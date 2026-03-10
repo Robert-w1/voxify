@@ -10,9 +10,59 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_09_090748) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_10_042533) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "folder_sessions", force: :cascade do |t|
+    t.bigint "recording_session_id", null: false
+    t.bigint "folder_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["folder_id"], name: "index_folder_sessions_on_folder_id"
+    t.index ["recording_session_id"], name: "index_folder_sessions_on_recording_session_id"
+  end
+
+  create_table "folders", force: :cascade do |t|
+    t.string "name"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_folders_on_user_id"
+  end
+
+  create_table "recording_sessions", force: :cascade do |t|
+    t.string "title"
+    t.string "audience"
+    t.string "presentation_type"
+    t.jsonb "focus"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "status"
+    t.index ["user_id"], name: "index_recording_sessions_on_user_id"
+  end
+
+  create_table "recordings", force: :cascade do |t|
+    t.string "audio_url"
+    t.text "transcript"
+    t.integer "duration_seconds"
+    t.bigint "recording_session_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recording_session_id"], name: "index_recordings_on_recording_session_id"
+  end
+
+  create_table "reports", force: :cascade do |t|
+    t.bigint "recording_id", null: false
+    t.jsonb "summary"
+    t.string "pdf_url"
+    t.jsonb "llm_raw_response"
+    t.jsonb "focus_feedbacks"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recording_id"], name: "index_reports_on_recording_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -22,8 +72,15 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_09_090748) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "username"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "folder_sessions", "folders"
+  add_foreign_key "folder_sessions", "recording_sessions"
+  add_foreign_key "folders", "users"
+  add_foreign_key "recording_sessions", "users"
+  add_foreign_key "recordings", "recording_sessions"
+  add_foreign_key "reports", "recordings"
 end
