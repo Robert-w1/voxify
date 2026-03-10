@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
-  root "home#index"
-
   devise_for :users
+  root to: "pages#home"
 
   resources :recording_sessions, path: "sessions" do
     resources :recordings, only: [:create]
