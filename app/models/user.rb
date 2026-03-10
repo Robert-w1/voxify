@@ -7,5 +7,5 @@ class User < ApplicationRecord
   has_many :recording_sessions, dependent: :destroy
   has_many :folders, dependent: :destroy
 
-  validates :username, presence: true
+  # validates :username, presence: true
 end

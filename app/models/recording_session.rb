@@ -2,6 +2,8 @@ class RecordingSession < ApplicationRecord
   belongs_to :user
   belongs_to :folder, optional: true
 
+  before_validation :set_default_title, on: :create
+
   has_many :recordings, dependent: :destroy
   has_many :reports, through: :recordings
 
@@ -57,4 +59,10 @@ class RecordingSession < ApplicationRecord
   validates :presentation_type, presence: true, inclusion: { in: PRESENTATION_TYPE_OPTIONS }
   validates :focus, presence: true
   validates :status, presence: true
+
+  private
+
+  def set_default_title
+  self.title ||= "#{presentation_type&.titleize} - #{Time.current.strftime('%b %d, %Y %I:%M %p')}"
+  end
 end

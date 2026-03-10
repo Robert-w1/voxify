@@ -1,0 +1,89 @@
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <h1 class="fw-bold mb-4">Session goal</h1>
+
+      <%= form_with(
+        model: @recording_session,
+        html: { class: "session-form" },
+        data: { controller: "session-form", action: "change->session-form#validate" }
+      ) do |f| %>
+
+        <% if @recording_session.errors.any? %>
+          <div class="alert alert-danger mb-4">
+            <% @recording_session.errors.full_messages.each do |msg| %>
+              <p class="mb-0"><%= msg %></p>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%# ── PRESENTATION TYPE ── %>
+        <div class="mb-5">
+          <h5 class="fw-semibold mb-3">What are you practicing?</h5>
+          <div class="d-flex flex-wrap gap-2" data-session-form-target="fieldGroup">
+            <% RecordingSession::PRESENTATION_TYPE_OPTIONS.each do |option| %>
+              <div>
+                <%= f.radio_button :presentation_type, option,
+                  class: "btn-check",
+                  id: "presentation_type_#{option}",
+                  data: { session_form_target: "requiredField" } %>
+                <%= f.label :presentation_type, option.titleize.gsub("1on1", "1-on-1"),
+                  for: "presentation_type_#{option}",
+                  class: "btn btn-outline-dark rounded-pill" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <%# ── AUDIENCE ── %>
+        <div class="mb-5">
+          <h5 class="fw-semibold mb-3">Who is the audience?</h5>
+          <div class="d-flex flex-wrap gap-2" data-session-form-target="fieldGroup">
+            <% RecordingSession::AUDIENCE_OPTIONS.each do |option| %>
+              <div>
+                <%= f.radio_button :audience, option,
+                  class: "btn-check",
+                  id: "audience_#{option}",
+                  data: { session_form_target: "requiredField" } %>
+                <%= f.label :audience, option.titleize.gsub("Vcs", "VCs"),
+                  for: "audience_#{option}",
+                  class: "btn btn-outline-dark rounded-pill" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <%# ── FEEDBACK FOCUS ── %>
+        <div class="mb-5">
+          <h5 class="fw-semibold mb-3">What is your desired feedback focus?</h5>
+          <div class="d-flex flex-wrap gap-2" data-session-form-target="fieldGroup">
+            <% RecordingSession::FEEDBACK_FOCUS_OPTIONS.each do |option| %>
+              <div>
+                <%= f.check_box :focus, {
+                  multiple: true,
+                  class: "btn-check",
+                  id: "focus_#{option}",
+                  data: { session_form_target: "checkboxField" }
+                }, option, nil %>
+                <%= f.label :focus, option.titleize,
+                  for: "focus_#{option}",
+                  class: "btn btn-outline-dark rounded-pill" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <%# ── SUBMIT ── %>
+        <div class="mt-4">
+          <%= f.submit "Start Recording",
+            class: "btn btn-lg w-100 text-white",
+            style: "background-color: #2a9d8f;",
+            disabled: true,
+            data: { session_form_target: "submitButton" } %>
+        </div>
+
+      <% end %>
+    </div>
+  </div>
+</div>
