@@ -3,6 +3,8 @@ class Recording < ApplicationRecord
 
   has_one :report, dependent: :destroy
 
-  validates :recording_sessions, presence: true
-  validates :audio_url, presence: true
+  delegate :user, to: :recording_session
+
+  validates :recording_session, presence: true
+  validates :duration_seconds, numericality: { greater_than: 0 }, allow_nil: true
 end
