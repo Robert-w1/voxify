@@ -6,9 +6,28 @@ export default class extends Controller {
 
   validate() {
     const allValid = this.#radioGroupsSelected() && this.#atLeastOneCheckbox()
+    console.log("validate fired — greyOut method exists:", typeof this.#greyOutUnselectedRadios)
     this.submitButtonTarget.disabled = !allValid
+    this.#greyOutUnselectedRadios()
+  }
+connect() {
+    this.previouslyChecked = {}
   }
 
+  toggleRadio(event) {
+    const radio = event.target
+    const name = radio.name
+
+    if (this.previouslyChecked[name] === radio.id) {
+      radio.checked = false
+      delete this.previouslyChecked[name]
+    } else {
+      this.previouslyChecked[name] = radio.id
+    }
+
+    this.validate()
+  }
+  
   // ── Private ──
 
   #radioGroupsSelected() {
@@ -24,5 +43,26 @@ export default class extends Controller {
 
   #atLeastOneCheckbox() {
     return this.checkboxFieldTargets.some(el => el.checked)
+  }
+  #greyOutUnselectedRadios() {
+    const radioNames = [...new Set(
+      this.requiredFieldTargets.map(el => el.name)
+    )]
+
+    radioNames.forEach(name => {
+      const radiosInGroup = this.requiredFieldTargets.filter(el => el.name === name)
+      const hasSelection = radiosInGroup.some(el => el.checked)
+
+      radiosInGroup.forEach(radio => {
+        const label = radio.nextElementSibling
+        if (!label) return
+
+        if (hasSelection && !radio.checked) {
+          label.style.opacity = "0.4"
+        } else {
+          label.style.opacity = "1"
+        }
+      })
+    })
   }
 }
