@@ -1,8 +1,8 @@
-<div class="container py-5">
+<div class="container-app py-5">
   <div class="row justify-content-center">
     <div class="col-lg-8">
 
-      <h1 class="fw-bold mb-4">Session goal</h1>
+      <h1 class="mb-4">Session goal</h1>
 
       <%= form_with(
         model: @recording_session,
@@ -11,7 +11,7 @@
       ) do |f| %>
 
         <% if @recording_session.errors.any? %>
-          <div class="alert alert-danger mb-4">
+          <div class="p-3 mb-4" style="background-color: #f8d7da; border: 1px solid #912519; border-radius: 10px; color: #912519;">
             <% @recording_session.errors.full_messages.each do |msg| %>
               <p class="mb-0"><%= msg %></p>
             <% end %>
@@ -21,7 +21,7 @@
         <%# ── PRESENTATION TYPE ── %>
         <div class="mb-5">
           <h5 class="fw-semibold mb-1">What are you practicing?</h5>
-          <p class="text-muted fst-italic mb-3">Choose one core purpose.</p>
+          <p class="text-caption fst-italic mb-3">Choose one core purpose.</p>
           <div class="d-flex flex-wrap gap-2" data-session-form-target="fieldGroup">
             <% RecordingSession::PRESENTATION_TYPE_OPTIONS.each do |option| %>
               <div>
@@ -31,7 +31,7 @@
                   data: { session_form_target: "requiredField", action: "click->session-form#toggleRadio" } %>
                 <%= f.label :presentation_type, option.titleize.gsub("1on1", "1-on-1"),
                   for: "presentation_type_#{option}",
-                  class: "btn btn-outline-dark rounded-pill" %>
+                  class: "btn btn-secondary" %>
               </div>
             <% end %>
           </div>
@@ -40,7 +40,7 @@
         <%# ── AUDIENCE ── %>
         <div class="mb-5">
           <h5 class="fw-semibold mb-1">Who is the audience?</h5>
-          <p class="text-muted fst-italic mb-3">Choose one core audience.</p>
+          <p class="text-caption fst-italic mb-3">Choose one core audience.</p>
           <div class="d-flex flex-wrap gap-2" data-session-form-target="fieldGroup">
             <% RecordingSession::AUDIENCE_OPTIONS.each do |option| %>
               <div>
@@ -50,7 +50,7 @@
                   data: { session_form_target: "requiredField", action: "click->session-form#toggleRadio" } %>
                 <%= f.label :audience, option.titleize.gsub("Vcs", "VCs"),
                   for: "audience_#{option}",
-                  class: "btn btn-outline-dark rounded-pill" %>
+                  class: "btn btn-secondary" %>
               </div>
             <% end %>
           </div>
@@ -59,7 +59,7 @@
         <%# ── FEEDBACK FOCUS ── %>
         <div class="mb-5">
           <h5 class="fw-semibold mb-1">What is your desired feedback focus?</h5>
-          <p class="text-muted fst-italic mb-3">Choose all that apply. Leaving them all unchecked will generate a report about them all.</p>
+          <p class="text-caption fst-italic mb-3">Choose all that apply. Leaving them all unchecked will generate a report about them all.</p>
           <div class="d-flex flex-wrap gap-2" data-session-form-target="fieldGroup">
             <% RecordingSession::FEEDBACK_FOCUS_OPTIONS.each do |option| %>
               <div>
@@ -71,7 +71,7 @@
                 }, option, nil %>
                 <%= f.label :focus, option.titleize,
                   for: "focus_#{option}",
-                  class: "btn btn-outline-dark rounded-pill" %>
+                  class: "btn btn-secondary" %>
               </div>
             <% end %>
           </div>
@@ -80,8 +80,7 @@
         <%# ── SUBMIT ── %>
         <div class="mt-4">
           <%= f.submit "Start Recording",
-            class: "btn btn-lg w-100 text-white",
-            style: "background-color: #2a9d8f;",
+            class: "btn btn-primary w-100",
             disabled: true,
             data: { session_form_target: "submitButton" } %>
         </div>
