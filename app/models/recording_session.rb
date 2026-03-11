@@ -2,6 +2,8 @@ class RecordingSession < ApplicationRecord
   belongs_to :user
   belongs_to :folder, optional: true
 
+  before_validation :set_default_title, on: :create
+
   has_many :recordings, dependent: :destroy
   has_many :reports, through: :recordings
 
@@ -55,6 +57,18 @@ class RecordingSession < ApplicationRecord
   validates :title, presence: true
   validates :audience, presence: true, inclusion: { in: AUDIENCE_OPTIONS }
   validates :presentation_type, presence: true, inclusion: { in: PRESENTATION_TYPE_OPTIONS }
-  validates :focus, presence: true
+  validate :at_least_one_focus_selected
   validates :status, presence: true
+
+  private
+
+  def set_default_title
+  self.title ||= "#{presentation_type&.titleize} - #{Time.current.strftime('%b %d, %Y %I:%M %p')}"
+  end
+
+  def at_least_one_focus_selected
+   if focus.blank? || focus.reject(&:blank?).empty?
+    errors.add(:focus, "requires at least one selection")
+   end
+  end
 end
