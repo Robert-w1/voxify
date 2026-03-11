@@ -18,17 +18,29 @@
     align-items:     center;
     gap:             10px;
     text-decoration: none;
+    line-height: 1;
     &:hover { opacity: 0.85; }
   }
 
-  &__logo { width: 36px; height: 36px; }
+  &__logo {
+    width:          36px;
+    height:         36px;
+    display:        block;        // removes inline image gap
+    position:       relative;
+    top:            -2px;         // nudge up to optically align with Bebas Neue
+  }
 
   &__brand-name {
     font-family:    $font-display;
     font-size:      26px;
     letter-spacing: 0.06em;
     color:          $color-heading;
+    align-items:    center;
     line-height:    1;
+    padding-top: 0;
+    padding-bottom: 0;
+    top:            3px;          // Bebas Neue sits low visually — nudge it down to meet the logo centre
+
   }
 
   &__actions {

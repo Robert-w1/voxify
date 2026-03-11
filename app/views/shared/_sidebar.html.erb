@@ -1,0 +1,84 @@
+<%# ============================================================
+<%#    Voxify Sidebar %>
+<%#    - Collapses to icon-only mode via JS toggle
+<%#    - Recent sessions pulled from @recent_sessions (set in controller)
+<%#    - Avatar dropdown for logout
+<%# ============================================================ %>
+<aside id="sidebar" class="sidebar">
+
+  <div class="sidebar-top">
+
+    <%# ── Header: logo + collapse toggle ── %>
+    <div class="sidebar-header">
+      <div class="brand-link">
+        <%= image_tag "voxify_logo.svg", class: "brand-logo", alt: "Voxify" %>
+        <span class="brand-name">Voxify</span>
+      </div>
+      <button id="sidebar-toggle" class="toggle-btn" aria-label="Toggle sidebar">
+        <i data-feather="menu"></i>
+      </button>
+    </div>
+
+    <%# ── Primary navigation ── %>
+    <nav class="sidebar-nav">
+
+      <%# New Session — creates a new RecordingSession %>
+      <%= link_to new_recording_session_path, class: "nav-item #{"active" if current_page?(new_recording_session_path)}" do %>
+        <i data-feather="mic"></i>
+        <span class="label">New session</span>
+      <% end %>
+
+      <%# All Sessions — lists the user's past sessions %>
+      <%= link_to recording_sessions_path, class: "nav-item #{"active" if current_page?(recording_sessions_path)}" do %>
+        <i data-feather="layers"></i>
+        <span class="label">Sessions</span>
+      <% end %>
+
+      <%# Folders %>
+      <%= link_to '#', class: "nav-item" do %>
+         <i data-feather="folder"></i>
+         <span class="label">Folders</span>
+       <% end %>
+
+    </nav>
+
+    <%# ── Recent Sessions list ── %>
+    <%# @recent_sessions is set by the before_action :set_sidebar_data helper %>
+    <div class="recent-section">
+      <div class="recent-title">Recent</div>
+      <% @recent_sessions&.each do |session| %>
+        <%= link_to recording_session_path(session), class: "nav-item recent-item" do %>
+          <%# Status dot: green = completed, amber = processing, red = failed %>
+          <span class="status-dot status-dot--<%= session.status %>"></span>
+          <span class="label recent-label">
+            <%= session.title.presence || "Untitled" %>
+          </span>
+        <% end %>
+      <% end %>
+    </div>
+
+  </div>
+
+  <%# ── Bottom: avatar + logout dropdown ── %>
+  <div class="sidebar-bottom">
+    <div class="avatar-wrapper" id="avatar-toggle">
+      <div class="sidebar-avatar">
+        <%# Show first letter of username, fallback to email %>
+        <%= (current_user.username.presence || current_user.email).first.upcase %>
+      </div>
+      <%# Show username when sidebar is expanded %>
+      <span class="label avatar-name">
+        <%= current_user.username.presence || current_user.email.split("@").first %>
+      </span>
+    </div>
+
+    <%# Dropdown appears above the avatar on click -%>
+    <div class="avatar-dropdown" id="avatar-dropdown">
+      <%= link_to "Log out",
+            destroy_user_session_path,
+            data: { turbo_method: :delete },
+            class: "avatar-dropdown-item" %>
+    </div>
+  </div>
+
+</aside>
