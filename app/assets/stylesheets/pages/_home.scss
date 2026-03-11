@@ -317,7 +317,10 @@
     gap:              14px;
     transition:       border-color $transition;
 
-    &:hover    { border-color: $color-border; }
+    &:hover {
+      background-color: $color-bg-card-hover;
+      border-color:     $color-border;
+    }
     &--active  { border-color: $color-primary; }
   }
 
