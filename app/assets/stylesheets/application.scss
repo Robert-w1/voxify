@@ -3,6 +3,39 @@
 @import "config/colors";
 @import "config/bootstrap_variables";
 
+// ============================================================
+// VARIABLES
+// ============================================================
+
+$color-primary:       #0D7377;
+$color-primary-hover: #0a5f62;
+$color-accent:        #E8913A;
+$color-accent-hover:  #d17e2c;
+
+$color-bg:            #F7F5F0;
+$color-bg-card:       #E8E4DD;
+$color-bg-card-hover: #dedad2;
+
+$color-heading:       #2D2A26;
+$color-body:          #5C5650;
+$color-caption:       #9B9590;
+
+$color-border:        #dedad2;
+$color-border-light:  #ede9e3;
+
+$color-success:       #1c6442;
+$color-error:         #912519;
+
+$font-display:        'Bebas Neue', sans-serif;
+$font-body:           'Inter', sans-serif;
+
+$radius-sm:           6px;
+$radius-md:           10px;
+$radius-lg:           16px;
+$radius-xl:           24px;
+
+$transition:          0.2s ease;
+
 // External libraries
 @import "bootstrap";
 @import "font-awesome";
@@ -10,3 +43,199 @@
 // Your CSS partials
 @import "components/index";
 @import "pages/index";
+
+// Importing Google Fonts
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
+
+// ============================================================
+// BASE
+// ============================================================
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family:      $font-body;
+  font-size:        16px;
+  line-height:      1.6;
+  color:            $color-body;
+  background-color: $color-bg;
+}
+
+// ============================================================
+// TYPOGRAPHY
+// ============================================================
+
+h1 {
+  font-family:    $font-display;
+  font-size:      42px;
+  line-height:    1.05;
+  color:          $color-heading;
+  letter-spacing: 0.02em;
+}
+
+h2 {
+  font-family: $font-body;
+  font-size:   33px;
+  font-weight: 700;
+  line-height: 1.2;
+  color:       $color-heading;
+}
+
+h3 {
+  font-family:    $font-display;
+  font-size:      26px;
+  line-height:    1.1;
+  color:          $color-heading;
+  letter-spacing: 0.02em;
+}
+
+h4 {
+  font-family: $font-body;
+  font-size:   18px;
+  font-weight: 600;
+  color:       $color-heading;
+}
+
+p {
+  font-size:   16px;
+  color:       $color-body;
+  line-height: 1.65;
+}
+
+.text-caption {
+  font-size: 13px;
+  color:     $color-caption;
+}
+
+a {
+  color:           $color-primary;
+  text-decoration: none;
+  transition:      color $transition;
+
+  &:hover {
+    color:           $color-primary-hover;
+    text-decoration: none;
+  }
+}
+
+// ============================================================
+// BUTTONS
+// ============================================================
+
+.btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             8px;
+  font-family:     $font-body;
+  font-size:       15px;
+  font-weight:     600;
+  line-height:     1;
+  border-radius:   $radius-md;
+  border:          1.5px solid transparent;
+  cursor:          pointer;
+  text-decoration: none;
+  transition:      background-color $transition, border-color $transition, color $transition;
+
+  &:hover  { text-decoration: none; }
+  &:active { opacity: 0.9; }
+}
+
+.btn-primary {
+  background-color: $color-primary;
+  border-color:     $color-primary;
+  color:            #F7F5F0;
+
+  &:hover {
+    background-color: $color-primary-hover;
+    border-color:     $color-primary-hover;
+    color:            #F7F5F0;
+  }
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border-color:     $color-border;
+  color:            $color-heading;
+
+  &:hover {
+    background-color: $color-bg-card;
+    border-color:     $color-caption;
+    color:            $color-heading;
+  }
+}
+
+.btn-primary-disabled {
+  background-color: $color-bg-card;
+  border-color:     $color-bg-card;
+  color:            $color-caption;
+  cursor:           not-allowed;
+  pointer-events:   none;
+}
+
+.btn-sm { font-size: 13px; }
+.btn-lg { font-size: 17px; border-radius: $radius-lg; }
+
+// ============================================================
+// CARDS
+// ============================================================
+
+.info-card {
+  background-color: $color-bg-card;
+  border:           1px solid $color-border-light;
+  border-radius:    $radius-lg;
+  transition:       background-color $transition, border-color $transition;
+
+  &:hover {
+    background-color: $color-bg-card-hover;
+    border-color:     $color-border;
+  }
+}
+
+// ============================================================
+// FORM INPUTS
+// ============================================================
+
+.input-field {
+  width:            100%;
+  font-family:      $font-body;
+  font-size:        15px;
+  color:            $color-heading;
+  background-color: $color-bg;
+  border:           1.5px solid $color-border;
+  border-radius:    $radius-md;
+  line-height:      1.5;
+  outline:          none;
+  transition:       border-color $transition;
+
+  &::placeholder { color: $color-caption; }
+
+  &:focus {
+    border-color: $color-primary;
+    box-shadow:   0 0 0 3px rgba($color-primary, 0.1);
+  }
+
+  &:disabled {
+    background-color: $color-bg-card;
+    color:            $color-caption;
+    cursor:           not-allowed;
+  }
+}
+
+.select-input {
+  @extend .input-field;
+  appearance:          none;
+  background-image:    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239B9590' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:   no-repeat;
+  background-position: right 16px center;
+  cursor:              pointer;
+}
+
+.container-app {
+  max-width: 1400px;
+  margin:    0 auto;
+  padding:   0 48px;
+}

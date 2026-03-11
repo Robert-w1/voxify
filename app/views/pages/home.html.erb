@@ -1,2 +1,268 @@
-<h1>Pages#home</h1>
-<p>Find me in app/views/pages/home.html.erb</p>
+<%# ── HERO ── %>
+<section class="hero">
+  <div class="container-app">
+    <div class="hero__inner px-4 py-5 mx-auto">
+
+      <div class="hero__content">
+        <span class="hero__eyebrow px-3 py-1">
+          AI-Powered Presentation Coach
+        </span>
+
+        <h1 class="hero__title mt-2">
+          SPEAK WITH<br>
+          <span class="accent">CONFIDENCE.</span><br>
+          ALWAYS.
+        </h1>
+
+        <p class="hero__description">
+          Record your presentation, choose your audience and focus areas -
+          and get instant, personalised AI feedback that helps you communicate
+          more clearly, confidently, and effectively.
+        </p>
+
+        <div class="hero__actions d-flex gap-3 flex-wrap">
+          <%= link_to "Start for free", new_user_registration_path, class: "btn btn-primary btn-lg" %>
+          <%= link_to "See how it works", "#how-it-works", class: "btn btn-secondary btn-lg" %>
+        </div>
+
+        <p class="hero__note">No credit card required &middot; Free to get started</p>
+      </div>
+
+      <%# Mock feedback card %>
+      <div class="hero__visual">
+        <div class="hero__mockup p-4">
+
+          <div class="hero__waveform mb-4">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
+
+          <p class="hero__mockup-label mb-3">Feedback summary</p>
+
+          <div class="hero__score-row">
+            <span class="hero__score-label">Tone</span>
+            <div class="hero__score-bar-track">
+              <div class="hero__score-bar-fill" style="width: 88%"></div>
+            </div>
+            <span class="hero__score-value">88</span>
+          </div>
+          <div class="hero__score-row mt-2">
+            <span class="hero__score-label">Clarity</span>
+            <div class="hero__score-bar-track">
+              <div class="hero__score-bar-fill" style="width: 74%"></div>
+            </div>
+            <span class="hero__score-value">74</span>
+          </div>
+          <div class="hero__score-row mt-2">
+            <span class="hero__score-label">Pace</span>
+            <div class="hero__score-bar-track">
+              <div class="hero__score-bar-fill" style="width: 91%"></div>
+            </div>
+            <span class="hero__score-value">91</span>
+          </div>
+          <div class="hero__score-row mt-2">
+            <span class="hero__score-label">Filler words</span>
+            <div class="hero__score-bar-track">
+              <div class="hero__score-bar-fill hero__score-bar-fill--warning" style="width: 62%"></div>
+            </div>
+            <span class="hero__score-value">62</span>
+          </div>
+          <div class="hero__score-row mt-2">
+            <span class="hero__score-label">Engagement</span>
+            <div class="hero__score-bar-track">
+              <div class="hero__score-bar-fill" style="width: 80%"></div>
+            </div>
+            <span class="hero__score-value">80</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# ── SOCIAL PROOF STRIP ── %>
+<div class="container-app">
+  <div class="social-proof py-4">
+    <div class="social-proof__inner px-4">
+      <div class="social-proof__item">
+        <span class="social-proof__number">10+</span>
+        <span class="social-proof__text">Focus areas</span>
+      </div>
+      <div class="social-proof__divider"></div>
+      <div class="social-proof__item">
+        <span class="social-proof__number">10</span>
+        <span class="social-proof__text">Audience types</span>
+      </div>
+      <div class="social-proof__divider"></div>
+      <div class="social-proof__item">
+        <span class="social-proof__number">AI</span>
+        <span class="social-proof__text">Powered feedback</span>
+      </div>
+      <div class="social-proof__divider"></div>
+      <div class="social-proof__item">
+        <span class="social-proof__number">PDF</span>
+        <span class="social-proof__text">Downloadable reports</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%# ── FEATURES ── %>
+<section class="features py-5" id="features">
+  <div class="container-app">
+    <div class="features__inner px-4">
+
+      <p class="features__eyebrow mb-2">What you get</p>
+      <h2 class="mb-5">Everything you need to<br>level up your delivery</h2>
+
+      <div class="features__grid">
+
+        <div class="features__card p-4">
+          <div class="features__icon mb-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="2" width="6" height="11" rx="3"/>
+              <path d="M5 10a7 7 0 0014 0"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+              <line x1="8" y1="22" x2="16" y2="22"/>
+            </svg>
+          </div>
+          <p class="features__card-title">LIVE RECORDING</p>
+          <p class="features__card-desc">Record directly in your browser with a real-time waveform visualiser. Pause, resume, or restart until you're ready.</p>
+        </div>
+
+        <div class="features__card p-4">
+          <div class="features__icon mb-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+            </svg>
+          </div>
+          <p class="features__card-title">AUDIENCE FILTERS</p>
+          <p class="features__card-desc">Tailor feedback to your context - VCs, your team, a conference. The AI adjusts its lens to match who you're speaking to.</p>
+        </div>
+
+        <div class="features__card p-4">
+          <div class="features__icon mb-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a5 5 0 015 5v1a5 5 0 01-10 0V7a5 5 0 015-5z"/>
+              <path d="M5 14h1a2 2 0 012 2v1a3 3 0 003 3h2a3 3 0 003-3v-1a2 2 0 012-2h1"/>
+            </svg>
+          </div>
+          <p class="features__card-title">AI TRANSCRIPTION</p>
+          <p class="features__card-desc">Powered by OpenAI Whisper, your speech is transcribed with precision and used as the basis for all feedback.</p>
+        </div>
+
+        <div class="features__card p-4">
+          <div class="features__icon mb-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="20" x2="18" y2="10"/>
+              <line x1="12" y1="20" x2="12" y2="4"/>
+              <line x1="6" y1="20" x2="6" y2="14"/>
+              <line x1="2" y1="20" x2="22" y2="20"/>
+            </svg>
+          </div>
+          <p class="features__card-title">FOCUSED FEEDBACK</p>
+          <p class="features__card-desc">Choose what matters - tone, pace, filler words, storytelling. Get deep, actionable insights per focus area you select.</p>
+        </div>
+
+        <div class="features__card p-4">
+          <div class="features__icon mb-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+            </svg>
+          </div>
+          <p class="features__card-title">ATTEMPT HISTORY</p>
+          <p class="features__card-desc">Track your improvement across multiple recordings in the same session. See how each attempt compares side by side.</p>
+        </div>
+
+        <div class="features__card p-4">
+          <div class="features__icon mb-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="12" y1="11" x2="12" y2="17"/>
+              <polyline points="9 14 12 17 15 14"/>
+            </svg>
+          </div>
+          <p class="features__card-title">PDF REPORT</p>
+          <p class="features__card-desc">Every session generates a downloadable, formatted PDF report - ready to review, share, or save anywhere.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# ── HOW IT WORKS ── %>
+<section class="how-it-works py-5" id="how-it-works">
+  <div class="container-app">
+    <div class="how-it-works__inner px-4">
+
+      <div class="how-it-works__header mb-5">
+        <p class="how-it-works__eyebrow mb-2">The process</p>
+        <h2>From recording to report<br>in four steps</h2>
+        <p class="mt-2">No setup. No subscriptions. Just record, review, and improve.</p>
+      </div>
+
+      <div class="how-it-works__steps">
+
+        <div class="how-it-works__step p-4">
+          <div class="how-it-works__step-number">1</div>
+          <h3 class="how-it-works__step-title">SET YOUR CONTEXT</h3>
+          <p class="how-it-works__step-desc">Choose your audience type, presentation style, and the specific areas you want feedback on.</p>
+        </div>
+
+        <div class="how-it-works__step p-4">
+          <div class="how-it-works__step-number">2</div>
+          <h3 class="how-it-works__step-title">RECORD YOURSELF</h3>
+          <p class="how-it-works__step-desc">Hit record and deliver your presentation. Watch the waveform respond in real time. Pause or restart whenever you need.</p>
+        </div>
+
+        <div class="how-it-works__step p-4">
+          <div class="how-it-works__step-number">3</div>
+          <h3 class="how-it-works__step-title">AI ANALYSES IT</h3>
+          <p class="how-it-works__step-desc">Whisper transcribes your audio, then our AI analyses it against your chosen focus areas and audience.</p>
+        </div>
+
+        <div class="how-it-works__step p-4">
+          <div class="how-it-works__step-number">4</div>
+          <h3 class="how-it-works__step-title">REVIEW & IMPROVE</h3>
+          <p class="how-it-works__step-desc">Get a full report broken down by focus area. Download as PDF, try again, and track your progress.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# ── CTA ── %>
+<section class="cta-section py-5">
+  <div class="container-app">
+    <div class="cta-section__inner px-4">
+      <div class="cta-section__card p-5">
+        <h2 class="cta-section__title mb-3">READY TO SOUND<br>YOUR BEST?</h2>
+        <p class="cta-section__subtitle mb-4">
+          Start getting the feedback that actually helps you communicate better -
+          in any room, to any audience.
+        </p>
+        <div class="cta-section__actions">
+          <%= link_to "Start for free", new_user_registration_path, class: "btn btn-lg btn-cta-primary" %>
+          <%= link_to "Sign in", new_user_session_path, class: "btn btn-lg btn-cta-ghost" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%# ── FOOTER ── %>
+<footer class="vx-footer py-4">
+  <div class="vx-footer__inner px-4">
+    <%= link_to root_path, class: "vx-footer__brand" do %>
+      <%= image_tag "voxify_logo.svg", width: "24", height: "24", alt: "" %>
+      <span class="vx-footer__brand-name">VOXIFY</span>
+    <% end %>
+    <p class="vx-footer__copy">&copy; <%= Date.current.year %> Voxify. All rights reserved.</p>
+  </div>
+</footer>

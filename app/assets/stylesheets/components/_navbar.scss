@@ -1,12 +1,47 @@
-.navbar-lewagon {
-  justify-content: space-between;
-  background: white;
-}
+.vx-navbar {
+  background-color: $color-bg;
+  border-bottom:    1px solid $color-border-light;
+  height:           68px;
+  display:          flex;
+  align-items:      center;
 
-.navbar-lewagon .navbar-collapse {
-  flex-grow: 0;
-}
+  &__inner {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    width:           100%;
+    padding:         0 24px;
+  }
 
-.navbar-lewagon .navbar-brand img {
-  width: 40px;
+  &__brand {
+    display:         flex;
+    align-items:     center;
+    gap:             10px;
+    text-decoration: none;
+    &:hover { opacity: 0.85; }
+  }
+
+  &__logo { width: 36px; height: 36px; }
+
+  &__brand-name {
+    font-family:    $font-display;
+    font-size:      26px;
+    letter-spacing: 0.06em;
+    color:          $color-heading;
+    line-height:    1;
+  }
+
+  &__actions {
+    display:     flex;
+    align-items: center;
+    gap:         12px;
+  }
+
+  &__login-link {
+    font-size:       14px;
+    font-weight:     500;
+    color:           $color-caption;
+    text-decoration: none;
+    &:hover { color: $color-heading; }
+  }
 }
