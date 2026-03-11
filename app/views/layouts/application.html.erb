@@ -11,11 +11,28 @@
   </head>
 
   <body>
-  <% unless user_signed_in? %>
-    <%= render "shared/navbar" %>
-  <% end %>
-  <%= render "shared/flashes" %>
-  <%= yield %>
+    <%# Only show navbar on public pages (no sidebar) %>
+    <%= render "shared/navbar" unless show_sidebar? %>
+
+    <%= render "shared/flashes" %>
+
+    <div class="page-wrapper <%= "with-sidebar" if show_sidebar? %>">
+      <%# Sidebar only renders for authenticated pages %>
+      <% if show_sidebar? %>
+        <%= render "shared/sidebar" %>
+      <% end %>
+
+      <main class="main-content">
+        <%= yield %>
+      </main>
+    </div>
+
+    <%# Feather icons — re-initialised after every Turbo navigation %>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+      document.addEventListener("turbo:load", () => feather.replace())
+      document.addEventListener("turbo:render", () => feather.replace())
+    </script>
   </body>
 
 </html>

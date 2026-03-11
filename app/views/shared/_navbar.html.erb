@@ -7,8 +7,10 @@
     <% end %>
 
     <div class="vx-navbar__actions">
-      <%= link_to "Sign up", new_user_registration_path, class: "vx-navbar__login-link" %>
-      <%= link_to "Sign in", new_user_session_path, class: "btn btn-primary btn-sm" %>
+      <% if current_page?(root_path) %>
+        <%= link_to "Sign up", new_user_registration_path, class: "vx-navbar__login-link" %>
+        <%= link_to "Sign in", new_user_session_path, class: "btn btn-primary btn-sm" %>
+      <% end %>
     </div>
 
   </div>
