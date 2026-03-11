@@ -3,3 +3,6 @@ import "@hotwired/turbo-rails"
 import "controllers"
 import "@popperjs/core"
 import "bootstrap"
+
+import RecorderController from "./controllers/recorder_controller.js"
+Stimulus.register("recorder", RecorderController)
