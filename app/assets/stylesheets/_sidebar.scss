@@ -1,0 +1,332 @@
+// ============================================================
+// Layout shell
+// ============================================================
+.page-wrapper {
+  display: block;
+
+  &.with-sidebar {
+    display: flex;
+    min-height: 100vh;
+  }
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  background-color: #F7F5EF;
+}
+
+// ============================================================
+// Sidebar
+// ============================================================
+.sidebar {
+  width: 240px;
+  min-height: 100vh;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  background-color: #EFECE3;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 10px;
+  transition: width 0.22s ease;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  &.collapsed {
+    width: 56px;
+
+    .brand-link,
+    .label,
+    .recent-title,
+    .recent-section {
+      display: none;
+    }
+
+    .sidebar-header {
+      justify-content: center;
+    }
+
+    .nav-item {
+      justify-content: center;
+      padding: 8px;
+      gap: 0;
+    }
+
+    .avatar-wrapper {
+      justify-content: center;
+      padding: 6px;
+    }
+
+    .avatar-dropdown {
+      left: 56px;
+      bottom: 0;
+    }
+  }
+}
+
+.sidebar-top {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+// ── Header ──────────────────────────────────────────────────
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  margin-bottom: 20px;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.brand-logo {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display:   block;       // removes inline image gap
+  position:  relative;
+  top:       -2px;        // nudge up to match Bebas Neue
+}
+
+.brand-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: #5A533D;
+  white-space: nowrap;
+  line-height: 1;  // prevents the text from sitting high
+  display: block;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  top:            3px;    // compensate for Bebas Neue's empty metric space above caps
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #E8750A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: #E4E0D6;
+    color: #c4620a;
+  }
+}
+
+// ── Nav items ────────────────────────────────────────────────
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 24px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  color: #5A533D;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+  // Reset button/form defaults (needed when using button_to)
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+
+  &:hover {
+    background-color: #E4E0D6;
+    color: #5A533D;
+    text-decoration: none;
+  }
+
+  &.active {
+    background-color: #E4E0D6;
+    font-weight: 400;
+    color: #5A533D;
+  }
+}
+
+// Feather icons — force correct size and prevent shrinking
+.nav-item i,
+.toggle-btn i {
+  display: flex;
+  flex-shrink: 0;
+}
+
+// ── Recent section ───────────────────────────────────────────
+.recent-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: #D5D1C9 transparent;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #D5D1C9;
+    border-radius: 4px;
+  }
+}
+
+.recent-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #B0ACA0;
+  padding: 0 10px;
+  margin-bottom: 4px;
+}
+
+.recent-item {
+  font-weight: 400;
+  color: #858279;
+
+  &:hover {
+    color: #5A533D;
+  }
+}
+
+.recent-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 150px;
+}
+
+// ── Status dots ───────────────────────────────────────────────
+// Shown next to each recent session to indicate its state
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &--completed  { background-color: #6DBF8A; }
+  &--processing { background-color: #F0B429; }
+  &--failed     { background-color: #C0BAB0; }
+
+  // Recording pulses to signal active state
+  &--recording {
+    background-color: #E05C5C;
+    animation: status-pulse 1.2s ease-in-out infinite;
+  }
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+// ── Bottom avatar ─────────────────────────────────────────────
+.sidebar-bottom {
+  position: relative;
+  border-top: 1px solid rgba(90, 83, 61, 0.12);
+  padding-top: 12px;
+  margin-top: 8px;
+}
+
+.avatar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #E4E0D6;
+  }
+}
+
+.sidebar-avatar {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 50%;
+  background-color: #E8750A;
+  color: #EFECE3;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-name {
+  font-size: 13px;
+  color: #5A533D;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar-dropdown {
+  display: none;
+  position: absolute;
+  bottom: 56px;
+  left: 8px;
+  background-color: #F7F5EF;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(90, 83, 61, 0.15);
+  overflow: hidden;
+  min-width: 140px;
+  z-index: 100;
+
+  &.open {
+    display: block;
+  }
+}
+
+.avatar-dropdown-item {
+  display: block;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #5A533D;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #EFECE3;
+    color: #5A533D;
+    text-decoration: none;
+  }
+}

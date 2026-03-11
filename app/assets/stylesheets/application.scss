@@ -1,7 +1,7 @@
-// Graphical variables
-@import "config/fonts";
-@import "config/colors";
-@import "config/bootstrap_variables";
+// // Graphical variables
+// @import "config/fonts";
+// @import "config/colors";
+// @import "config/bootstrap_variables";
 
 // ============================================================
 // VARIABLES
@@ -43,6 +43,7 @@ $transition:          0.2s ease;
 // Your CSS partials
 @import "components/index";
 @import "pages/index";
+@import "sidebar";
 
 // Importing Google Fonts
 
@@ -144,7 +145,8 @@ a {
   &:active { opacity: 0.9; }
 }
 
-.btn-primary {
+.btn-primary,
+input[type="submit"].btn-primary {
   background-color: $color-primary;
   border-color:     $color-primary;
   color:            #F7F5F0;
