@@ -5,6 +5,33 @@
   justify-content: center;
 }
 
+.auth-card {
+  min-height: 607px;
+  min-width: 355px;
+  border: 1px solid $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: 8px 8px 35px $color-bg-card;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.form-inputs {
+  display: flex;
+  flex-direction: column;
+}
+
 .form-inputs .input {
   margin-bottom: 18px;
+}
+
+.auth-card form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-actions {
+  margin-top: auto;
+  display: flex;
 }
