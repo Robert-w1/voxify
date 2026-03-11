@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" fill="none">
+  <!-- Outer rounded square background -->
+  <rect width="40" height="40" rx="10" fill="#0D7377"/>
+  <!-- Waveform bars: 5 vertical bars of varying height, centered -->
+  <rect x="7"  y="17" width="4" height="6"  rx="2" fill="white" opacity="0.6"/>
+  <rect x="13" y="12" width="4" height="16" rx="2" fill="white"/>
+  <rect x="19" y="8"  width="4" height="24" rx="2" fill="white"/>
+  <rect x="25" y="12" width="4" height="16" rx="2" fill="white"/>
+  <rect x="31" y="17" width="4" height="6"  rx="2" fill="white" opacity="0.6"/>
+</svg>

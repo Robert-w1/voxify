@@ -1,1 +1,449 @@
-// Specific CSS for your home-page
+// ============================================================
+// HERO
+// ============================================================
+
+.hero {
+  &__inner {
+    display:               grid;
+    grid-template-columns: 1fr 1fr;
+    gap:                   64px;
+    align-items:           center;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+      gap:        48px;
+      text-align: center;
+    }
+  }
+
+  &__content {
+    display:        flex;
+    flex-direction: column;
+    gap:            24px;
+  }
+
+  &__eyebrow {
+    display:          inline-flex;
+    align-items:      center;
+    gap:              8px;
+    font-size:        12px;
+    font-weight:      600;
+    letter-spacing:   0.1em;
+    text-transform:   uppercase;
+    color:            $color-primary;
+    background-color: rgba(13, 115, 119, 0.08);
+    border:           1px solid rgba(13, 115, 119, 0.15);
+    border-radius:    100px;
+    width:            fit-content;
+
+    @media (max-width: 900px) { margin: 0 auto; }
+  }
+
+  &__title {
+    font-family:    $font-display;
+    font-size:      clamp(48px, 6vw, 76px);
+    line-height:    0.96;
+    color:          $color-heading;
+    letter-spacing: 0.02em;
+    margin:         0;
+
+    .accent { color: $color-primary; }
+  }
+
+  &__description {
+    font-size:   17px;
+    line-height: 1.7;
+    color:       $color-body;
+    max-width:   480px;
+    margin:      0;
+
+    @media (max-width: 900px) { max-width: 100%; }
+  }
+
+  &__actions {
+    display:     flex;
+    align-items: center;
+    gap:         14px;
+    flex-wrap:   wrap;
+
+    @media (max-width: 900px) { justify-content: center; }
+  }
+
+  &__note {
+    font-size: 13px;
+    color:     $color-caption;
+    margin:    0;
+  }
+
+  &__visual {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+
+    @media (max-width: 900px) { max-width: 440px; margin: 0 auto; }
+  }
+
+  &__mockup {
+    width:            100%;
+    max-width:        460px;
+    background-color: $color-bg-card;
+    border:           1px solid $color-border-light;
+    border-radius:    $radius-xl;
+  }
+
+  &__mockup-label {
+    font-size:      12px;
+    font-weight:    600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color:          $color-caption;
+  }
+
+  &__waveform {
+    display:     flex;
+    align-items: flex-end;
+    gap:         5px;
+    height:      72px;
+
+    span {
+      display:          block;
+      width:            6px;
+      border-radius:    3px;
+      background-color: $color-primary;
+
+      &:nth-child(1)  { height: 30%; opacity: 0.3; }
+      &:nth-child(2)  { height: 65%; opacity: 0.5; }
+      &:nth-child(3)  { height: 90%; opacity: 0.7; }
+      &:nth-child(4)  { height: 55%; opacity: 0.5; }
+      &:nth-child(5)  { height: 100%; }
+      &:nth-child(6)  { height: 75%; opacity: 0.8; }
+      &:nth-child(7)  { height: 45%; opacity: 0.6; }
+      &:nth-child(8)  { height: 85%; opacity: 0.9; }
+      &:nth-child(9)  { height: 60%; opacity: 0.6; }
+      &:nth-child(10) { height: 35%; opacity: 0.4; }
+      &:nth-child(11) { height: 50%; opacity: 0.5; }
+      &:nth-child(12) { height: 25%; opacity: 0.3; }
+    }
+  }
+
+  &__score-row {
+    display:     flex;
+    align-items: center;
+    gap:         10px;
+
+    &:not(:last-child) { margin-bottom: 10px; }
+  }
+
+  &__score-label {
+    font-size:   13px;
+    color:       $color-body;
+    width:       90px;
+    flex-shrink: 0;
+  }
+
+  &__score-bar-track {
+    flex:             1;
+    height:           6px;
+    background-color: $color-border-light;
+    border-radius:    100px;
+    overflow:         hidden;
+  }
+
+  &__score-bar-fill {
+    height:        100%;
+    border-radius: 100px;
+    background-color: $color-primary;
+
+    &--warning { background-color: $color-accent; }
+  }
+
+  &__score-value {
+    font-size:   12px;
+    font-weight: 600;
+    color:       $color-heading;
+    width:       28px;
+    text-align:  right;
+    flex-shrink: 0;
+  }
+}
+
+// ============================================================
+// SOCIAL PROOF STRIP
+// ============================================================
+
+.social-proof {
+  border-top:    1px solid $color-border-light;
+  border-bottom: 1px solid $color-border-light;
+
+  &__inner {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             48px;
+    flex-wrap:       wrap;
+  }
+
+  &__item {
+    display:        flex;
+    flex-direction: column;
+    align-items:    center;
+    gap:            2px;
+  }
+
+  &__number {
+    font-family:    $font-display;
+    font-size:      28px;
+    color:          $color-heading;
+    letter-spacing: 0.04em;
+    line-height:    1;
+  }
+
+  &__text {
+    font-size:   13px;
+    color:       $color-caption;
+    font-weight: 500;
+  }
+
+  &__divider {
+    width:            1px;
+    height:           36px;
+    background-color: $color-border-light;
+
+    @media (max-width: 600px) { display: none; }
+  }
+}
+
+// ============================================================
+// FEATURES
+// ============================================================
+
+.features {
+
+  &__eyebrow {
+    font-size:      12px;
+    font-weight:    600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color:          $color-accent;
+  }
+
+  &__grid {
+    display:               grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap:                   20px;
+
+    @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 560px) { grid-template-columns: 1fr; }
+  }
+
+  &__card {
+    background-color: $color-bg-card;
+    border:           1px solid $color-border-light;
+    border-radius:    $radius-lg;
+    transition:       background-color $transition, border-color $transition;
+
+    &:hover {
+      background-color: $color-bg-card-hover;
+      border-color:     $color-border;
+    }
+  }
+
+  &__icon {
+    width:            44px;
+    height:           44px;
+    border-radius:    $radius-md;
+    background-color: rgba(13, 115, 119, 0.1);
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    color:            $color-primary;
+
+    svg { width: 22px; height: 22px; }
+  }
+
+  &__card-title {
+    font-family:    $font-display;
+    font-size:      20px;
+    color:          $color-heading;
+    letter-spacing: 0.03em;
+  }
+
+  &__card-desc {
+    font-size:   14px;
+    line-height: 1.65;
+    color:       $color-body;
+    margin:      0;
+  }
+}
+
+// ============================================================
+// HOW IT WORKS
+// ============================================================
+
+.how-it-works {
+  background-color: $color-bg-card;
+  border-top:       1px solid $color-border-light;
+  border-bottom:    1px solid $color-border-light;
+
+  &__header {
+    text-align: center;
+    max-width:  500px;
+    margin:     0 auto;
+  }
+
+  &__eyebrow {
+    font-size:      12px;
+    font-weight:    600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color:          $color-primary;
+  }
+
+  &__steps {
+    display:               grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:                   20px;
+
+    @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 540px) { grid-template-columns: 1fr; }
+  }
+
+  &__step {
+    background-color: $color-bg;
+    border:           1px solid $color-border-light;
+    border-radius:    $radius-lg;
+    display:          flex;
+    flex-direction:   column;
+    gap:              14px;
+    transition:       border-color $transition;
+
+    &:hover {
+      background-color: $color-bg-card-hover;
+      border-color:     $color-border;
+    }
+    &--active  { border-color: $color-primary; }
+  }
+
+  &__step-number {
+    width:           44px;
+    height:          44px;
+    border-radius:   50%;
+    background:      $color-primary;
+    color:           white;
+    font-family:     $font-display;
+    font-size:       20px;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    flex-shrink:     0;
+  }
+
+  &__step-title {
+    font-family:    $font-display;
+    font-size:      19px;
+    color:          $color-heading;
+    letter-spacing: 0.03em;
+    margin:         0;
+  }
+
+  &__step-desc {
+    font-size:   14px;
+    line-height: 1.65;
+    color:       $color-body;
+    margin:      0;
+  }
+}
+
+// ============================================================
+// CTA SECTION
+// ============================================================
+
+.cta-section {
+  &__inner {
+    max-width:  860px;
+    margin:     0 auto;
+    text-align: center;
+  }
+
+  &__card {
+    background-color: $color-heading;
+    border-radius:    $radius-xl;
+    position:         relative;
+    overflow:         hidden;
+  }
+
+  &__title {
+    font-family:    $font-display;
+    font-size:      clamp(36px, 5vw, 54px);
+    color:          #fff;
+    letter-spacing: 0.03em;
+    line-height:    1;
+  }
+
+  &__subtitle {
+    font-size:   17px;
+    color:       rgba(255, 255, 255, 0.65);
+    max-width:   440px;
+    margin:      0 auto;
+    line-height: 1.65;
+  }
+
+  &__actions {
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             14px;
+    flex-wrap:       wrap;
+  }
+
+  .btn-cta-primary {
+    background-color: $color-primary;
+    border-color:     $color-primary;
+    color:            white;
+    &:hover { background-color: $color-primary-hover; border-color: $color-primary-hover; }
+  }
+
+  .btn-cta-ghost {
+    background-color: transparent;
+    border-color:     rgba(255, 255, 255, 0.25);
+    color:            rgba(255, 255, 255, 0.8);
+    &:hover { background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.4); color: white; }
+  }
+}
+
+// ============================================================
+// FOOTER
+// ============================================================
+
+.vx-footer {
+  border-top: 1px solid $color-border-light;
+
+  &__inner {
+    display:         flex;
+    align-items:     center;
+    justify-content: space-between;
+    gap:             16px;
+    flex-wrap:       wrap;
+  }
+
+  &__brand {
+    display:         flex;
+    align-items:     center;
+    gap:             8px;
+    text-decoration: none;
+    &:hover { opacity: 0.8; }
+  }
+
+  &__brand-name {
+    font-family:    $font-display;
+    font-size:      20px;
+    letter-spacing: 0.06em;
+    color:          $color-heading;
+  }
+
+  &__copy {
+    font-size: 13px;
+    color:     $color-caption;
+    margin:    0;
+  }
+}
