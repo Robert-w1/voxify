@@ -4,6 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["microphoneStatus", "recordingStatus"]
 
+  // Request Mic access
   connect() {
     this.requestMicrophone()
   }
@@ -18,6 +19,7 @@ export default class extends Controller {
     }
   }
 
+  // Start recording
   start() {
     this.chunks = []
 
@@ -29,7 +31,7 @@ export default class extends Controller {
       }
     }
 
-    this.mediaRecorder.onstop = () => {
+    this.mediaRecorder.onstop = async () => {
       this.audioBlob = new Blob(this.chunks, { type: "audio/webm" })
       console.log("Recorded blob:", this.audioBlob)
 
@@ -38,14 +40,41 @@ export default class extends Controller {
       const audio = new Audio(audioURL)
       audio.controls = true
       document.body.appendChild(audio)
+      URL.revokeObjectURL(url)
+
+      await this.upload()
     }
 
     this.mediaRecorder.start()
     this.recordingStatusTarget.textContent = "Recording..."
   }
 
+  // Stop Recording
   stop() {
     this.mediaRecorder.stop()
     this.recordingStatusTarget.textContent = "Recording stopped"
+  }
+
+  // Save recording to data base
+  async upload() {
+    const formData = new FormData()
+
+    formData.append(
+      "audio",
+      this.audioBlob,
+      "recording.webm"
+    )
+
+    const response = await fetch("/recordings", {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
+      }
+    })
+
+    const data = await response.json()
+
+    console.log("Upload finished:", data)
   }
 }

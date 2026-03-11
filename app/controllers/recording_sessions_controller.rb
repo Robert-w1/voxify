@@ -10,7 +10,7 @@ class RecordingSessionsController < ApplicationController
     @recording_session.status = :recording
 
     if @recording_session.save
-      redirect_to @recording_session, notice: "Session started!"
+      redirect_to recording_session_path(@recording_session), notice: "Session started!"
     else
       render :new, status: :unprocessable_entity
     end
