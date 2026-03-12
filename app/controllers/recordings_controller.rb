@@ -10,6 +10,9 @@ class RecordingsController < ApplicationController
     recording.save!
     recording.update!(audio_url: url_for(recording.audio))
 
+    session.processing!
+    TranscribeRecordingJob.perform_later(recording.id, current_user.id)
+
     render json: { status: "ok" }
   end
 end
