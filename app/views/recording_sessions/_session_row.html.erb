@@ -1,0 +1,63 @@
+<div class="session-row"
+     id="<%= dom_id(session) %>"
+     data-controller="rename-session"
+     data-rename-session-url-value="<%= recording_session_path(session) %>"
+     data-rename-session-original-value="<%= session.title.presence || 'Untitled' %>">
+
+  <div class="session-row__main">
+    <span class="session-row__title">
+      <span class="session-row__title-text"
+            data-rename-session-target="display"
+            data-action="dblclick->rename-session#startEditing">
+        <%= session.title.presence || "Untitled" %>
+      </span>
+      <input class="session-row__title-input input-field"
+             data-rename-session-target="input"
+             data-action="blur->rename-session#save keydown.enter->rename-session#save keydown.esc->rename-session#cancel"
+             type="text"
+             value="<%= session.title.presence || 'Untitled' %>"
+             style="display:none;" />
+    </span>
+
+    <div class="session-row__meta">
+      <% if session.presentation_type.present? %>
+        <span class="session-row__badge session-row__badge--type">
+          <span class="session-row__badge-label">Presentation</span>
+          <%= session.presentation_type.humanize %>
+        </span>
+      <% end %>
+      <% if session.audience.present? %>
+        <span class="session-row__badge session-row__badge--audience">
+          <span class="session-row__badge-label">Audience</span>
+          <%= session.audience.humanize %>
+        </span>
+      <% end %>
+      <span class="session-row__date text-caption">
+        <%= session.created_at.strftime("%-d %b %Y") %>
+      </span>
+    </div>
+  </div>
+
+  <div class="session-row__actions">
+    <button class="session-row__action-btn"
+            title="Rename"
+            data-action="click->rename-session#startEditing"
+            data-rename-session-target="trigger">
+      <i class="fa-solid fa-pencil"></i>
+    </button>
+
+    <button class="session-row__action-btn"
+            title="Add to folder">
+      <i class="fa-solid fa-folder-plus"></i>
+    </button>
+
+    <button class="session-row__action-btn session-row__action-btn--danger"
+            title="Delete"
+            data-action="click->delete-modal#open"
+            data-delete-modal-title-value="<%= session.title.presence || 'Untitled' %>"
+            data-delete-modal-url-value="<%= recording_session_path(session) %>">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+  </div>
+
+</div>

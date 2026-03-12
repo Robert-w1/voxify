@@ -6,4 +6,5 @@ Rails.application.routes.draw do
     resources :recordings, only: [:create]
     resources :reports, only: [:show]
   end
+
 end

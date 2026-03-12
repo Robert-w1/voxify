@@ -1,0 +1,234 @@
+.sessions-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 32px;
+}
+
+// ── Header ────────────────────────────────────────────────
+.sessions-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  margin-bottom:   32px;
+  padding-bottom:  20px;
+  border-bottom:   1px solid $color-border;
+
+  h2 { margin: 0; }
+
+  &__count { margin: 0; }
+}
+
+// ── Empty state ───────────────────────────────────────────
+.sessions-empty {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  padding:         80px 32px;
+  text-align:      center;
+
+  &__icon {
+    width:            64px;
+    height:           64px;
+    background-color: $color-bg-card;
+    border-radius:    $radius-lg;
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    margin-bottom:    20px;
+    font-size:        26px;
+    color:            $color-caption;
+  }
+
+  h4 { margin-bottom: 6px; }
+  p  { margin: 0; }
+}
+
+// ── List ─────────────────────────────────────────────────
+.sessions-list {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+}
+
+// ── Row ──────────────────────────────────────────────────
+.session-row {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             16px;
+  padding:         14px 16px;
+  border-radius:   $radius-md;
+  transition:      background-color $transition;
+
+  .session-row__actions { opacity: 0; transition: opacity $transition; }
+
+  &:hover {
+    background-color: $color-bg-card;
+    .session-row__actions { opacity: 1; }
+  }
+}
+
+.session-row__main {
+  display:        flex;
+  flex-direction: column;
+  gap:            5px;
+  min-width:      0;
+  flex:           1;
+}
+
+.session-row__title {
+  font-size:     15px;
+  font-weight:   600;
+  color:         $color-heading;
+  white-space:   nowrap;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+}
+
+.session-row__title-input {
+  font-size:   15px;
+  font-weight: 600;
+  padding:     2px 8px;
+  height:      auto;
+  width:       320px;
+  max-width:   100%;
+}
+
+.session-row__meta {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  flex-wrap:   wrap;
+}
+
+.session-row__badge {
+  display:        inline-flex;
+  align-items:    center;
+  font-size:      11px;
+  font-weight:    600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius:  $radius-sm;
+  padding:        2px 8px;
+
+  &--type {
+    background-color: rgba($color-primary, 0.1);
+    color:            $color-primary;
+  }
+
+  &--audience {
+    background-color: rgba($color-accent, 0.12);
+    color:            darken($color-accent, 10%);
+  }
+}
+
+.session-row__badge-label {
+  font-weight:    400;
+  opacity:        0.65;
+  margin-right:   4px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.session-row__date {
+  font-size: 12px;
+}
+
+// ── Action buttons ────────────────────────────────────────
+.session-row__actions {
+  display:     flex;
+  align-items: center;
+  gap:         4px;
+  flex-shrink: 0;
+}
+
+.session-row__action-btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  width:           32px;
+  height:          32px;
+  border-radius:   $radius-sm;
+  border:          none;
+  background:      transparent;
+  color:           $color-caption;
+  cursor:          pointer;
+  font-size:       13px;
+  padding:         0;
+  transition:      background-color $transition, color $transition;
+
+  &:hover {
+    background-color: $color-bg;
+    color:            $color-heading;
+  }
+
+  &--danger:hover {
+    background-color: rgba($color-error, 0.08);
+    color:            $color-error;
+  }
+}
+
+// ── Delete modal ──────────────────────────────────────────
+.delete-modal-backdrop {
+  position:        fixed;
+  inset:           0;
+  background:      rgba(#2D2A26, 0.4);
+  z-index:         1000;
+  backdrop-filter: blur(2px);
+}
+
+.delete-modal {
+  position:       fixed;
+  top:            50%;
+  left:           50%;
+  transform:      translate(-50%, -50%);
+  z-index:        1001;
+  background:     $color-bg;
+  border:         1px solid $color-border;
+  border-radius:  $radius-xl;
+  padding:        40px 36px;
+  width:          420px;
+  max-width:      calc(100vw - 48px);
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  text-align:     center;
+  gap:            12px;
+  box-shadow:     0 24px 48px rgba(#2D2A26, 0.12);
+
+  &__icon {
+    width:            52px;
+    height:           52px;
+    border-radius:    $radius-lg;
+    background-color: rgba($color-error, 0.08);
+    color:            $color-error;
+    display:          flex;
+    align-items:      center;
+    justify-content:  center;
+    font-size:        22px;
+    margin-bottom:    4px;
+  }
+
+  h4 { margin: 0; }
+  .text-caption { margin: 0; max-width: 300px; }
+
+  &__actions {
+    display:    flex;
+    gap:        10px;
+    margin-top: 8px;
+  }
+}
+
+// ── Danger button ─────────────────────────────────────────
+.btn-danger {
+  background-color: $color-error;
+  border-color:     $color-error;
+  color:            #fff;
+
+  &:hover {
+    background-color: darken($color-error, 8%);
+    border-color:     darken($color-error, 8%);
+    color:            #fff;
+  }
+}

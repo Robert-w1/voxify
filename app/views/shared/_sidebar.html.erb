@@ -1,9 +1,3 @@
-<%# ============================================================
-<%#    Voxify Sidebar %>
-<%#    - Collapses to icon-only mode via JS toggle
-<%#    - Recent sessions pulled from @recent_sessions (set in controller)
-<%#    - Avatar dropdown for logout
-<%# ============================================================ %>
 <aside id="sidebar" class="sidebar">
 
   <div class="sidebar-top">
@@ -42,21 +36,47 @@
 
     </nav>
 
-    <%# ── Recent Sessions list ── %>
-    <%# @recent_sessions is set by the before_action :set_sidebar_data helper %>
-    <div class="recent-section">
-      <div class="recent-title">Recent</div>
-      <% @recent_sessions&.each do |session| %>
-        <%= link_to recording_session_path(session), class: "nav-item recent-item" do %>
-          <%# Status dot: green = completed, amber = processing, red = failed %>
-          <span class="status-dot status-dot--<%= session.status %>"></span>
-          <span class="label recent-label">
-            <%= session.title.presence || "Untitled" %>
-          </span>
-        <% end %>
-      <% end %>
-    </div>
+  <%# ── Recent Sessions list ── %>
+  <div class="recent-section">
+    <div class="recent-title">Recent</div>
+    <% @recent_sessions&.each do |session| %>
+      <div class="recent-item-wrapper"
+          data-controller="session-menu"
+          data-session-menu-title-value="<%= session.title.presence || 'Untitled' %>"
+          data-session-menu-url-value="<%= recording_session_path(session) %>">
 
+        <%= link_to '#',
+              class: "nav-item recent-item #{"active" if current_page?(recording_session_path(session))}" do %>
+          <span class="status-dot status-dot--<%= session.status %>"></span>
+          <span class="label recent-label"><%= session.title.presence || "Untitled" %></span>
+        <% end %>
+
+        <%# 3-dot menu trigger — only visible on hover %>
+        <button class="recent-item-menu-btn"
+                data-action="click->session-menu#toggle"
+                data-session-menu-target="trigger"
+                title="Options">
+          <i data-feather="more-horizontal"></i>
+        </button>
+
+        <%# Dropdown %>
+        <div class="recent-item-dropdown" data-session-menu-target="menu" style="display:none;">
+          <button class="recent-item-dropdown__item"
+                  data-action="click->session-menu#rename">
+            <i data-feather="edit-2"></i> Rename
+          </button>
+          <button class="recent-item-dropdown__item"
+                  data-action="click->session-menu#addToFolder">
+            <i data-feather="folder-plus"></i> Add to folder
+          </button>
+          <button class="recent-item-dropdown__item recent-item-dropdown__item--danger"
+                  data-action="click->session-menu#confirmDelete">
+            <i data-feather="trash-2"></i> Delete
+          </button>
+        </div>
+
+      </div>
+    <% end %>
   </div>
 
   <%# ── Bottom: avatar + logout dropdown ── %>

@@ -4,7 +4,6 @@ class ApplicationController < ActionController::Base
   # Call enable_sidebar as a before_action in any controller that renders an authenticated layout
   # It sets @show_sidebar = true which application.html.erb reads
   helper_method :show_sidebar?
-  before_action :set_sidebar_data
 
   def configure_permitted_parameters
     # For additional fields in app/views/devise/registrations/new.html.erb
@@ -22,18 +21,10 @@ class ApplicationController < ActionController::Base
 
   def enable_sidebar
     @show_sidebar = true
+    @recent_sessions = current_user.recording_sessions.order(created_at: :desc).limit(10)
   end
 
   def show_sidebar?
     @show_sidebar
   end
-
-  # Runs on every action but only queries the DB if a user is logged in
-  # and the sidebar is actually being shown — keeps public pages clean
-  def set_sidebar_data
-    return unless user_signed_in? && @show_sidebar
-
-    @recent_sessions = current_user.recording_sessions.order(created_at: :desc).limit(10)
-  end
-
 end

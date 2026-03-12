@@ -1,0 +1,43 @@
+<div data-controller="delete-modal">
+
+  <div class="delete-modal-backdrop"
+       data-delete-modal-target="backdrop"
+       data-action="click->delete-modal#close"
+       style="display:none;"></div>
+
+  <div class="delete-modal" data-delete-modal-target="modal" style="display:none;">
+    <div class="delete-modal__icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <h4 data-delete-modal-target="title">Delete this session?</h4>
+    <p class="text-caption">This can't be undone. All recordings and reports will be permanently removed.</p>
+    <div class="delete-modal__actions">
+      <button class="btn btn-secondary btn-sm" data-action="click->delete-modal#close">Cancel</button>
+      <%= button_to "Delete", "#",
+            method: :delete,
+            class: "btn btn-danger btn-sm",
+            form: { data: { "delete-modal-target": "form" } } %>
+    </div>
+  </div>
+
+  <div class="sessions-page">
+    <div class="sessions-header">
+      <h2>Sessions</h2>
+      <p class="text-caption sessions-header__count"><%= pluralize(@recent_sessions.size, "session") %></p>
+    </div>
+
+    <% if @recent_sessions.empty? %>
+      <div class="sessions-empty">
+        <div class="sessions-empty__icon">
+          <i class="fa-solid fa-microphone-slash"></i>
+        </div>
+        <h4>No sessions yet</h4>
+        <p class="text-caption">Start by recording your first presentation.</p>
+        <%= link_to "New Session", new_recording_session_path, class: "btn btn-primary btn-sm mt-3" %>
+      </div>
+    <% else %>
+      <div class="sessions-list">
+        <%= render partial: "session_row", collection: @recent_sessions, as: :session %>
+      </div>
+    <% end %>
+  </div>
+
+</div>
