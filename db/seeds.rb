@@ -110,7 +110,7 @@ def build_session(user:, status:, title:, audience:, presentation_type:, focus:,
   recording = session.recordings.create!(
     audio_url:        "https://res.cloudinary.com/demo/video/upload/sample_audio.mp3",
     transcript:       transcript || TRANSCRIPTS.sample,
-    duration_seconds: duration || rand(90..360)
+    duration_seconds: duration || rand(10..30)
   )
 
   return session unless status == "completed"
@@ -146,7 +146,7 @@ build_session(
   presentation_type: "investor_pitch",
   focus:             %w[confidence storytelling tone],
   transcript:        TRANSCRIPTS[1],
-  duration:          245
+  duration:          24
 )
 
 build_session(
@@ -158,7 +158,7 @@ build_session(
   presentation_type: "all_hands",
   focus:             %w[clarity conciseness pace],
   transcript:        TRANSCRIPTS[0],
-  duration:          312
+  duration:          12
 )
 
 build_session(
@@ -170,7 +170,7 @@ build_session(
   presentation_type: "product_demo",
   focus:             %w[engagement vocabulary filler_words],
   transcript:        TRANSCRIPTS[3],
-  duration:          198
+  duration:          19
 )
 
 build_session(
@@ -182,7 +182,7 @@ build_session(
   presentation_type: "conference_talk",
   focus:             %w[storytelling technical_depth pace],
   transcript:        TRANSCRIPTS[3],
-  duration:          420
+  duration:          20
 )
 
 # Processing session (job in progress)
@@ -195,7 +195,7 @@ build_session(
   presentation_type: "investor_pitch",
   focus:             %w[confidence tone filler_words],
   transcript:        TRANSCRIPTS[0],
-  duration:          180
+  duration:          30
 )
 
 # Failed session
@@ -234,7 +234,7 @@ build_session(
   presentation_type: "sales_pitch",
   focus:             %w[engagement confidence filler_words storytelling],
   transcript:        TRANSCRIPTS[1],
-  duration:          275
+  duration:          27
 )
 
 build_session(
@@ -246,7 +246,7 @@ build_session(
   presentation_type: "team_update",
   focus:             %w[clarity conciseness],
   transcript:        TRANSCRIPTS[2],
-  duration:          165
+  duration:          16
 )
 
 build_session(
@@ -258,7 +258,7 @@ build_session(
   presentation_type: "product_demo",
   focus:             %w[tone vocabulary technical_depth],
   transcript:        TRANSCRIPTS[4],
-  duration:          303
+  duration:          30
 )
 
 build_session(
@@ -270,7 +270,7 @@ build_session(
   presentation_type: "workshop",
   focus:             %w[pace engagement storytelling],
   transcript:        TRANSCRIPTS[3],
-  duration:          390
+  duration:          19
 )
 
 puts ""
