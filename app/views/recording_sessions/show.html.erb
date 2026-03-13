@@ -2,7 +2,10 @@
      data-controller="recorder"
      data-recorder-session-id-value="<%= @recording_session.id %>"
      data-recorder-max-duration-value="30"
-     data-recorder-focuses-value="<%= @recording_session.focus.reject(&:blank?).to_json %>">
+     data-recorder-focuses-value="<%= @recording_session.focus.reject(&:blank?).to_json %>"
+     data-recorder-initial-status-value="<%= @recording_session.status %>"
+     <% if @report_json %>data-recorder-initial-report-value="<%= @report_json %>"<% end %>>
+
 
   <div class="row justify-content-center">
     <div class="col-lg-8">

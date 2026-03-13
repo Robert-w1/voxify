@@ -5,7 +5,7 @@
       frame, swapping the title for an inline form in-place.      -%>
   <%= turbo_frame_tag dom_id(session, :title), class: "session-row__main" do %>
 
-    <%= link_to recording_session_path(session), class: "session-row__link" do %>
+    <%= link_to recording_session_path(session), class: "session-row__link", data: { turbo_frame: "_top" } do %>
 
       <div class="session-row__title">
         <span class="status-dot status-dot--<%= session.status %>"></span>

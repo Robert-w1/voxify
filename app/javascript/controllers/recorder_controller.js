@@ -16,7 +16,9 @@ export default class extends Controller {
   static values = {
     sessionId: Number,
     maxDuration: { type: Number, default: 30 },
-    focuses: { type: Array, default: [] }
+    focuses: { type: Array, default: [] },
+    initialStatus: { type: String, default: "" },
+    initialReport: { type: Object, default: {} }
   }
 
   // ────────────────────────────────────────
@@ -30,6 +32,7 @@ export default class extends Controller {
     this.isPaused = false
     this.reportData = null
     this.enumerateDevices()
+    this._initFromStatus()
   }
 
   disconnect() {
@@ -41,6 +44,26 @@ export default class extends Controller {
     if (this.audioContext) {
       this.audioContext.close()
     }
+  }
+
+  // ────────────────────────────────────────
+  // INIT FROM SERVER STATE
+  // ────────────────────────────────────────
+
+  _initFromStatus() {
+    const status = this.initialStatusValue
+    const report = this.initialReportValue
+
+    if (status === "processing") {
+      this._transitionTo("processing")
+    } else if (status === "completed") {
+      if (report && Object.keys(report).length > 0) {
+        this.reportData = report
+        this._renderReport(report)
+      }
+      this._transitionTo("completed")
+    }
+    // "recording", "failed" → stay in "ready"
   }
 
   // ────────────────────────────────────────

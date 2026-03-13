@@ -23,6 +23,9 @@ class RecordingSessionsController < ApplicationController
 
   def show
     @recording_session = current_user.recording_sessions.find(params[:id])
+    @recording = @recording_session.recordings.order(created_at: :desc).first
+    @report = @recording&.report
+    @report_json = build_report_json(@report, @recording).to_json if @report
   end
 
   def edit
@@ -45,6 +48,26 @@ class RecordingSessionsController < ApplicationController
   end
 
   private
+
+  def build_report_json(report, recording)
+    feedbacks = report.focus_feedbacks || {}
+    scores = feedbacks.values.filter_map { |v| v["score"].to_i if v.is_a?(Hash) }
+    overall = report.llm_raw_response&.dig("overall_score") ||
+              (scores.any? ? (scores.sum.to_f / scores.size).round : 0)
+
+    summary_text = report.summary.is_a?(Hash) ? report.summary["text"] : report.summary.to_s
+
+    {
+      overall_score: overall,
+      summary: summary_text,
+      focus_feedbacks: feedbacks,
+      metrics: {
+        duration_seconds: recording&.duration_seconds || 0,
+        words_per_minute: report.llm_raw_response&.dig("metrics", "words_per_minute") || 0,
+        filler_word_count: report.llm_raw_response&.dig("metrics", "filler_word_count") || 0
+      }
+    }
+  end
 
   def recording_session_params
     params.require(:recording_session).permit(:audience, :presentation_type, focus: [])
