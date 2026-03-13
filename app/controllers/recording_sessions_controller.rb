@@ -32,7 +32,10 @@ class RecordingSessionsController < ApplicationController
   def update
     @recording_session = current_user.recording_sessions.find(params[:id])
     @recording_session.update(update_params)
-    redirect_to recording_sessions_path
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to recording_sessions_path }
+    end
   end
 
   def destroy

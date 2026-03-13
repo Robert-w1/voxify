@@ -48,7 +48,6 @@
 .sessions-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
 // ── Session row ───────────────────────────────────────────────
@@ -57,9 +56,12 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 14px 12px;
   border-radius: $radius-md;
   transition: background-color $transition;
+  border-bottom: 1px solid rgba(90, 83, 61, 0.08);
+
+  &:last-child { border-bottom: none; }
 
   &:hover {
     background-color: $color-bg-card;
@@ -127,8 +129,11 @@
 }
 
 .session-row__badge-label {
-  font-weight: 600;
-  opacity: 0.65;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+  margin-right: 2px;
 }
 
 .session-row__date {
@@ -140,7 +145,6 @@
 .session-row__rename-form {
   display: flex;
   align-items: center;
-  gap: 8px;
   padding: 4px 0;
 }
 
@@ -149,12 +153,7 @@
   font-size: 15px;
   padding: 5px 10px;
   min-width: 0;
-}
-
-.session-row__rename-actions {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
+  width: 100%;
 }
 
 // ── Action buttons ────────────────────────────────────────────

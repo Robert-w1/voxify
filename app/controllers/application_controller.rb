@@ -28,10 +28,8 @@ class ApplicationController < ActionController::Base
     @show_sidebar
   end
 
-  # Runs on every action but only queries the DB if a user is logged in
-  # and the sidebar is actually being shown — keeps public pages clean
   def set_sidebar_data
-    return unless user_signed_in? && @show_sidebar
+    return unless user_signed_in?
 
     @recent_sessions = current_user.recording_sessions.order(created_at: :desc).limit(10)
   end
