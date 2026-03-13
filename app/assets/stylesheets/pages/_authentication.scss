@@ -1,8 +1,8 @@
 .auth-page {
-  min-height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 3.5rem 1rem;
 }
 
 .auth-card {
@@ -10,7 +10,6 @@
   min-width: 355px;
   border: 1px solid $color-bg-card;
   border-radius: $radius-lg;
-  box-shadow: 8px 8px 35px $color-bg-card;
 
   display: flex;
   flex-direction: column;
@@ -34,4 +33,56 @@
 .form-actions {
   margin-top: auto;
   display: flex;
+}
+
+// Remember me checkbox — neutral subtitle style, no Bootstrap green
+.auth-card .form-check-label {
+  font-size: 0.8rem;
+  color: $color-caption;
+  font-weight: 400;
+}
+
+.auth-card .form-check-input {
+  border-color: $color-caption;
+
+  &:checked {
+    background-color: $color-caption;
+    border-color: $color-caption;
+  }
+
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+// Suppress green "valid" styling when sign-in credentials are wrong
+.auth-failed .form-control.is-valid {
+  border-color: var(--bs-border-color);
+  background-image: none;
+  box-shadow: none;
+}
+
+// Restore your custom input focus style after failed login
+.auth-failed .input-field.is-valid:focus {
+  border-color: $color-primary;
+  box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
+}
+
+// Keep checkbox neutral even when Bootstrap validation runs
+.auth-card .was-validated .form-check-input:valid,
+.auth-card .form-check-input.is-valid {
+  border-color: $color-caption;
+  box-shadow: none;
+}
+
+// Preserve the checkmark
+.auth-card .form-check-input:checked {
+  background-color: $color-caption;
+  border-color: $color-caption;
+}
+
+// Prevent label turning green
+.auth-card .was-validated .form-check-input:valid ~ .form-check-label,
+.auth-card .form-check-input.is-valid ~ .form-check-label {
+  color: $color-caption;
 }
