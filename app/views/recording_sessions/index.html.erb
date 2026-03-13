@@ -1,0 +1,24 @@
+<div class="sessions-page">
+
+  <div class="sessions-header">
+    <h2>Sessions</h2>
+    <p class="text-caption sessions-header__count"><%= pluralize(@recording_sessions.size, "session") %></p>
+  </div>
+
+  <% if @recording_sessions.empty? %>
+    <div class="sessions-empty">
+      <div class="sessions-empty__icon">
+        <i class="fa-solid fa-microphone-slash"></i>
+      </div>
+      <h4>No sessions yet</h4>
+      <p class="text-caption">Start by recording your first presentation.</p>
+      <%= link_to "New Session", new_recording_session_path, class: "btn btn-primary btn-sm mt-3" %>
+    </div>
+
+  <% else %>
+    <div class="sessions-list">
+      <%= render partial: "session_row", collection: @recording_sessions, as: :session %>
+    </div>
+  <% end %>
+
+</div>

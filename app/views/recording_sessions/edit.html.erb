@@ -1,0 +1,24 @@
+<%# Turbo Frame inline rename — only this frame is extracted and rendered in-place.
+    Turbo ignores the rest of the page layout.                                       -%>
+<%= turbo_frame_tag dom_id(@recording_session, :title), class: "session-row__main" do %>
+
+  <%= form_with model: @recording_session,
+                url: recording_session_path(@recording_session),
+                class: "session-row__rename-form" do |f| %>
+
+    <%= f.text_field :title,
+                     class: "session-row__title-input input-field",
+                     autofocus: true,
+                     required: true %>
+
+    <div class="session-row__rename-actions">
+      <%= f.submit "Save", class: "btn btn-primary btn-sm" %>
+      <%= link_to "Cancel",
+                  recording_sessions_path,
+                  data: { turbo_frame: dom_id(@recording_session, :title) },
+                  class: "btn btn-secondary btn-sm" %>
+    </div>
+
+  <% end %>
+
+<% end %>

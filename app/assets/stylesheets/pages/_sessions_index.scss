@@ -1,0 +1,205 @@
+// ============================================================
+// Sessions index page
+// ============================================================
+
+.sessions-page {
+  padding: 40px 48px;
+  max-width: 860px;
+}
+
+// ── Header ───────────────────────────────────────────────────
+
+.sessions-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 28px;
+
+  h2 { margin: 0; }
+}
+
+.sessions-header__count {
+  margin: 0;
+}
+
+// ── Empty state ───────────────────────────────────────────────
+
+.sessions-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 80px 24px;
+  gap: 8px;
+
+  h4 { margin: 8px 0 0; }
+  p  { margin: 0; }
+}
+
+.sessions-empty__icon {
+  font-size: 36px;
+  color: $color-caption;
+  opacity: 0.4;
+  margin-bottom: 4px;
+}
+
+// ── Session list ─────────────────────────────────────────────
+
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+// ── Session row ───────────────────────────────────────────────
+
+.session-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: $radius-md;
+  transition: background-color $transition;
+
+  &:hover {
+    background-color: $color-bg-card;
+
+    .session-row__actions { opacity: 1; }
+  }
+}
+
+// Turbo Frame wrapper — takes all remaining width
+.session-row__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.session-row__link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+
+  &:hover { text-decoration: none; color: inherit; }
+}
+
+// ── Title line ────────────────────────────────────────────────
+
+.session-row__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.session-row__title-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: $color-heading;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Meta line ─────────────────────────────────────────────────
+
+.session-row__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 17px; // aligns under the title text, after status dot
+}
+
+.session-row__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 100px;
+  font-weight: 500;
+
+  &--type     { background-color: rgba($color-primary, 0.1); color: $color-primary; }
+  &--audience { background-color: rgba($color-accent, 0.12); color: darken($color-accent, 12%); }
+}
+
+.session-row__badge-label {
+  font-weight: 600;
+  opacity: 0.65;
+}
+
+.session-row__date {
+  font-size: 11px;
+}
+
+// ── Inline rename form ────────────────────────────────────────
+
+.session-row__rename-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.session-row__title-input {
+  flex: 1;
+  font-size: 15px;
+  padding: 5px 10px;
+  min-width: 0;
+}
+
+.session-row__rename-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+// ── Action buttons ────────────────────────────────────────────
+
+.session-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity $transition;
+}
+
+.session-row__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: $radius-sm;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: $color-caption;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background-color $transition, color $transition;
+
+  &:hover:not(:disabled) {
+    background-color: $color-border;
+    color: $color-heading;
+    text-decoration: none;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  &--danger {
+    &:hover { background-color: rgba($color-error, 0.08); color: $color-error; }
+  }
+}
+
+// button_to wraps the button in a <form> — make it invisible to layout
+.session-row__delete-form {
+  display: contents;
+}
