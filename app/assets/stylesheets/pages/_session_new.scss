@@ -1,0 +1,111 @@
+// ============================================================
+// SESSION NEW — Card flow wizard
+// ============================================================
+
+// ── Step indicator ──
+
+.flow-steps {
+  display:     flex;
+  align-items: flex-start;
+}
+
+.flow-step {
+  background:     none;
+  border:         none;
+  padding:        0;
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            6px;
+  cursor:         pointer;
+
+  .step-num {
+    width:           32px;
+    height:          32px;
+    border-radius:   50%;
+    border:          2px solid $color-border;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    font-size:       13px;
+    font-weight:     600;
+    color:           $color-caption;
+    background:      $color-bg;
+    transition:      all $transition;
+  }
+
+  .step-label {
+    font-size:      11px;
+    font-weight:    500;
+    color:          $color-caption;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition:     color $transition;
+  }
+
+  &.active {
+    .step-num   { border-color: $color-primary; background: $color-primary; color: #fff; }
+    .step-label { color: $color-primary; }
+  }
+
+  &.completed {
+    .step-num   { border-color: $color-primary; background: transparent; color: $color-primary; }
+    .step-label { color: $color-primary; }
+  }
+
+  &.locked {
+    cursor: default;
+    .step-num, .step-label { opacity: 0.35; }
+  }
+}
+
+.flow-step-line {
+  flex:       1;
+  height:     2px;
+  background: $color-border;
+  margin:     0 10px;
+  margin-top: 15px; // visually center against the 32px circle
+}
+
+// ── Cards ──
+
+.flow-card {
+  background:    $color-bg-card;
+  border:        1px solid $color-border-light;
+  border-radius: $radius-xl;
+  padding:       32px;
+  animation:     flowCardIn 0.2s ease;
+}
+
+@keyframes flowCardIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+// ── Option grid — equal-width buttons ──
+
+.option-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap:                   8px;
+
+  > div {
+    display: flex;
+
+    label.btn {
+      flex:            1;
+      justify-content: center;
+      text-align:      center;
+      white-space:     normal;
+      word-break:      break-word;
+    }
+  }
+}
+
+// ── Card navigation bar ──
+
+.flow-nav {
+  display:     flex;
+  align-items: center;
+  margin-top:  12px;
+}
