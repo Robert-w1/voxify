@@ -4,7 +4,8 @@
      data-recorder-max-duration-value="30"
      data-recorder-focuses-value="<%= @recording_session.focus.reject(&:blank?).to_json %>"
      data-recorder-initial-status-value="<%= @recording_session.status %>"
-     <% if @report_json %>data-recorder-initial-report-value="<%= @report_json %>"<% end %>>
+     <% if @report_json %>data-recorder-initial-report-value="<%= @report_json %>"<% end %>
+     data-recorder-pdf-url-value="<%= @pdf_url.to_s %>">
 
 
   <div class="row justify-content-center">
@@ -23,6 +24,8 @@
 
         <div data-recorder-target="titleEdit" hidden class="d-flex align-items-center gap-2">
           <input type="text"
+                 id="session-title-input"
+                 name="session_title"
                  value="<%= @recording_session.title %>"
                  class="input-field"
                  data-recorder-target="titleInput"
@@ -126,7 +129,9 @@
           <div class="session-mic-bar d-flex align-items-center justify-content-center gap-3">
             <div class="d-flex align-items-center gap-2">
               <i class="fa fa-microphone text-caption"></i>
-              <select class="select-input select-input--sm"
+              <select id="mic-select"
+                      name="mic_device"
+                      class="select-input select-input--sm"
                       data-recorder-target="micSelect"
                       data-action="change->recorder#switchMic">
                 <option>Default - Microphone</option>

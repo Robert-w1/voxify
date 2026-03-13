@@ -1,6 +1,7 @@
 class RecordingSessionsController < ApplicationController
   before_action :authenticate_user!
   before_action :enable_sidebar
+  before_action :set_recording_session, only: [:show, :edit, :update, :destroy]
 
   def new
     @recording_session = RecordingSession.new
@@ -22,18 +23,22 @@ class RecordingSessionsController < ApplicationController
   end
 
   def show
-    @recording_session = current_user.recording_sessions.find(params[:id])
     @recording = @recording_session.recordings.order(created_at: :desc).first
     @report = @recording&.report
     @report_json = build_report_json(@report, @recording).to_json if @report
+    @pdf_url = if @report&.pdf_file&.attached?
+                 Cloudinary::Utils.cloudinary_url(
+                   "#{Rails.env}/#{@report.pdf_file.blob.key}",
+                   resource_type: "raw",
+                   sign_url: true,
+                   secure: true
+                 )
+               end
   end
 
-  def edit
-    @recording_session = current_user.recording_sessions.find(params[:id])
-  end
+  def edit; end
 
   def update
-    @recording_session = current_user.recording_sessions.find(params[:id])
     @recording_session.update(update_params)
     respond_to do |format|
       format.turbo_stream
@@ -42,7 +47,6 @@ class RecordingSessionsController < ApplicationController
   end
 
   def destroy
-    @recording_session = current_user.recording_sessions.find(params[:id])
     @recording_session.destroy
     redirect_to recording_sessions_path
   end
@@ -67,6 +71,10 @@ class RecordingSessionsController < ApplicationController
         filler_word_count: report.llm_raw_response&.dig("metrics", "filler_word_count") || 0
       }
     }
+  end
+
+  def set_recording_session
+    @recording_session = current_user.recording_sessions.find(params[:id])
   end
 
   def recording_session_params

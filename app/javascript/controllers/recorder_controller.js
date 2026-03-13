@@ -18,7 +18,8 @@ export default class extends Controller {
     maxDuration: { type: Number, default: 30 },
     focuses: { type: Array, default: [] },
     initialStatus: { type: String, default: "" },
-    initialReport: { type: Object, default: {} }
+    initialReport: { type: Object, default: {} },
+    pdfUrl: { type: String, default: "" }
   }
 
   // ────────────────────────────────────────
@@ -499,13 +500,8 @@ export default class extends Controller {
   // START OVER / TRY AGAIN
   // ────────────────────────────────────────
 
-  startOver() {
-    this._transitionTo("ready")
-  }
-
-  tryAgain() {
-    this._transitionTo("ready")
-  }
+  startOver() { this._transitionTo("ready") }
+  tryAgain()   { this._transitionTo("ready") }
 
   // ────────────────────────────────────────
   // REPORT RENDERING
@@ -606,13 +602,23 @@ export default class extends Controller {
   // ────────────────────────────────────────
 
   downloadReport() {
-    if (!this.reportData) return
+    // If a pre-generated PDF exists on Cloudinary, download that
+    if (this.pdfUrlValue) {
+      const a = document.createElement("a")
+      a.href = this.pdfUrlValue
+      a.download = `voxify-report-${this.sessionIdValue}.pdf`
+      a.target = "_blank"
+      a.click()
+      return
+    }
 
+    // Fallback: download the report data as JSON
+    if (!this.reportData) return
     const blob = new Blob([JSON.stringify(this.reportData, null, 2)], { type: "application/json" })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `travis-report-${this.sessionIdValue}.json`
+    a.download = `voxify-report-${this.sessionIdValue}.json`
     a.click()
     URL.revokeObjectURL(url)
   }
