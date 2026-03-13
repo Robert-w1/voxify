@@ -1,0 +1,38 @@
+<%# Directly replace the title frame on the sessions index page (if present) -%>
+<%= turbo_stream.replace dom_id(@recording_session, :title) do %>
+  <%= turbo_frame_tag dom_id(@recording_session, :title), class: "session-row__main" do %>
+    <%= link_to recording_session_path(@recording_session), class: "session-row__link" do %>
+      <div class="session-row__title">
+        <span class="status-dot status-dot--<%= @recording_session.status %>"></span>
+        <span class="session-row__title-text"><%= @recording_session.title.presence || "Untitled" %></span>
+      </div>
+      <div class="session-row__meta">
+        <% if @recording_session.presentation_type.present? %>
+          <span class="session-row__badge session-row__badge--type">
+            <span class="session-row__badge-label">Presentation</span>
+            <%= @recording_session.presentation_type.humanize %>
+          </span>
+        <% end %>
+        <% if @recording_session.audience.present? %>
+          <span class="session-row__badge session-row__badge--audience">
+            <span class="session-row__badge-label">Audience</span>
+            <%= @recording_session.audience.humanize %>
+          </span>
+        <% end %>
+        <span class="session-row__date text-caption">
+          <%= @recording_session.created_at.strftime("%-d %b %Y") %>
+        </span>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%# Directly replace the sidebar title frame (if present) -%>
+<%= turbo_stream.replace dom_id(@recording_session, :sidebar_title) do %>
+  <%= turbo_frame_tag dom_id(@recording_session, :sidebar_title), class: "recent-item__frame" do %>
+    <%= link_to recording_session_path(@recording_session), class: "nav-item recent-item" do %>
+      <span class="status-dot status-dot--<%= @recording_session.status %>"></span>
+      <span class="label recent-label"><%= @recording_session.title.presence || "Untitled" %></span>
+    <% end %>
+  <% end %>
+<% end %>

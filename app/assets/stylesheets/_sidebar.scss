@@ -58,10 +58,6 @@
       padding: 6px;
     }
 
-    .avatar-dropdown {
-      left: 56px;
-      bottom: 0;
-    }
   }
 }
 
@@ -253,6 +249,120 @@
   50%       { opacity: 0.3; }
 }
 
+// ── Recent item with inline action buttons ────────────────────
+
+.recent-item-wrapper {
+  display: flex;
+  align-items: center;
+  border-radius: 7px;
+  width: 100%;
+
+  .recent-item { min-width: 0; width: 100%; }
+}
+
+.recent-item__frame {
+  flex: 1;
+  min-width: 0;
+  display: block;
+  width: 100%;
+}
+
+// Inline rename form inside the Turbo Frame
+.recent-rename-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 6px;
+  width: 100%;
+}
+
+.recent-rename-input {
+  font-size: 13px;
+  padding: 4px 8px;
+  width: 100%;
+}
+
+// ── 3-dot menu trigger ────────────────────────────────────────
+
+.recent-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #858279;
+  font-size: 12px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+
+  // Hide Bootstrap dropdown caret
+  &::after { display: none; }
+
+  &:hover {
+    background-color: #D5D1C9;
+    color: #5A533D;
+  }
+}
+
+.recent-item-wrapper:hover .recent-menu-btn,
+.recent-menu-btn.show {
+  opacity: 1;
+}
+
+// ── Sidebar session dropdown menu ─────────────────────────────
+
+.session-dropdown {
+  background-color: #F7F5EF;
+  border: 1px solid rgba(90, 83, 61, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(90, 83, 61, 0.15);
+  padding: 4px;
+  min-width: 160px;
+}
+
+.session-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: #5A533D;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+
+  &:hover:not(.disabled) {
+    background-color: #EFECE3;
+    color: #5A533D;
+    text-decoration: none;
+  }
+
+  &.disabled {
+    opacity: 0.4;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &--danger {
+    color: #912519;
+
+    &:hover { background-color: rgba(#912519, 0.08); color: #912519; }
+  }
+
+  // button_to wraps in a <form> — make the form invisible
+  form { display: contents; }
+}
+
 // ── Bottom avatar ─────────────────────────────────────────────
 .sidebar-bottom {
   position: relative;
@@ -301,15 +411,13 @@
 
 .avatar-dropdown {
   display: none;
-  position: absolute;
-  bottom: 56px;
-  left: 8px;
+  position: fixed;
   background-color: #F7F5EF;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(90, 83, 61, 0.15);
   overflow: hidden;
   min-width: 140px;
-  z-index: 100;
+  z-index: 200;
 
   &.open {
     display: block;
