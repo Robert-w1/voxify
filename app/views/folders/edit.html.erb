@@ -1,0 +1,43 @@
+<% if turbo_frame_request? %>
+
+  <%# ── Used from folders index page (pencil button) ─────────── -%>
+  <%= turbo_frame_tag dom_id(@folder, :title), class: "session-row__main" do %>
+    <%= form_with model: @folder,
+                  url: folder_path(@folder),
+                  class: "session-row__rename-form" do |f| %>
+      <%= f.text_field :name,
+                       class: "session-row__title-input input-field",
+                       autofocus: true,
+                       required: true,
+                       onblur: "this.form.requestSubmit()" %>
+    <% end %>
+  <% end %>
+
+  <%# ── Used from folder show page — click on folder name ────── -%>
+  <%= turbo_frame_tag dom_id(@folder, :name) do %>
+    <%= form_with model: @folder,
+                  url: folder_path(@folder),
+                  class: "folder-show__inline-form" do |f| %>
+      <%= f.text_field :name,
+                       class: "folder-show__name-input input-field",
+                       autofocus: true,
+                       required: true,
+                       onblur: "this.form.requestSubmit()" %>
+    <% end %>
+  <% end %>
+
+  <%# ── Used from folder show page — click on description ─────── -%>
+  <%= turbo_frame_tag dom_id(@folder, :description) do %>
+    <%= form_with model: @folder,
+                  url: folder_path(@folder),
+                  class: "folder-show__inline-form" do |f| %>
+      <%= f.text_area :description,
+                      class: "folder-show__desc-input input-field",
+                      rows: 2,
+                      placeholder: "Add a description…",
+                      autofocus: true,
+                      onblur: "this.form.requestSubmit()" %>
+    <% end %>
+  <% end %>
+
+<% end %>

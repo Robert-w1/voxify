@@ -1,0 +1,53 @@
+<div class="sessions-page">
+
+  <%= link_to folders_path, class: "folder-show__back text-caption" do %>
+    <i class="fa-solid fa-chevron-left"></i> All folders
+  <% end %>
+
+  <div class="sessions-header" style="margin-top: 16px;">
+    <div class="sessions-header__left">
+      <i class="fa-solid fa-folder folder-show__icon"></i>
+
+      <%# Inline-editable folder name -%>
+      <%= turbo_frame_tag dom_id(@folder, :name) do %>
+        <%= link_to edit_folder_path(@folder),
+                    data: { turbo_frame: dom_id(@folder, :name) },
+                    class: "folder-show__editable-name" do %>
+          <h2><%= @folder.name %></h2>
+        <% end %>
+      <% end %>
+
+      <p class="text-caption sessions-header__count"><%= pluralize(@sessions.size, "session") %></p>
+    </div>
+  </div>
+
+  <%# Inline-editable description -%>
+  <%= turbo_frame_tag dom_id(@folder, :description), class: "folder-show__desc-frame" do %>
+    <%= link_to edit_folder_path(@folder),
+                data: { turbo_frame: dom_id(@folder, :description) },
+                class: "folder-show__editable-desc" do %>
+      <% if @folder.description.present? %>
+        <p class="text-caption folder-show__desc"><%= @folder.description %></p>
+      <% else %>
+        <p class="text-caption folder-show__desc-placeholder">Add a description&hellip;</p>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <% if @sessions.empty? %>
+    <div class="sessions-empty">
+      <div class="sessions-empty__icon">
+        <i class="fa-solid fa-folder-open"></i>
+      </div>
+      <h4>No sessions in this folder</h4>
+      <p class="text-caption">Add sessions from the Sessions page or sidebar.</p>
+      <%= link_to "Go to Sessions", recording_sessions_path, class: "btn btn-primary btn-sm mt-3" %>
+    </div>
+
+  <% else %>
+    <div class="sessions-list">
+      <%= render partial: "recording_sessions/session_row", collection: @sessions, as: :session %>
+    </div>
+  <% end %>
+
+</div>

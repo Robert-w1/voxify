@@ -1,0 +1,52 @@
+<%# ── Folder index row ─────────────────────────────────────────── %>
+<%= turbo_stream.replace dom_id(@folder, :title) do %>
+  <%= turbo_frame_tag dom_id(@folder, :title), class: "session-row__main" do %>
+    <%= link_to folder_path(@folder), class: "session-row__link", data: { turbo_frame: "_top" } do %>
+      <div class="session-row__title">
+        <i class="fa-solid fa-folder folder-row__icon"></i>
+        <span class="session-row__title-text"><%= @folder.name %></span>
+      </div>
+      <div class="session-row__meta">
+        <span class="session-row__badge session-row__badge--folder-count">
+          <span class="session-row__badge-label">Sessions</span>
+          <%= @folder.recording_sessions.size %>
+        </span>
+        <% if @folder.description.present? %>
+          <span class="session-row__badge session-row__badge--description">
+            <span class="session-row__badge-label">Description</span>
+            <%= @folder.description.split.first(10).join(" ") %><%= "…" if @folder.description.split.size > 10 %>
+          </span>
+        <% end %>
+        <span class="session-row__date text-caption">
+          <%= @folder.created_at.strftime("%-d %b %Y") %>
+        </span>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%# ── Folder show: name ────────────────────────────────────────── %>
+<%= turbo_stream.replace dom_id(@folder, :name) do %>
+  <%= turbo_frame_tag dom_id(@folder, :name) do %>
+    <%= link_to edit_folder_path(@folder),
+                data: { turbo_frame: dom_id(@folder, :name) },
+                class: "folder-show__editable-name" do %>
+      <h2><%= @folder.name %></h2>
+    <% end %>
+  <% end %>
+<% end %>
+
+<%# ── Folder show: description ────────────────────────────────── %>
+<%= turbo_stream.replace dom_id(@folder, :description) do %>
+  <%= turbo_frame_tag dom_id(@folder, :description), class: "folder-show__desc-frame" do %>
+    <%= link_to edit_folder_path(@folder),
+                data: { turbo_frame: dom_id(@folder, :description) },
+                class: "folder-show__editable-desc" do %>
+      <% if @folder.description.present? %>
+        <p class="text-caption folder-show__desc"><%= @folder.description %></p>
+      <% else %>
+        <p class="text-caption folder-show__desc-placeholder">Add a description&hellip;</p>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

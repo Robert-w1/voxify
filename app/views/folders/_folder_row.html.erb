@@ -1,0 +1,50 @@
+<div class="session-row" id="<%= dom_id(folder) %>">
+
+  <%= turbo_frame_tag dom_id(folder, :title), class: "session-row__main" do %>
+    <%= link_to folder_path(folder), class: "session-row__link", data: { turbo_frame: "_top" } do %>
+
+      <div class="session-row__title">
+        <i class="fa-solid fa-folder folder-row__icon"></i>
+        <span class="session-row__title-text"><%= folder.name %></span>
+      </div>
+
+      <div class="session-row__meta">
+        <span class="session-row__badge session-row__badge--folder-count">
+          <span class="session-row__badge-label">Sessions</span>
+          <%= folder.recording_sessions.size %>
+        </span>
+        <% if folder.description.present? %>
+          <span class="session-row__badge session-row__badge--description">
+            <span class="session-row__badge-label">Description</span>
+            <%= folder.description.split.first(10).join(" ") %><%= "…" if folder.description.split.size > 10 %>
+          </span>
+        <% end %>
+        <span class="session-row__date text-caption">
+          <%= folder.created_at.strftime("%-d %b %Y") %>
+        </span>
+      </div>
+
+    <% end %>
+  <% end %>
+
+  <div class="session-row__actions">
+
+    <%= link_to edit_folder_path(folder),
+                data: { turbo_frame: dom_id(folder, :title) },
+                class: "session-row__action-btn",
+                title: "Rename" do %>
+      <i class="fa-solid fa-pencil"></i>
+    <% end %>
+
+    <%= button_to folder_path(folder),
+                  method: :delete,
+                  class: "session-row__action-btn session-row__action-btn--danger",
+                  title: "Delete",
+                  form_class: "session-row__delete-form",
+                  data: { turbo_confirm: "Delete \"#{folder.name}\"? Sessions inside will not be deleted." } do %>
+      <i class="fa-solid fa-trash"></i>
+    <% end %>
+
+  </div>
+
+</div>

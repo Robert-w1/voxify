@@ -1,0 +1,331 @@
+// ============================================================
+// Folders pages
+// ============================================================
+
+// ── Folder row extras ────────────────────────────────────────
+
+.folder-row__icon {
+  color: $color-accent;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.folder-row__desc {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+
+// ── Folder show — inline editable fields ─────────────────────
+
+.folder-show__editable-name {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: $radius-sm;
+  padding: 2px 6px;
+  margin: -2px -6px;
+  transition: background-color $transition;
+
+  h2 { margin: 0; }
+
+  &:hover {
+    background-color: $color-bg-card;
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+.folder-show__desc-frame {
+  display: block;
+  margin-bottom: 24px;
+}
+
+.folder-show__editable-desc {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: $radius-sm;
+  padding: 4px 6px;
+  margin: -4px -6px;
+  transition: background-color $transition;
+
+  p { margin: 0; }
+
+  &:hover {
+    background-color: $color-bg-card;
+    text-decoration: none;
+  }
+}
+
+.folder-show__desc-placeholder {
+  color: $color-caption;
+  opacity: 0.5;
+  font-style: italic;
+  margin: 0;
+}
+
+.folder-show__inline-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.folder-show__name-input {
+  font-size: 33px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: $color-heading;
+  padding: 2px 6px;
+  height: auto;
+  width: 100%;
+}
+
+.folder-show__desc-input {
+  font-size: 13px;
+  color: $color-caption;
+  padding: 4px 6px;
+  width: 100%;
+  resize: none;
+}
+
+// ── Folder show ───────────────────────────────────────────────
+
+.folder-show__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  color: $color-caption;
+  font-size: 13px;
+
+  &:hover { color: $color-primary; text-decoration: none; }
+}
+
+.folder-show__icon {
+  color: $color-accent;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.folder-show__desc {
+  margin: -18px 0 24px;
+  padding-left: 2px;
+}
+
+// ── Session row folder badge (shown on sessions that belong to a folder) ─────
+
+.session-row__badge--folder {
+  background-color: rgba($color-accent, 0.1);
+  color: darken($color-accent, 10%);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 100px;
+  font-weight: 500;
+}
+
+// ── Folder row meta badges ────────────────────────────────────
+
+.session-row__badge--folder-count {
+  background-color: rgba($color-primary, 0.08);
+  color: $color-primary;
+}
+
+.session-row__badge--description {
+  background-color: rgba($color-body, 0.07);
+  color: $color-body;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ── Folder picker ─────────────────────────────────────────────
+
+.folder-picker-wrapper {
+  position: relative;
+}
+
+.folder-picker-popup {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 1000;
+  background-color: #fff;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+  max-width: 240px;
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.folder-picker-current {
+  padding: 6px 12px;
+  color: $color-caption;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folder-picker-divider {
+  height: 1px;
+  background-color: $color-border-light;
+  margin: 4px 0;
+}
+
+.folder-picker-empty {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: $color-caption;
+}
+
+.folder-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: $color-heading;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color $transition;
+
+  &:hover {
+    background-color: $color-bg-card;
+    color: $color-heading;
+    text-decoration: none;
+  }
+
+  i { color: $color-caption; font-size: 12px; flex-shrink: 0; }
+
+  &--remove {
+    color: $color-error;
+    i { color: $color-error; }
+    &:hover { background-color: rgba($color-error, 0.06); }
+  }
+
+  &--new {
+    color: $color-primary;
+    i { color: $color-primary; }
+    &:hover { background-color: rgba($color-primary, 0.06); }
+  }
+}
+
+// button_to wraps in a <form> — make it invisible to layout
+.folder-picker-item form {
+  display: contents;
+}
+
+// ── Folder form (new) — uses auth-card layout ─────────────────
+
+.folder-form__header {
+  text-align: center;
+  margin-bottom: 28px;
+
+  h1 { font-size: 32px; margin: 10px 0 4px; }
+  p  { margin: 0; }
+}
+
+.folder-form__icon {
+  font-size: 30px;
+  color: $color-accent;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.folder-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.folder-form__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-heading;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.folder-form__label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.folder-form__input {
+  padding: 10px 14px;
+}
+
+.folder-form__textarea {
+  resize: vertical;
+}
+
+.folder-form__errors {
+  background-color: rgba($color-error, 0.06);
+  border: 1px solid rgba($color-error, 0.2);
+  border-radius: $radius-md;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+
+  p { color: $color-error; font-size: 14px; margin: 0; }
+}
+
+// ── Sidebar inline folder picker ──────────────────────────────
+
+.sidebar-folder-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.sidebar-folder-toggle__arrow {
+  margin-left: auto;
+  font-size: 10px;
+  color: $color-caption;
+  transition: transform $transition;
+
+  &.open { transform: rotate(180deg); }
+}
+
+.sidebar-folder-list {
+  background-color: rgba($color-primary, 0.03);
+  border-top: 1px solid $color-border-light;
+  border-bottom: 1px solid $color-border-light;
+  padding: 4px 0;
+}
+
+.sidebar-folder-option {
+  padding-left: 28px !important;
+
+  &--new {
+    color: $color-primary !important;
+    i { color: $color-primary !important; }
+  }
+}
+
+// button_to wraps in a <form> inside .sidebar-folder-list — make invisible
+.sidebar-folder-list form { display: contents; }
+
+.session-dropdown-item--remove {
+  color: $color-error !important;
+  i { color: $color-error !important; }
+}
