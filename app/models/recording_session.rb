@@ -8,7 +8,6 @@ class RecordingSession < ApplicationRecord
   has_many :reports, through: :recordings
 
   AUDIENCE_OPTIONS = %w[
-    vcs
     investors
     board
     executives
@@ -28,7 +27,6 @@ class RecordingSession < ApplicationRecord
     team_update
     all_hands
     conference_talk
-    workshop
     job_interview
     casual_chat
   ].freeze
@@ -43,7 +41,6 @@ class RecordingSession < ApplicationRecord
     conciseness
     engagement
     storytelling
-    technical_depth
   ].freeze
 
   enum :status, {
@@ -57,18 +54,11 @@ class RecordingSession < ApplicationRecord
   validates :title, presence: true
   validates :audience, presence: true, inclusion: { in: AUDIENCE_OPTIONS }
   validates :presentation_type, presence: true, inclusion: { in: PRESENTATION_TYPE_OPTIONS }
-  validate :at_least_one_focus_selected
   validates :status, presence: true
 
   private
 
   def set_default_title
   self.title ||= "#{presentation_type&.titleize} - #{Time.current.strftime('%b %d, %Y %I:%M %p')}"
-  end
-
-  def at_least_one_focus_selected
-   if focus.blank? || focus.reject(&:blank?).empty?
-    errors.add(:focus, "requires at least one selection")
-   end
   end
 end

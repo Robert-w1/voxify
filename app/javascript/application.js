@@ -4,9 +4,6 @@ import "controllers"
 import "@popperjs/core"
 import "bootstrap"
 
-import RecorderController from "./controllers/recorder_controller.js"
-Stimulus.register("recorder", RecorderController)
-
 // SIDEBAR STUFF
 
 document.addEventListener("turbo:load", () => {
