@@ -4,8 +4,7 @@
      data-recorder-max-duration-value="30"
      data-recorder-focuses-value="<%= @recording_session.focus.reject(&:blank?).to_json %>"
      data-recorder-initial-status-value="<%= @recording_session.status %>"
-     <% if @report_json %>data-recorder-initial-report-value="<%= @report_json %>"<% end %>
-     data-recorder-pdf-url-value="<%= @pdf_url.to_s %>">
+     <% if @report_json %>data-recorder-initial-report-value="<%= @report_json %>"<% end %>>
 
 
   <div class="row justify-content-center">
@@ -195,11 +194,11 @@
 
           <%# Download %>
           <div class="text-center mt-4">
-            <button class="btn btn-primary w-100"
-                    data-action="click->recorder#downloadReport">
+            <%= link_to download_pdf_recording_session_path(@recording_session),
+                        class: "btn btn-primary w-100" do %>
               <i class="fa fa-download"></i>
               Download full report
-            </button>
+            <% end %>
           </div>
         </div>
       </div>

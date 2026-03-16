@@ -1,7 +1,7 @@
 class RecordingSessionsController < ApplicationController
   before_action :authenticate_user!
   before_action :enable_sidebar
-  before_action :set_recording_session, only: [:show, :edit, :update, :destroy]
+  before_action :set_recording_session, only: [:show, :edit, :update, :destroy, :download_pdf]
 
   def new
     @recording_session = RecordingSession.new
@@ -26,14 +26,21 @@ class RecordingSessionsController < ApplicationController
     @recording = @recording_session.recordings.order(created_at: :desc).first
     @report = @recording&.report
     @report_json = build_report_json(@report, @recording).to_json if @report
-    @pdf_url = if @report&.pdf_file&.attached?
-                 Cloudinary::Utils.cloudinary_url(
-                   "#{Rails.env}/#{@report.pdf_file.blob.key}",
-                   resource_type: "raw",
-                   sign_url: true,
-                   secure: true
-                 )
-               end
+  end
+
+  def download_pdf
+    recording = @recording_session.recordings.order(created_at: :desc).first
+    report = recording&.report
+
+    if report.present?
+      pdf_binary = PdfReportService.new(@recording_session, recording, report).generate
+      send_data pdf_binary,
+                filename: "voxify-report-#{report.id}.pdf",
+                type: "application/pdf",
+                disposition: "attachment"
+    else
+      redirect_to recording_session_path(@recording_session), alert: "PDF not available"
+    end
   end
 
   def edit; end
