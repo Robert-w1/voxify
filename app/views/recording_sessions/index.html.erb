@@ -1,8 +1,34 @@
 <div class="sessions-page">
 
   <div class="sessions-header">
-    <h2>Sessions</h2>
-    <p class="text-caption sessions-header__count"><%= pluralize(@recording_sessions.size, "session") %></p>
+    <div class="sessions-header__left">
+      <h2>Sessions</h2>
+      <p class="text-caption sessions-header__count"><%= pluralize(@recording_sessions.size, "session") %></p>
+    </div>
+    <%= link_to new_recording_session_path, class: "btn btn-primary btn-sm sessions-header__new" do %>
+      <i class="fa-solid fa-plus"></i> New session
+    <% end %>
+  </div>
+
+  <div data-controller="sessions-search" class="sessions-search-wrapper">
+    <%= form_with url: recording_sessions_path, method: :get, class: "sessions-search-form" do |f| %>
+      <div class="sessions-search-field">
+        <i class="fa-solid fa-magnifying-glass sessions-search-icon"></i>
+        <%= f.text_field :q, value: @query, placeholder: "Search sessions...",
+              class: "sessions-search-input",
+              autocomplete: "off",
+              data: {
+                sessions_search_target: "input",
+                action: "input->sessions-search#onInput keydown->sessions-search#onKeydown"
+              } %>
+        <% if @query.present? %>
+          <%= link_to recording_sessions_path, class: "sessions-search-clear" do %>
+            <i class="fa-solid fa-xmark"></i>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+    <div class="sidebar-search-popup" hidden data-sessions-search-target="results"></div>
   </div>
 
   <% if @recording_sessions.empty? %>
