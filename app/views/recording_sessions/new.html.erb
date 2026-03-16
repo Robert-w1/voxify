@@ -84,11 +84,11 @@
           </div>
         </div>
 
-        <%# ── CARD 3: FEEDBACK FOCUS + SUBMIT ── %>
+        <%# ── CARD 3: FEEDBACK FOCUS ── %>
         <div class="flow-card" data-session-form-target="card" data-step="3" hidden>
           <h5 class="fw-semibold mb-1">What is your desired feedback focus?</h5>
           <p class="text-caption fst-italic mb-4">Optionally choose areas to focus your AI feedback report.</p>
-          <div class="option-grid mb-4">
+          <div class="option-grid">
             <% RecordingSession::FEEDBACK_FOCUS_OPTIONS.each do |option| %>
               <div>
                 <%= f.check_box :focus, {
@@ -103,16 +103,6 @@
               </div>
             <% end %>
           </div>
-
-          <p class="text-caption text-center mb-2" style="display: none;" data-session-form-target="warningMessage">
-            Please select a presentation type and audience before starting.
-          </p>
-          <div data-action="click->session-form#attemptSubmit">
-            <%= f.submit "Start Recording",
-              class: "btn btn-primary w-100",
-              disabled: true,
-              data: { session_form_target: "submitButton", turbo: false } %>
-          </div>
         </div>
 
         <%# ── CARD NAVIGATION ── %>
@@ -124,14 +114,30 @@
                   hidden>
             &larr; Previous
           </button>
+
           <div class="ms-auto text-end" style="position: relative;">
+            <%# Steps 1 & 2 %>
             <button type="button"
                     class="btn btn-primary"
                     data-session-form-target="nextButton"
                     data-action="click->session-form#nextStep">
               Next &rarr;
             </button>
-            <p class="text-caption fst-italic mt-1 mb-0" style="display: none;" data-session-form-target="selectionWarning">
+
+            <%# Step 3 — submit acts as Next %>
+            <div data-session-form-target="submitWrapper" hidden>
+              <div data-action="click->session-form#attemptSubmit">
+                <%= f.submit "Next \u2192",
+                  class: "btn btn-primary",
+                  disabled: true,
+                  data: { session_form_target: "submitButton", turbo: false } %>
+              </div>
+              <p class="text-caption fst-italic mb-0" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 4px; white-space: nowrap;" data-session-form-target="warningMessage">
+                Please select a presentation type and audience before starting.
+              </p>
+            </div>
+
+            <p class="text-caption fst-italic mb-0" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 4px; white-space: nowrap;" data-session-form-target="selectionWarning">
               Please make a selection to proceed
             </p>
           </div>
