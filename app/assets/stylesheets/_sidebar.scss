@@ -237,16 +237,9 @@
   &--processing { background-color: #F0B429; }
   &--failed     { background-color: #C0BAB0; }
 
-  // Recording pulses to signal active state
   &--recording {
     background-color: #E05C5C;
-    animation: status-pulse 1.2s ease-in-out infinite;
   }
-}
-
-@keyframes status-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.3; }
 }
 
 // ── Recent item with inline action buttons ────────────────────
@@ -362,6 +355,90 @@
   // button_to wraps in a <form> — make the form invisible
   form { display: contents; }
 }
+
+// ── Sidebar search ────────────────────────────────────────────
+
+.sidebar-search-trigger {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sidebar-search-active {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  background-color: #E4E0D6;
+
+  .search-field-icon {
+    color: #858279;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.sidebar-search-input {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #5A533D;
+  width: 100%;
+
+  &::placeholder { color: #B0ACA0; }
+}
+
+// Floating popup — fixed so it escapes the sidebar's overflow:hidden
+.sidebar-search-popup {
+  position: fixed;
+  z-index: 300;
+  background-color: #F7F5EF;
+  border: 1px solid rgba(90, 83, 61, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(90, 83, 61, 0.15);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.search-popup-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  font-size: 13px;
+  color: #5A533D;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+
+  i { flex-shrink: 0; color: #B0ACA0; font-size: 12px; }
+
+  &:hover {
+    background-color: #EFECE3;
+    color: #5A533D;
+    text-decoration: none;
+  }
+}
+
+.search-popup-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-popup-empty {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #B0ACA0;
+}
+
+// Hide input when sidebar is collapsed
+.sidebar.collapsed .sidebar-search-active { display: none !important; }
 
 // ── Bottom avatar ─────────────────────────────────────────────
 .sidebar-bottom {

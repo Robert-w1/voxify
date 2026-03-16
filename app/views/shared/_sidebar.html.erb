@@ -22,6 +22,31 @@
     <%# ── Primary navigation ── %>
     <nav class="sidebar-nav">
 
+      <%# Search %>
+      <div data-controller="sidebar-search" class="sidebar-search-container">
+
+        <div class="nav-item sidebar-search-trigger"
+             data-action="click->sidebar-search#activate"
+             data-sidebar-search-target="trigger">
+          <i data-feather="search"></i>
+          <span class="label">Search</span>
+        </div>
+
+        <div class="sidebar-search-active" hidden data-sidebar-search-target="activeArea">
+          <i data-feather="search" class="search-field-icon"></i>
+          <input type="text"
+                 class="sidebar-search-input"
+                 placeholder="Search sessions..."
+                 autocomplete="off"
+                 data-sidebar-search-target="input"
+                 data-action="input->sidebar-search#onInput keydown->sidebar-search#onKeydown">
+        </div>
+
+        <%# Results popup — positioned via JS as a fixed overlay %>
+        <div class="sidebar-search-popup" hidden data-sidebar-search-target="results"></div>
+
+      </div>
+
       <%# New Session — creates a new RecordingSession %>
       <%= link_to new_recording_session_path, class: "nav-item #{"active" if current_page?(new_recording_session_path)}" do %>
         <i data-feather="mic"></i>

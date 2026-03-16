@@ -19,7 +19,26 @@ class RecordingSessionsController < ApplicationController
   end
 
   def index
-    @recording_sessions = current_user.recording_sessions.order(created_at: :desc)
+    @query = params[:q].to_s.strip
+    @recording_sessions = if @query.present?
+      current_user.recording_sessions.search_by_title(@query)
+    else
+      current_user.recording_sessions.order(created_at: :desc)
+    end
+
+    respond_to do |format|
+      format.html
+      format.json do
+        q = @query
+        return render json: [] if q.length < 2
+
+        results = current_user.recording_sessions.search_by_title(q).limit(8).map do |s|
+          { type: "session", label: s.title.presence || "Untitled", url: recording_session_path(s) }
+        end
+
+        render json: results
+      end
+    end
   end
 
   def show

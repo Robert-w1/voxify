@@ -3,23 +3,78 @@
 // ============================================================
 
 .sessions-page {
-  padding: 40px 48px;
-  max-width: 860px;
+  padding: 48px 40px;
+  max-width: 880px;
+  margin: 0 auto;
 }
 
 // ── Header ───────────────────────────────────────────────────
 
 .sessions-header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.sessions-header__left {
+  display: flex;
   align-items: baseline;
   gap: 12px;
-  margin-bottom: 28px;
 
   h2 { margin: 0; }
 }
 
 .sessions-header__count {
   margin: 0;
+}
+
+// ── Search ────────────────────────────────────────────────────
+
+.sessions-search-form {
+  margin-bottom: 24px;
+}
+
+.sessions-search-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fff;
+  border: 1px solid rgba(90, 83, 61, 0.15);
+  border-radius: 8px;
+  padding: 10px 14px;
+  transition: border-color 0.15s ease;
+
+  &:focus-within {
+    border-color: rgba(90, 83, 61, 0.4);
+  }
+}
+
+.sessions-search-icon {
+  color: #B0ACA0;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.sessions-search-input {
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 14px;
+  color: #5A533D;
+  flex: 1;
+
+  &::placeholder { color: #B0ACA0; }
+}
+
+.sessions-search-clear {
+  color: #B0ACA0;
+  font-size: 12px;
+  line-height: 1;
+  flex-shrink: 0;
+  text-decoration: none;
+
+  &:hover { color: #5A533D; }
 }
 
 // ── Empty state ───────────────────────────────────────────────
