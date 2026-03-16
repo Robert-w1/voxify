@@ -2,7 +2,10 @@
      data-controller="recorder"
      data-recorder-session-id-value="<%= @recording_session.id %>"
      data-recorder-max-duration-value="30"
-     data-recorder-focuses-value="<%= @recording_session.focus.reject(&:blank?).to_json %>">
+     data-recorder-focuses-value="<%= @recording_session.focus.reject(&:blank?).to_json %>"
+     data-recorder-initial-status-value="<%= @recording_session.status %>"
+     <% if @report_json %>data-recorder-initial-report-value="<%= @report_json %>"<% end %>>
+
 
   <div class="row justify-content-center">
     <div class="col-lg-8">
@@ -20,6 +23,8 @@
 
         <div data-recorder-target="titleEdit" hidden class="d-flex align-items-center gap-2">
           <input type="text"
+                 id="session-title-input"
+                 name="session_title"
                  value="<%= @recording_session.title %>"
                  class="input-field"
                  data-recorder-target="titleInput"
@@ -123,7 +128,9 @@
           <div class="session-mic-bar d-flex align-items-center justify-content-center gap-3">
             <div class="d-flex align-items-center gap-2">
               <i class="fa fa-microphone text-caption"></i>
-              <select class="select-input select-input--sm"
+              <select id="mic-select"
+                      name="mic_device"
+                      class="select-input select-input--sm"
                       data-recorder-target="micSelect"
                       data-action="change->recorder#switchMic">
                 <option>Default - Microphone</option>
@@ -187,11 +194,11 @@
 
           <%# Download %>
           <div class="text-center mt-4">
-            <button class="btn btn-primary w-100"
-                    data-action="click->recorder#downloadReport">
+            <%= link_to download_pdf_recording_session_path(@recording_session),
+                        class: "btn btn-primary w-100" do %>
               <i class="fa fa-download"></i>
               Download full report
-            </button>
+            <% end %>
           </div>
         </div>
       </div>
