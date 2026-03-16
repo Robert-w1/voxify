@@ -4,9 +4,6 @@ import "controllers"
 import "@popperjs/core"
 import "bootstrap"
 
-import RecorderController from "./controllers/recorder_controller.js"
-Stimulus.register("recorder", RecorderController)
-
 // SIDEBAR STUFF
 
 document.addEventListener("turbo:load", () => {
@@ -28,7 +25,13 @@ document.addEventListener("turbo:load", () => {
   const avatarDropdown = document.getElementById("avatar-dropdown")
   if (avatarBtn && avatarDropdown) {
     avatarBtn.addEventListener("click", (e) => {
-      e.stopPropagation()                         // don't let click bubble to window
+      e.stopPropagation()
+      const isOpening = !avatarDropdown.classList.contains("open")
+      if (isOpening) {
+        const rect = avatarBtn.getBoundingClientRect()
+        avatarDropdown.style.bottom = (window.innerHeight - rect.top + 6) + "px"
+        avatarDropdown.style.left   = rect.left + "px"
+      }
       avatarDropdown.classList.toggle("open")
     })
     // Close when clicking anywhere else on the page

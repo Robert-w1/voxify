@@ -22,6 +22,31 @@
     <%# ── Primary navigation ── %>
     <nav class="sidebar-nav">
 
+      <%# Search %>
+      <div data-controller="sidebar-search" class="sidebar-search-container">
+
+        <div class="nav-item sidebar-search-trigger"
+             data-action="click->sidebar-search#activate"
+             data-sidebar-search-target="trigger">
+          <i data-feather="search"></i>
+          <span class="label">Search</span>
+        </div>
+
+        <div class="sidebar-search-active" hidden data-sidebar-search-target="activeArea">
+          <i data-feather="search" class="search-field-icon"></i>
+          <input type="text"
+                 class="sidebar-search-input"
+                 placeholder="Search sessions..."
+                 autocomplete="off"
+                 data-sidebar-search-target="input"
+                 data-action="input->sidebar-search#onInput keydown->sidebar-search#onKeydown">
+        </div>
+
+        <%# Results popup — positioned via JS as a fixed overlay %>
+        <div class="sidebar-search-popup" hidden data-sidebar-search-target="results"></div>
+
+      </div>
+
       <%# New Session — creates a new RecordingSession %>
       <%= link_to new_recording_session_path, class: "nav-item #{"active" if current_page?(new_recording_session_path)}" do %>
         <i data-feather="mic"></i>
@@ -47,13 +72,53 @@
     <div class="recent-section">
       <div class="recent-title">Recent</div>
       <% @recent_sessions&.each do |session| %>
-        <%= link_to recording_session_path(session), class: "nav-item recent-item" do %>
-          <%# Status dot: green = completed, amber = processing, red = failed %>
-          <span class="status-dot status-dot--<%= session.status %>"></span>
-          <span class="label recent-label">
-            <%= session.title.presence || "Untitled" %>
-          </span>
-        <% end %>
+
+        <div class="recent-item-wrapper">
+
+          <%# Title — Turbo Frame so Rename swaps it inline -%>
+          <%= turbo_frame_tag dom_id(session, :sidebar_title), class: "recent-item__frame" do %>
+            <%= link_to recording_session_path(session), class: "nav-item recent-item", data: { turbo_frame: "_top" } do %>
+              <span class="status-dot status-dot--<%= session.status %>"></span>
+              <span class="label recent-label"><%= session.title.presence || "Untitled" %></span>
+            <% end %>
+          <% end %>
+
+          <%# 3-dot dropdown -%>
+          <div class="dropdown recent-item-menu">
+            <button class="recent-menu-btn dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+              <i class="fa-solid fa-ellipsis"></i>
+            </button>
+
+            <ul class="dropdown-menu dropdown-menu-end session-dropdown">
+              <li>
+                <%= link_to edit_recording_session_path(session),
+                            data: { turbo_frame: dom_id(session, :sidebar_title) },
+                            class: "dropdown-item session-dropdown-item" do %>
+                  <i class="fa-solid fa-pencil"></i> Rename
+                <% end %>
+              </li>
+              <li>
+                <span class="dropdown-item session-dropdown-item disabled">
+                  <i class="fa-solid fa-folder-plus"></i> Add to folder
+                </span>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <%= button_to recording_session_path(session),
+                              method: :delete,
+                              class: "dropdown-item session-dropdown-item session-dropdown-item--danger",
+                              form_class: "session-row__delete-form",
+                              data: { turbo_confirm: "Delete \"#{session.title.presence || 'Untitled'}\"? This cannot be undone." } do %>
+                  <i class="fa-solid fa-trash"></i> Delete
+                <% end %>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
       <% end %>
     </div>
 

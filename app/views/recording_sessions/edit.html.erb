@@ -1,0 +1,30 @@
+<% if turbo_frame_request? %>
+
+  <%# ── For the sessions index page pencil button ─────────────── -%>
+  <%= turbo_frame_tag dom_id(@recording_session, :title), class: "session-row__main" do %>
+    <%= form_with model: @recording_session,
+                  url: recording_session_path(@recording_session),
+                  class: "session-row__rename-form" do |f| %>
+      <%= f.text_field :title,
+                       class: "session-row__title-input input-field",
+                       autofocus: true,
+                       required: true,
+                       onblur: "this.form.requestSubmit()" %>
+    <% end %>
+  <% end %>
+
+  <%# ── For the sidebar 3-dot Rename button ────────────────────── -%>
+  <%# Uses a different frame ID so it can coexist with the index frame on the same page -%>
+  <%= turbo_frame_tag dom_id(@recording_session, :sidebar_title) do %>
+    <%= form_with model: @recording_session,
+                  url: recording_session_path(@recording_session),
+                  class: "recent-rename-form" do |f| %>
+      <%= f.text_field :title,
+                       class: "recent-rename-input input-field",
+                       autofocus: true,
+                       required: true,
+                       onblur: "this.form.requestSubmit()" %>
+    <% end %>
+  <% end %>
+
+<% end %>

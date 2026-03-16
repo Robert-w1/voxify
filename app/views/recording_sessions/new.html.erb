@@ -1,8 +1,9 @@
 <div class="container-app py-5">
   <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-6">
 
-      <h1 class="mb-4">Session goal</h1>
+      <h1 class="mb-1">Session goal</h1>
+      <p class="text-caption fst-italic mb-4">Set your goal before recording.</p>
 
       <%= form_with(
         model: @recording_session,
@@ -18,11 +19,38 @@
           </div>
         <% end %>
 
-        <%# ── PRESENTATION TYPE ── %>
-        <div class="mb-5">
+        <%# ── STEP INDICATOR ── %>
+        <div class="flow-steps mb-4">
+          <button type="button" class="flow-step active"
+                  data-session-form-target="stepDot"
+                  data-step="1"
+                  data-action="click->session-form#goToStep">
+            <span class="step-num">1</span>
+            <span class="step-label">Practice</span>
+          </button>
+          <div class="flow-step-line"></div>
+          <button type="button" class="flow-step locked"
+                  data-session-form-target="stepDot"
+                  data-step="2"
+                  data-action="click->session-form#goToStep">
+            <span class="step-num">2</span>
+            <span class="step-label">Audience</span>
+          </button>
+          <div class="flow-step-line"></div>
+          <button type="button" class="flow-step locked"
+                  data-session-form-target="stepDot"
+                  data-step="3"
+                  data-action="click->session-form#goToStep">
+            <span class="step-num">3</span>
+            <span class="step-label">Focus</span>
+          </button>
+        </div>
+
+        <%# ── CARD 1: PRESENTATION TYPE ── %>
+        <div class="flow-card" data-session-form-target="card" data-step="1">
           <h5 class="fw-semibold mb-1">What are you practicing?</h5>
-          <p class="text-caption fst-italic mb-3">Choose one core purpose.</p>
-          <div class="d-flex flex-wrap gap-2" data-session-form-target="fieldGroup">
+          <p class="text-caption fst-italic mb-4">Choose one core purpose.</p>
+          <div class="option-grid">
             <% RecordingSession::PRESENTATION_TYPE_OPTIONS.each do |option| %>
               <div>
                 <%= f.radio_button :presentation_type, option,
@@ -37,11 +65,11 @@
           </div>
         </div>
 
-        <%# ── AUDIENCE ── %>
-        <div class="mb-5">
+        <%# ── CARD 2: AUDIENCE ── %>
+        <div class="flow-card" data-session-form-target="card" data-step="2" hidden>
           <h5 class="fw-semibold mb-1">Who is the audience?</h5>
-          <p class="text-caption fst-italic mb-3">Choose one core audience.</p>
-          <div class="d-flex flex-wrap gap-2" data-session-form-target="fieldGroup">
+          <p class="text-caption fst-italic mb-4">Choose one core audience.</p>
+          <div class="option-grid">
             <% RecordingSession::AUDIENCE_OPTIONS.each do |option| %>
               <div>
                 <%= f.radio_button :audience, option,
@@ -56,11 +84,11 @@
           </div>
         </div>
 
-        <%# ── FEEDBACK FOCUS ── %>
-        <div class="mb-5">
+        <%# ── CARD 3: FEEDBACK FOCUS ── %>
+        <div class="flow-card" data-session-form-target="card" data-step="3" hidden>
           <h5 class="fw-semibold mb-1">What is your desired feedback focus?</h5>
-          <p class="text-caption fst-italic mb-3">Choose all that apply. Leaving them all unchecked will generate a report about them all.</p>
-          <div class="d-flex flex-wrap gap-2" data-session-form-target="fieldGroup">
+          <p class="text-caption fst-italic mb-4">Optionally choose areas to focus your AI feedback report.</p>
+          <div class="option-grid">
             <% RecordingSession::FEEDBACK_FOCUS_OPTIONS.each do |option| %>
               <div>
                 <%= f.check_box :focus, {
@@ -77,12 +105,42 @@
           </div>
         </div>
 
-        <%# ── SUBMIT ── %>
-        <div class="mt-4">
-          <%= f.submit "Start Recording",
-            class: "btn btn-primary w-100",
-            disabled: true,
-            data: { session_form_target: "submitButton", turbo: false } %>
+        <%# ── CARD NAVIGATION ── %>
+        <div class="flow-nav">
+          <button type="button"
+                  class="btn btn-secondary"
+                  data-session-form-target="prevButton"
+                  data-action="click->session-form#prevStep"
+                  hidden>
+            &larr; Previous
+          </button>
+
+          <div class="ms-auto text-end" style="position: relative;">
+            <%# Steps 1 & 2 %>
+            <button type="button"
+                    class="btn btn-primary"
+                    data-session-form-target="nextButton"
+                    data-action="click->session-form#nextStep">
+              Next &rarr;
+            </button>
+
+            <%# Step 3 — submit acts as Next %>
+            <div data-session-form-target="submitWrapper" hidden>
+              <div data-action="click->session-form#attemptSubmit">
+                <%= f.submit "Next \u2192",
+                  class: "btn btn-primary",
+                  disabled: true,
+                  data: { session_form_target: "submitButton", turbo: false } %>
+              </div>
+              <p class="text-caption fst-italic mb-0" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 4px; white-space: nowrap;" data-session-form-target="warningMessage">
+                Please select a presentation type and audience before starting.
+              </p>
+            </div>
+
+            <p class="text-caption fst-italic mb-0" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 4px; white-space: nowrap;" data-session-form-target="selectionWarning">
+              Please make a selection to proceed
+            </p>
+          </div>
         </div>
 
       <% end %>

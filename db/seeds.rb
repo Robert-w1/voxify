@@ -51,37 +51,62 @@ TRANSCRIPTS = [
 ].freeze
 
 SUMMARY_TEMPLATES = [
-  {
-    overall_score: 72,
-    strengths: ["Clear structure", "Good use of data", "Confident delivery"],
-    improvements: ["Reduce filler words", "Vary pace more", "Stronger closing statement"],
-    overall_feedback: "A solid presentation with clear structure. Focus on eliminating filler words and building a stronger conclusion to leave a lasting impression."
-  },
-  {
-    overall_score: 85,
-    strengths: ["Engaging storytelling", "Strong opening hook", "Appropriate vocabulary for audience"],
-    improvements: ["Slightly too fast in the middle section", "Could add more pauses for emphasis"],
-    overall_feedback: "Excellent delivery overall. The narrative arc was compelling and well-suited to the audience. Minor pacing adjustments would make this near-perfect."
-  },
-  {
-    overall_score: 61,
-    strengths: ["Good energy", "Relevant examples"],
-    improvements: ["High filler word count", "Unclear call to action", "Tone inconsistent in places"],
-    overall_feedback: "The enthusiasm came through clearly, but the message was diluted by frequent filler words. Work on sharpening your key message and practicing a clean close."
-  }
+  "A solid presentation with clear structure and good use of data. Your confident delivery made the content feel trustworthy. Focus on eliminating filler words and building a stronger conclusion to leave a lasting impression on your audience.",
+  "Excellent delivery overall. The narrative arc was compelling and well-suited to the audience. Your opening hook was particularly strong. Minor pacing adjustments in the middle section would make this near-perfect.",
+  "The enthusiasm came through clearly, but the message was diluted by frequent filler words and an unclear call to action. Work on sharpening your key message and practicing a clean, memorable close."
 ].freeze
 
 FOCUS_FEEDBACK_POOL = {
-  filler_words:    "You used filler words (um, uh, like, you know) approximately 14 times during this 3-minute recording. This is above average. Try replacing pauses with a brief silence — it sounds far more confident to listeners.",
-  tone:            "Your tone was generally warm and approachable, well-suited to the audience. There were a few moments mid-section where your tone became slightly flat. Try to vary your emotional register to keep listeners engaged.",
-  pace:            "Your average pace was around 165 words per minute, which is slightly fast. The ideal range for presentations is 130–150 wpm. Slowing down at key points will give your audience time to absorb important information.",
-  clarity:         "Your articulation was clear for most of the session. A few technical terms were rushed and may have been unclear to a non-specialist audience. Consider pausing briefly after introducing new concepts.",
-  confidence:      "You sounded confident in the opening and closing sections. The middle section showed some hesitation — likely due to the increased use of fillers and trailing sentences. Strong, complete sentences will project more authority.",
-  vocabulary:      "Your vocabulary was appropriate for the audience level. You avoided unnecessary jargon while still sounding credible. One area to improve: replacing vague words like 'basically' and 'kind of' with more precise language.",
-  conciseness:     "Several points were repeated or over-explained. Aim to make each point once, clearly, and move on. Trimming roughly 15% of the content would make the presentation feel tighter and more impactful.",
-  engagement:      "You asked one rhetorical question, which was effective. Consider adding 1–2 more interactive moments — even a brief pause to let the audience reflect can significantly increase perceived engagement.",
-  storytelling:    "You included a brief anecdote which was a highlight of the session. Building more of the presentation around a narrative arc (problem → journey → resolution) would strengthen the emotional connection with your audience.",
-  technical_depth: "The level of technical detail was well-calibrated for your stated audience. You successfully explained complex concepts without over-simplifying. Consider adding one concrete technical example to anchor the key claim."
+  filler_words: {
+    score: 58,
+    feedback: "You used filler words (um, uh, like, you know) approximately 14 times. This is above average. Try replacing pauses with a brief silence — it sounds far more confident to listeners.",
+    details: { count: 14, words: [ { word: "um", count: 6 }, { word: "uh", count: 4 }, { word: "like", count: 3 }, { word: "you know", count: 1 } ] }
+  },
+  tone: {
+    score: 76,
+    feedback: "Your tone was generally warm and approachable, well-suited to the audience. There were a few moments mid-section where your tone became slightly flat. Vary your emotional register to keep listeners engaged.",
+    details: {}
+  },
+  pace: {
+    score: 70,
+    feedback: "Your average pace was around 165 words per minute, which is slightly fast. The ideal range for presentations is 130–150 wpm. Slowing down at key points gives your audience time to absorb information.",
+    details: { wpm: 165 }
+  },
+  clarity: {
+    score: 82,
+    feedback: "Your articulation was clear for most of the session. A few technical terms were rushed and may have been unclear to a non-specialist audience. Pause briefly after introducing new concepts.",
+    details: {}
+  },
+  confidence: {
+    score: 74,
+    feedback: "You sounded confident in the opening and closing sections. The middle section showed some hesitation. Strong, complete sentences and fewer trailing thoughts will project more authority.",
+    details: {}
+  },
+  vocabulary: {
+    score: 80,
+    feedback: "Your vocabulary was appropriate for the audience level. You avoided unnecessary jargon while still sounding credible. Replace vague words like 'basically' and 'kind of' with more precise language.",
+    details: {}
+  },
+  conciseness: {
+    score: 65,
+    feedback: "Several points were repeated or over-explained. Aim to make each point once, clearly, and move on. Trimming roughly 15% of the content would make the presentation feel tighter and more impactful.",
+    details: {}
+  },
+  engagement: {
+    score: 78,
+    feedback: "You asked one rhetorical question, which was effective. Consider adding 1–2 more interactive moments — even a brief pause to let the audience reflect can significantly increase perceived engagement.",
+    details: {}
+  },
+  storytelling: {
+    score: 83,
+    feedback: "You included a brief anecdote which was a highlight of the session. Building more of the presentation around a narrative arc (problem → journey → resolution) would strengthen the emotional connection.",
+    details: {}
+  },
+  technical_depth: {
+    score: 88,
+    feedback: "The level of technical detail was well-calibrated for your stated audience. You explained complex concepts without over-simplifying. Consider adding one concrete technical example to anchor the key claim.",
+    details: {}
+  }
 }.freeze
 
 # # ---------------------------------------------------------------------------
@@ -115,19 +140,29 @@ def build_session(user:, status:, title:, audience:, presentation_type:, focus:,
 
   return session unless status == "completed"
 
-  summary_data   = SUMMARY_TEMPLATES.sample
+  summary_text    = SUMMARY_TEMPLATES.sample
   focus_feedbacks = focus.index_with { |f| FOCUS_FEEDBACK_POOL[f.to_sym] }.compact
+  scores          = focus_feedbacks.values.map { |v| v[:score] }
+  overall_score   = scores.any? ? (scores.sum.to_f / scores.size).round : 70
+  wpm             = rand(130..175)
+  filler_count    = focus_feedbacks.key?(:filler_words) ? focus_feedbacks[:filler_words][:details][:count] : rand(3..10)
 
-  recording.create_report!(
-    summary:          summary_data,
-    focus_feedbacks:  focus_feedbacks,
-    pdf_url:          "https://res.cloudinary.com/demo/raw/upload/sample_report.pdf",
+  report = recording.create_report!(
+    summary:          summary_text,
+    focus_feedbacks:  focus_feedbacks.transform_keys(&:to_s).transform_values { |v| v.transform_keys(&:to_s) },
     llm_raw_response: {
-      model:        "claude-3-5-sonnet-20241022",
-      generated_at: Time.current.iso8601,
-      raw:          "{ \"summary\": #{summary_data.to_json}, \"focus_feedbacks\": #{focus_feedbacks.to_json} }"
+      "overall_score"      => overall_score,
+      "transcript_excerpt" => (recording.transcript || "").split.first(50).join(" "),
+      "metrics"            => { "words_per_minute" => wpm, "filler_word_count" => filler_count }
     }
   )
+
+  begin
+    GenerateReportPdfJob.perform_now(report.id)
+    puts "  ✅ PDF generated for: #{session.title}"
+  rescue => e
+    puts "  ⚠️  PDF generation skipped for '#{session.title}': #{e.message}"
+  end
 
   session
 end
@@ -142,7 +177,7 @@ build_session(
   # folder:            investor_folder,
   status:            "completed",
   title:             "Series A Pitch — Accel Partners",
-  audience:          "vcs",
+  audience:          "investors",
   presentation_type: "investor_pitch",
   focus:             %w[confidence storytelling tone],
   transcript:        TRANSCRIPTS[1],
@@ -191,7 +226,7 @@ build_session(
   # folder:            investor_folder,
   status:            "processing",
   title:             "Seed Round Pitch — Y Combinator",
-  audience:          "vcs",
+  audience:          "investors",
   presentation_type: "investor_pitch",
   focus:             %w[confidence tone filler_words],
   transcript:        TRANSCRIPTS[0],
@@ -267,7 +302,7 @@ build_session(
   status:            "processing",
   title:             "Untitled",
   audience:          "general_public",
-  presentation_type: "workshop",
+  presentation_type: "conference_talk",
   focus:             %w[pace engagement storytelling],
   transcript:        TRANSCRIPTS[3],
   duration:          19

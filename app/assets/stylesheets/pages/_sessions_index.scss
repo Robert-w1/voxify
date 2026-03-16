@@ -1,0 +1,259 @@
+// ============================================================
+// Sessions index page
+// ============================================================
+
+.sessions-page {
+  padding: 48px 40px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+// ── Header ───────────────────────────────────────────────────
+
+.sessions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.sessions-header__left {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+
+  h2 { margin: 0; }
+}
+
+.sessions-header__count {
+  margin: 0;
+}
+
+// ── Search ────────────────────────────────────────────────────
+
+.sessions-search-form {
+  margin-bottom: 24px;
+}
+
+.sessions-search-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fff;
+  border: 1px solid rgba(90, 83, 61, 0.15);
+  border-radius: 8px;
+  padding: 10px 14px;
+  transition: border-color 0.15s ease;
+
+  &:focus-within {
+    border-color: rgba(90, 83, 61, 0.4);
+  }
+}
+
+.sessions-search-icon {
+  color: #B0ACA0;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.sessions-search-input {
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 14px;
+  color: #5A533D;
+  flex: 1;
+
+  &::placeholder { color: #B0ACA0; }
+}
+
+.sessions-search-clear {
+  color: #B0ACA0;
+  font-size: 12px;
+  line-height: 1;
+  flex-shrink: 0;
+  text-decoration: none;
+
+  &:hover { color: #5A533D; }
+}
+
+// ── Empty state ───────────────────────────────────────────────
+
+.sessions-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 80px 24px;
+  gap: 8px;
+
+  h4 { margin: 8px 0 0; }
+  p  { margin: 0; }
+}
+
+.sessions-empty__icon {
+  font-size: 36px;
+  color: $color-caption;
+  opacity: 0.4;
+  margin-bottom: 4px;
+}
+
+// ── Session list ─────────────────────────────────────────────
+
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+}
+
+// ── Session row ───────────────────────────────────────────────
+
+.session-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 12px;
+  border-radius: $radius-md;
+  transition: background-color $transition;
+  border-bottom: 1px solid rgba(90, 83, 61, 0.08);
+
+  &:last-child { border-bottom: none; }
+
+  &:hover {
+    background-color: $color-bg-card;
+
+    .session-row__actions { opacity: 1; }
+  }
+}
+
+// Turbo Frame wrapper — takes all remaining width
+.session-row__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.session-row__link {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+
+  &:hover { text-decoration: none; color: inherit; }
+}
+
+// ── Title line ────────────────────────────────────────────────
+
+.session-row__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.session-row__title-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: $color-heading;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Meta line ─────────────────────────────────────────────────
+
+.session-row__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 17px; // aligns under the title text, after status dot
+}
+
+.session-row__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 100px;
+  font-weight: 500;
+
+  &--type     { background-color: rgba($color-primary, 0.1); color: $color-primary; }
+  &--audience { background-color: rgba($color-accent, 0.12); color: darken($color-accent, 12%); }
+}
+
+.session-row__badge-label {
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+  margin-right: 2px;
+}
+
+.session-row__date {
+  font-size: 11px;
+}
+
+// ── Inline rename form ────────────────────────────────────────
+
+.session-row__rename-form {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.session-row__title-input {
+  flex: 1;
+  font-size: 15px;
+  padding: 5px 10px;
+  min-width: 0;
+  width: 100%;
+}
+
+// ── Action buttons ────────────────────────────────────────────
+
+.session-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity $transition;
+}
+
+.session-row__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: $radius-sm;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: $color-caption;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background-color $transition, color $transition;
+
+  &:hover:not(:disabled) {
+    background-color: $color-border;
+    color: $color-heading;
+    text-decoration: none;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  &--danger {
+    &:hover { background-color: rgba($color-error, 0.08); color: $color-error; }
+  }
+}
+
+// button_to wraps the button in a <form> — make it invisible to layout
+.session-row__delete-form {
+  display: contents;
+}

@@ -1,0 +1,66 @@
+<div class="session-row" id="<%= dom_id(session) %>">
+
+  <%# ── Title + meta area wrapped in a Turbo Frame ────────────
+      Clicking the pencil button loads edit.html.erb into this
+      frame, swapping the title for an inline form in-place.      -%>
+  <%= turbo_frame_tag dom_id(session, :title), class: "session-row__main" do %>
+
+    <%= link_to recording_session_path(session), class: "session-row__link", data: { turbo_frame: "_top" } do %>
+
+      <div class="session-row__title">
+        <span class="status-dot status-dot--<%= session.status %>"></span>
+        <span class="session-row__title-text">
+          <%= session.title.presence || "Untitled" %>
+        </span>
+      </div>
+
+      <div class="session-row__meta">
+        <% if session.presentation_type.present? %>
+          <span class="session-row__badge session-row__badge--type">
+            <span class="session-row__badge-label">Presentation</span>
+            <%= session.presentation_type.humanize %>
+          </span>
+        <% end %>
+        <% if session.audience.present? %>
+          <span class="session-row__badge session-row__badge--audience">
+            <span class="session-row__badge-label">Audience</span>
+            <%= session.audience.humanize %>
+          </span>
+        <% end %>
+        <span class="session-row__date text-caption">
+          <%= session.created_at.strftime("%-d %b %Y") %>
+        </span>
+      </div>
+
+    <% end %>
+
+  <% end %>
+
+  <%# ── Action buttons ─────────────────────────────────────── -%>
+  <div class="session-row__actions">
+
+    <%# Rename: targets the turbo frame above — loads edit form inline -%>
+    <%= link_to edit_recording_session_path(session),
+                data: { turbo_frame: dom_id(session, :title) },
+                class: "session-row__action-btn",
+                title: "Rename" do %>
+      <i class="fa-solid fa-pencil"></i>
+    <% end %>
+
+    <button class="session-row__action-btn" title="Add to folder" disabled>
+      <i class="fa-solid fa-folder-plus"></i>
+    </button>
+
+    <%# Delete: standard Rails form, no JS -%>
+    <%= button_to recording_session_path(session),
+                  method: :delete,
+                  class: "session-row__action-btn session-row__action-btn--danger",
+                  title: "Delete",
+                  form_class: "session-row__delete-form",
+                  data: { turbo_confirm: "Delete \"#{session.title.presence || 'Untitled'}\"? This cannot be undone." } do %>
+      <i class="fa-solid fa-trash"></i>
+    <% end %>
+
+  </div>
+
+</div>
