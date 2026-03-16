@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "requiredField", "checkboxField", "submitButton", "warningMessage",
-    "card", "stepDot", "prevButton", "nextButton", "selectionWarning"
+    "card", "stepDot", "prevButton", "nextButton", "submitWrapper", "selectionWarning"
   ]
 
   connect() {
@@ -92,8 +92,9 @@ export default class extends Controller {
       card.hidden = parseInt(card.dataset.step) !== step
     })
 
-    this.prevButtonTarget.hidden = (step === 1)
-    this.nextButtonTarget.hidden = (step === 3)
+    this.prevButtonTarget.hidden   = (step === 1)
+    this.nextButtonTarget.hidden   = (step === 3)
+    this.submitWrapperTarget.hidden = (step !== 3)
 
     const maxUnlocked = this.#maxUnlockedStep()
     this.stepDotTargets.forEach(dot => {
