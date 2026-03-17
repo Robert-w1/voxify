@@ -30,7 +30,7 @@ class TranscribeRecordingJob < ApplicationJob
       )
     end
 
-    session.completed!
+    AnalyzeTranscriptJob.perform_later(recording_id, user_id)
   rescue => e
     Recording.find_by(id: recording_id)&.recording_session&.failed!
     raise e
