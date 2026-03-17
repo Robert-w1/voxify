@@ -3,7 +3,7 @@ class Recording < ApplicationRecord
 
   has_one :report, dependent: :destroy
 
-  has_one_attached :audio
+  has_one_attached :audio, service: :local
 
   delegate :user, to: :recording_session
 

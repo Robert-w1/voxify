@@ -1,7 +1,7 @@
 class RecordingSessionsController < ApplicationController
   before_action :authenticate_user!
   before_action :enable_sidebar
-  before_action :set_recording_session, only: [:show, :edit, :update, :destroy, :download_pdf]
+  before_action :set_recording_session, only: [:show, :edit, :update, :destroy]
 
   def new
     @recording_session = RecordingSession.new
