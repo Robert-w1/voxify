@@ -15,6 +15,12 @@
       </div>
 
       <div class="session-row__meta">
+        <% if session.folder.present? %>
+          <span class="session-row__badge session-row__badge--folder">
+            <i class="fa-solid fa-folder"></i>
+            <%= session.folder.name %>
+          </span>
+        <% end %>
         <% if session.presentation_type.present? %>
           <span class="session-row__badge session-row__badge--type">
             <span class="session-row__badge-label">Presentation</span>
@@ -47,9 +53,15 @@
       <i class="fa-solid fa-pencil"></i>
     <% end %>
 
-    <button class="session-row__action-btn" title="Add to folder" disabled>
-      <i class="fa-solid fa-folder-plus"></i>
-    </button>
+    <%# Folder picker -%>
+    <div class="folder-picker-wrapper" data-controller="folder-picker">
+      <button class="session-row__action-btn"
+              title="Add to folder"
+              data-action="click->folder-picker#toggle">
+        <i class="fa-solid fa-folder-plus"></i>
+      </button>
+      <%= render "shared/folder_picker_popup", session: session %>
+    </div>
 
     <%# Delete: standard Rails form, no JS -%>
     <%= button_to recording_session_path(session),

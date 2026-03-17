@@ -36,7 +36,7 @@
           <i data-feather="search" class="search-field-icon"></i>
           <input type="text"
                  class="sidebar-search-input"
-                 placeholder="Search sessions..."
+                 placeholder="Search..."
                  autocomplete="off"
                  data-sidebar-search-target="input"
                  data-action="input->sidebar-search#onInput keydown->sidebar-search#onKeydown">
@@ -60,10 +60,10 @@
       <% end %>
 
       <%# Folders %>
-      <%= link_to '#', class: "nav-item" do %>
-         <i data-feather="folder"></i>
-         <span class="label">Folders</span>
-       <% end %>
+      <%= link_to folders_path, class: "nav-item #{"active" if request.path.start_with?(folders_path)}" do %>
+        <i data-feather="folder"></i>
+        <span class="label">Folders</span>
+      <% end %>
 
     </nav>
 
@@ -87,6 +87,7 @@
           <div class="dropdown recent-item-menu">
             <button class="recent-menu-btn dropdown-toggle"
                     data-bs-toggle="dropdown"
+                    data-bs-auto-close="outside"
                     aria-expanded="false">
               <i class="fa-solid fa-ellipsis"></i>
             </button>
@@ -99,11 +100,49 @@
                   <i class="fa-solid fa-pencil"></i> Rename
                 <% end %>
               </li>
+
+              <%# Add to folder — click expands inline list, stopPropagation keeps dropdown open -%>
               <li>
-                <span class="dropdown-item session-dropdown-item disabled">
-                  <i class="fa-solid fa-folder-plus"></i> Add to folder
-                </span>
+                <button type="button"
+                        class="dropdown-item session-dropdown-item sidebar-folder-toggle"
+                        onclick="event.stopPropagation(); this.closest('li').nextElementSibling.hidden = !this.closest('li').nextElementSibling.hidden; this.querySelector('.sidebar-folder-toggle__arrow').classList.toggle('open')">
+                  <i class="fa-solid fa-folder-plus"></i>
+                  Add to folder
+                  <i class="fa-solid fa-chevron-down sidebar-folder-toggle__arrow"></i>
+                </button>
               </li>
+
+              <li class="sidebar-folder-list" hidden>
+                <% if session.folder.present? %>
+                  <%= button_to update_folder_recording_session_path(session),
+                                params: { folder_id: "" },
+                                method: :patch,
+                                class: "dropdown-item session-dropdown-item session-dropdown-item--remove sidebar-folder-option" do %>
+                    <i class="fa-solid fa-folder-minus"></i> Remove from folder
+                  <% end %>
+                <% end %>
+
+                <% @user_folders.reject { |f| f.id == session.folder_id }.each do |folder| %>
+                  <%= button_to update_folder_recording_session_path(session),
+                                params: { folder_id: folder.id },
+                                method: :patch,
+                                class: "dropdown-item session-dropdown-item sidebar-folder-option" do %>
+                    <i class="fa-solid fa-folder"></i> <%= folder.name %>
+                  <% end %>
+                <% end %>
+
+                <% if @user_folders.empty? && session.folder.nil? %>
+                  <span class="dropdown-item session-dropdown-item disabled sidebar-folder-option">
+                    No folders yet
+                  </span>
+                <% end %>
+
+                <%= link_to new_folder_path(session_id: session.id),
+                            class: "dropdown-item session-dropdown-item sidebar-folder-option sidebar-folder-option--new" do %>
+                  <i class="fa-solid fa-plus"></i> New folder
+                <% end %>
+              </li>
+
               <li><hr class="dropdown-divider"></li>
               <li>
                 <%= button_to recording_session_path(session),

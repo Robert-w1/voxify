@@ -1,0 +1,45 @@
+<%# Folder picker popup — rendered inside a folder-picker Stimulus controller element.
+    Requires: `session` local (the RecordingSession record)
+    Requires: `@user_folders` (loaded via ApplicationController#set_sidebar_data) %>
+
+<div class="folder-picker-popup" hidden data-folder-picker-target="popup">
+
+  <% if session.folder.present? %>
+    <div class="folder-picker-current text-caption">
+      <i class="fa-solid fa-folder"></i> <%= session.folder.name %>
+    </div>
+    <%= button_to update_folder_recording_session_path(session),
+                  params: { folder_id: "" },
+                  method: :patch,
+                  class: "folder-picker-item folder-picker-item--remove",
+                  form: { data: { turbo_frame: "_top" } } do %>
+      <i class="fa-solid fa-folder-minus"></i> Remove from folder
+    <% end %>
+    <div class="folder-picker-divider"></div>
+  <% end %>
+
+  <% other_folders = @user_folders.reject { |f| f.id == session.folder_id } %>
+
+  <% if other_folders.any? %>
+    <% other_folders.each do |folder| %>
+      <%= button_to update_folder_recording_session_path(session),
+                    params: { folder_id: folder.id },
+                    method: :patch,
+                    class: "folder-picker-item",
+                    form: { data: { turbo_frame: "_top" } } do %>
+        <i class="fa-solid fa-folder"></i> <%= folder.name %>
+      <% end %>
+    <% end %>
+    <div class="folder-picker-divider"></div>
+  <% elsif session.folder.nil? %>
+    <div class="folder-picker-empty text-caption">No folders yet</div>
+    <div class="folder-picker-divider"></div>
+  <% end %>
+
+  <%= link_to new_folder_path(session_id: session.id),
+              class: "folder-picker-item folder-picker-item--new",
+              data: { turbo_frame: "_top" } do %>
+    <i class="fa-solid fa-plus"></i> New folder
+  <% end %>
+
+</div>
