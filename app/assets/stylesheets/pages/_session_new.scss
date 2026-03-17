@@ -86,8 +86,12 @@
 
 .option-grid {
   display:               grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap:                   8px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   > div {
     display: flex;

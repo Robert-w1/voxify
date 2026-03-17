@@ -193,6 +193,82 @@
   to { transform: rotate(360deg); }
 }
 
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(226, 75, 74, 0.15); }
+  50%       { box-shadow: 0 0 0 8px rgba(226, 75, 74, 0.25); }
+}
+
+@keyframes countdownPop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  50%  { transform: scale(1.1); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+// ── Record button ──
+
+.record-btn {
+  width:           72px;
+  height:          72px;
+  border-radius:   50%;
+  background:      #E24B4A;
+  border:          none;
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  box-shadow:      0 0 0 4px rgba(226, 75, 74, 0.15);
+  transition:      box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 0 0 6px rgba(226, 75, 74, 0.2);
+  }
+
+  &--active {
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+}
+
+.record-btn__icon {
+  width:         24px;
+  height:        24px;
+  border-radius: 50%;
+  background:    white;
+  display:       block;
+  transition:    border-radius 0.15s ease;
+}
+
+// ── Review buttons ──
+
+.review-btn {
+  width:           44px;
+  height:          44px;
+  border-radius:   50%;
+  background:      transparent;
+  border:          2px solid $color-border;
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  cursor:          pointer;
+  color:           $color-heading;
+  transition:      background-color $transition, border-color $transition;
+
+  &:hover {
+    background-color: $color-bg;
+    border-color:     $color-caption;
+  }
+
+  &--primary {
+    background:   #0D7377;
+    border-color: #0D7377;
+    color:        white;
+
+    &:hover {
+      background:   darken(#0D7377, 8%);
+      border-color: darken(#0D7377, 8%);
+    }
+  }
+}
+
 // ── State 4: Completed (Report) ──
 
 // Overall score circle

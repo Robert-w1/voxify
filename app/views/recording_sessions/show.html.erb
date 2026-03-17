@@ -1,168 +1,171 @@
 <div class="container-app py-5"
      data-controller="recorder"
      data-recorder-session-id-value="<%= @recording_session.id %>"
-     data-recorder-max-duration-value="30"
-     data-recorder-focuses-value="<%= @recording_session.focus.reject(&:blank?).to_json %>"
      data-recorder-initial-status-value="<%= @recording_session.status %>"
      <% if @report_json %>data-recorder-initial-report-value="<%= @report_json %>"<% end %>>
-
 
   <div class="row justify-content-center">
     <div class="col-lg-8">
 
-      <%# ── TITLE (editable) ── %>
+      <%# ── TITLE ── %>
       <div class="session-title-row mb-4">
-        <div data-recorder-target="titleDisplay" class="d-flex align-items-center gap-2">
-          <h1 class="mb-0"><%= @recording_session.title %></h1>
-          <button class="btn btn-secondary btn-sm"
-                  data-action="click->recorder#editTitle"
-                  aria-label="Edit session title">
+        <div class="d-flex align-items-center gap-2">
+          <h1 class="mb-0"
+              data-recorder-target="titleDisplay"
+              data-action="blur->recorder#saveTitle keydown->recorder#titleKeydown"><%= @recording_session.title.split(' - ').first %></h1>
+          <button data-action="click->recorder#editTitle"
+                  class="btn btn-secondary btn-sm" aria-label="Edit session title">
             <i class="fa fa-pencil"></i>
           </button>
         </div>
-
-        <div data-recorder-target="titleEdit" hidden class="d-flex align-items-center gap-2">
-          <input type="text"
-                 id="session-title-input"
-                 name="session_title"
-                 value="<%= @recording_session.title %>"
-                 class="input-field"
-                 data-recorder-target="titleInput"
-                 data-action="keydown.enter->recorder#saveTitle keydown.escape->recorder#cancelEditTitle"
-                 style="max-width: 500px;" />
-          <button class="btn btn-primary btn-sm" data-action="click->recorder#saveTitle">Save</button>
-          <button class="btn btn-secondary btn-sm" data-action="click->recorder#cancelEditTitle">Cancel</button>
-        </div>
+        <p class="text-caption mb-0"><%= @recording_session.created_at.strftime('%b %d, %Y %I:%M %p') %></p>
       </div>
 
       <%# ── SESSION CARD ── %>
       <div class="session-card info-card p-4">
 
-        <%# ──────────────────────────────────────── %>
-        <%# STATE 1 : READY                         %>
-        <%# ──────────────────────────────────────── %>
-        <div data-recorder-target="stateReady">
-
-          <div class="session-ready-prompt text-center py-5">
-            <div class="session-ready-icon mb-3">
-              <i class="fa fa-microphone" aria-hidden="true"></i>
-            </div>
-            <h2 class="mb-2">Ready to record</h2>
-            <p class="text-caption">Hit record to start your session, or upload an existing recording.</p>
-          </div>
-
-          <div class="session-controls d-flex justify-content-center gap-3 mt-3">
-            <button class="btn btn-primary btn-lg px-5"
-                    data-action="click->recorder#startRecording">
-              <i class="fa fa-circle" aria-hidden="true"></i>
-              Record
-            </button>
-
-            <button class="btn btn-secondary btn-lg px-4"
-                    data-action="click->recorder#triggerUpload">
-              <i class="fa fa-upload" aria-hidden="true"></i>
-              Upload
-            </button>
-            <input type="file"
-                   accept="audio/*"
-                   hidden
-                   data-recorder-target="uploadInput"
-                   data-action="change->recorder#handleUpload" />
+        <%# ── Top bar: state label + context chips ── %>
+        <div class="d-flex justify-content-between align-items-start mb-4">
+          <span data-recorder-target="stateLabel"
+                class="text-muted small text-uppercase"
+                style="letter-spacing: 0.05em;">
+            Ready to record
+          </span>
+          <div class="d-flex gap-2">
+            <span class="badge bg-light text-muted border">
+              <%= @recording_session.presentation_type&.titleize %>
+            </span>
+            <% @recording_session.focus.reject(&:blank?).each do |f| %>
+              <span class="badge bg-light text-muted border">
+                <%= f.titleize %> focus
+              </span>
+            <% end %>
           </div>
         </div>
 
-        <%# ──────────────────────────────────────── %>
-        <%# STATE 2 : RECORDING / PAUSED            %>
-        <%# ──────────────────────────────────────── %>
-        <div data-recorder-target="stateRecording" hidden>
+        <%# ── Timer (shown in recording + review) ── %>
+        <div data-recorder-target="timerDisplay" class="text-center mb-3" hidden>
+          <span data-recorder-target="timer"
+                class="timer-display"
+                style="font-size: 36px; font-variant-numeric: tabular-nums;">
+            0:00
+          </span>
+        </div>
 
-          <%# Waveform %>
-          <div class="session-waveform-wrapper mb-4">
-            <canvas data-recorder-target="waveformCanvas"
-                    class="session-waveform-canvas"
-                    width="700" height="120"></canvas>
+        <%# ── Countdown ── %>
+        <div data-recorder-target="countdownArea" class="text-center py-4" hidden>
+          <div data-recorder-target="countdown"
+               style="font-size: 56px; font-weight: 700; color: #0D7377; line-height: 1;">
+            3
           </div>
+          <button data-action="click->recorder#skipCountdown"
+                  class="btn btn-link text-muted small mt-3"
+                  style="text-decoration: none;">
+            Tap to skip
+          </button>
+        </div>
 
-          <%# Timer %>
-          <div class="session-timer text-center mb-4">
-            <span data-recorder-target="timer" class="timer-display">00:00</span>
-            <span class="timer-limit text-caption"> / 00:30</span>
+        <%# ── Waveform ── %>
+        <div data-recorder-target="waveformWrapper"
+             class="session-waveform-wrapper mb-4"
+             style="opacity: 0.2; transition: opacity 0.3s ease;">
+          <canvas data-recorder-target="waveformCanvas"
+                  class="session-waveform-canvas"
+                  width="700" height="120"></canvas>
+        </div>
+
+        <%# ── Mic permission prompt (shown when access not yet granted) ── %>
+        <div data-recorder-target="micGrantArea" class="text-center mb-4" hidden>
+          <p class="text-muted small mb-3">
+            Microphone access is required to record.<br>
+            Click below to grant permission.
+          </p>
+          <button data-action="click->recorder#requestMicAccess"
+                  class="btn btn-primary">
+            <i class="fa fa-microphone me-2"></i>Grant microphone access
+          </button>
+        </div>
+
+        <%# ── Record button (ready + recording states) ── %>
+        <div data-recorder-target="recordButtonArea" class="text-center mb-4">
+          <button data-recorder-target="recordButton"
+                  data-action="click->recorder#handleRecordButton"
+                  aria-label="Record"
+                  class="record-btn">
+            <span data-recorder-target="recordIcon" class="record-btn__icon"></span>
+          </button>
+          <div data-recorder-target="buttonLabel" class="text-muted small mt-2">
+            Tap to record
           </div>
+        </div>
 
-          <%# Controls %>
-          <div class="session-controls d-flex justify-content-center gap-3 mb-4">
-            <%# Pause / Resume %>
-            <button class="btn-control btn-control--pause"
-                    data-recorder-target="pauseButton"
-                    data-action="click->recorder#pauseRecording"
-                    aria-label="Pause recording">
-              <i class="fa fa-pause"></i>
-            </button>
+        <%# ── Mic selector (ready + recording states) ── %>
+        <div data-recorder-target="micBar"
+             class="session-mic-bar d-flex align-items-center justify-content-center gap-2 mb-4">
+          <i class="fa fa-microphone text-caption"></i>
+          <select id="mic-select"
+                  name="mic_device"
+                  class="select-input select-input--sm"
+                  data-recorder-target="micSelect"
+                  data-action="change->recorder#switchMic">
+            <option>Default microphone</option>
+          </select>
+        </div>
 
-            <button class="btn-control btn-control--resume"
-                    data-recorder-target="resumeButton"
-                    data-action="click->recorder#resumeRecording"
-                    aria-label="Resume recording"
-                    hidden>
-              <i class="fa fa-play"></i>
-            </button>
+        <%# ── Upload option (ready state only) ── %>
+        <div data-recorder-target="uploadArea" class="text-center mb-3">
+          <div class="text-muted small mb-2" style="letter-spacing: 0.03em;">or</div>
+          <button data-action="click->recorder#triggerFileUpload"
+                  class="btn btn-outline-secondary btn-sm">
+            <i class="fa fa-upload me-1"></i>Upload audio file
+          </button>
+          <input type="file"
+                 accept="audio/*"
+                 data-recorder-target="fileInput"
+                 data-action="change->recorder#handleFileSelected"
+                 style="display: none;" />
+        </div>
 
-            <%# Stop %>
-            <button class="btn-control btn-control--stop"
-                    data-action="click->recorder#stopRecording"
-                    aria-label="Stop recording">
-              <i class="fa fa-stop"></i>
-            </button>
-
-            <%# Restart (only when paused) %>
-            <button class="btn-control btn-control--restart"
-                    data-recorder-target="restartButton"
-                    data-action="click->recorder#restartRecording"
-                    aria-label="Restart recording"
-                    hidden>
-              <i class="fa fa-undo"></i>
-            </button>
-          </div>
-
-          <%# Mic selector + Speaker coach %>
-          <div class="session-mic-bar d-flex align-items-center justify-content-center gap-3">
-            <div class="d-flex align-items-center gap-2">
-              <i class="fa fa-microphone text-caption"></i>
-              <select id="mic-select"
-                      name="mic_device"
-                      class="select-input select-input--sm"
-                      data-recorder-target="micSelect"
-                      data-action="change->recorder#switchMic">
-                <option>Default - Microphone</option>
-              </select>
+        <%# ── Review controls (review state) ── %>
+        <div data-recorder-target="reviewControls" class="text-center" hidden>
+          <div class="d-flex justify-content-center gap-4">
+            <div class="text-center">
+              <button data-action="click->recorder#reRecord"
+                      aria-label="Re-record"
+                      class="review-btn">
+                <i class="fa fa-times"></i>
+              </button>
+              <div class="text-muted small mt-1">Re-record</div>
             </div>
-
-            <div class="mic-bar-divider"></div>
-
-            <div class="d-flex align-items-center gap-2 text-caption">
-              <i class="fa fa-commenting-o"></i>
-              <span>Speaker coach: Off</span>
+            <div class="text-center">
+              <button data-action="click->recorder#playRecording"
+                      aria-label="Play recording"
+                      class="review-btn">
+                <i class="fa fa-play"></i>
+              </button>
+              <div class="text-muted small mt-1">Play</div>
+            </div>
+            <div class="text-center">
+              <button data-action="click->recorder#submitRecording"
+                      aria-label="Analyze recording"
+                      class="review-btn review-btn--primary">
+                <i class="fa fa-check"></i>
+              </button>
+              <div class="text-muted small mt-1">Analyze</div>
             </div>
           </div>
         </div>
 
-        <%# ──────────────────────────────────────── %>
-        <%# STATE 3 : PROCESSING                    %>
-        <%# ──────────────────────────────────────── %>
-        <div data-recorder-target="stateProcessing" hidden>
-
-          <div class="session-processing text-center py-5">
-            <div class="processing-spinner mb-4">
-              <div class="spinner-ring"></div>
-            </div>
-            <h3 class="mb-2">RECORDING IS BEING PROCESSED</h3>
-            <p class="text-caption">Travis is analyzing your session. This usually takes a moment.</p>
+        <%# ── Processing indicator ── %>
+        <div data-recorder-target="processingIndicator" class="text-center py-5" hidden>
+          <div class="processing-spinner mb-4">
+            <div class="spinner-ring"></div>
           </div>
+          <p class="mb-1" style="font-size: 14px; color: #6c757d;">Analyzing your delivery...</p>
+          <p class="mb-0" style="font-size: 12px; color: #adb5bd;">This usually takes 10–15 seconds</p>
         </div>
 
-        <%# ──────────────────────────────────────── %>
-        <%# STATE 4 : COMPLETED (REPORT)            %>
-        <%# ──────────────────────────────────────── %>
+        <%# ── Completed (Report) ── %>
         <div data-recorder-target="stateCompleted" hidden>
 
           <%# Overall score %>
@@ -201,25 +204,6 @@
             <% end %>
           </div>
         </div>
-      </div>
-
-      <%# ── BOTTOM ACTION (context-dependent) ── %>
-      <div class="mt-3">
-        <button class="btn btn-secondary w-100"
-                data-recorder-target="startOverButton"
-                data-action="click->recorder#startOver"
-                hidden>
-          <i class="fa fa-undo"></i>
-          Start over
-        </button>
-
-        <button class="btn btn-secondary w-100"
-                data-recorder-target="tryAgainButton"
-                data-action="click->recorder#tryAgain"
-                hidden>
-          <i class="fa fa-refresh"></i>
-          Try again
-        </button>
       </div>
 
     </div>
