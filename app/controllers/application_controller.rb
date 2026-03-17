@@ -32,6 +32,7 @@ class ApplicationController < ActionController::Base
     return unless user_signed_in?
 
     @recent_sessions = current_user.recording_sessions.order(created_at: :desc).limit(10)
+    @user_folders = current_user.folders.order(name: :asc)
   end
 
 end

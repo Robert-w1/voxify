@@ -49,11 +49,20 @@ export default class extends Controller {
   }
 
   async _fetch(q) {
-    const res = await fetch(`/sessions.json?q=${encodeURIComponent(q)}`, {
-      headers: { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" }
-    })
-    const results = await res.json()
-    this._render(results)
+    const headers = { "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" }
+    const encoded = encodeURIComponent(q)
+
+    const [sessionsRes, foldersRes] = await Promise.all([
+      fetch(`/sessions.json?q=${encoded}`, { headers }),
+      fetch(`/folders.json?q=${encoded}`, { headers })
+    ])
+
+    const [sessions, folders] = await Promise.all([
+      sessionsRes.json(),
+      foldersRes.json()
+    ])
+
+    this._render([...folders, ...sessions])
   }
 
   _render(results) {

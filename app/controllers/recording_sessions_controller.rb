@@ -1,7 +1,7 @@
 class RecordingSessionsController < ApplicationController
   before_action :authenticate_user!
   before_action :enable_sidebar
-  before_action :set_recording_session, only: [:show, :edit, :update, :destroy, :download_pdf]
+  before_action :set_recording_session, only: [:show, :edit, :update, :destroy, :download_pdf, :update_folder]
 
   def new
     @recording_session = RecordingSession.new
@@ -75,6 +75,12 @@ class RecordingSessionsController < ApplicationController
   def destroy
     @recording_session.destroy
     redirect_to recording_sessions_path
+  end
+
+  def update_folder
+    folder_id = params[:folder_id].presence
+    @recording_session.update(folder_id: folder_id)
+    redirect_back_or_to recording_sessions_path
   end
 
   private

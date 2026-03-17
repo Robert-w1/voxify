@@ -1,0 +1,54 @@
+<div class="auth-page">
+  <div class="auth-card p-5">
+
+    <div class="folder-form__header">
+      <i class="fa-solid fa-folder-plus folder-form__icon"></i>
+      <h1>New folder</h1>
+      <p class="text-caption">Organise your sessions into a folder.</p>
+    </div>
+
+    <%= form_with model: @folder, url: folders_path, class: "folder-form" do |f| %>
+
+      <% if @folder.errors.any? %>
+        <div class="folder-form__errors">
+          <% @folder.errors.full_messages.each do |msg| %>
+            <p><%= msg %></p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="form-inputs">
+        <div class="input">
+          <%= f.label :name, "Folder name", class: "folder-form__label" %>
+          <%= f.text_field :name,
+                           class: "input-field folder-form__input",
+                           placeholder: "e.g. Interview prep",
+                           autofocus: true,
+                           required: true %>
+        </div>
+
+        <div class="input">
+          <div class="folder-form__label-row">
+            <%= f.label :description, "Description", class: "folder-form__label" %>
+            <span class="text-caption">Optional</span>
+          </div>
+          <%= f.text_area :description,
+                          class: "input-field folder-form__input folder-form__textarea",
+                          placeholder: "What are these sessions for?",
+                          rows: 3 %>
+        </div>
+      </div>
+
+      <% if @session_id.present? %>
+        <%= hidden_field_tag :session_id, @session_id %>
+      <% end %>
+
+      <div class="form-actions">
+        <%= f.submit "Create folder", class: "btn btn-primary me-2" %>
+        <%= link_to "Cancel", folders_path, class: "btn btn-secondary" %>
+      </div>
+
+    <% end %>
+
+  </div>
+</div>
