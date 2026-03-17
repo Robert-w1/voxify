@@ -53,6 +53,7 @@ class TranscribeRecordingJob < ApplicationJob
     raise "Deepgram API error: #{body["err_msg"]}" if body["error"]
 
     alternative = body.dig("results", "channels", 0, "alternatives", 0)
+    raise "Deepgram returned no transcription — audio may be empty or too short" if alternative.nil?
 
     {
       "transcript" => alternative["transcript"],

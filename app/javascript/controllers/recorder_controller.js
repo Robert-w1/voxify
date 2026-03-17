@@ -4,25 +4,33 @@ import { Controller } from "@hotwired/stimulus"
 // State machine: ready → countdown → recording → review → processing → completed
 export default class extends Controller {
   static targets = [
+    "stateReady", "stateRecording", "stateProcessing", "stateCompleted",
+    "waveformCanvas", "timer", "micSelect",
+    "pauseButton", "resumeButton", "restartButton",
+    "uploadInput",
+    "titleDisplay", "titleEdit", "titleInput",
+    "overallScore", "reportSummary", "reportStrengths", "reportImprovements",
+    "reportFocus", "reportMetrics",
+    "startOverButton", "tryAgainButton",
+    "downloadButton",
     "stateLabel",
-    "timerDisplay", "timer",
+    "timerDisplay",
     "countdownArea", "countdown",
-    "waveformWrapper", "waveformCanvas",
+    "waveformWrapper",
     "recordButtonArea", "recordButton", "recordIcon", "buttonLabel",
-    "micBar", "micSelect",
+    "micBar",
     "micGrantArea",
     "uploadArea", "fileInput",
     "reviewControls",
-    "processingIndicator",
-    "stateCompleted",
-    "overallScore", "reportSummary", "reportScores", "reportMetrics",
-    "titleDisplay"
+    "processingIndicator"
   ]
 
   static values = {
     sessionId:     Number,
     initialStatus: { type: String, default: "" },
     initialReport: { type: Object, default: {} },
+    pdfStatusUrl: { type: String, default: "" },
+    reportStatusUrl: { type: String, default: "" },
   }
 
   // ────────────────────────────────────────
@@ -44,9 +52,15 @@ export default class extends Controller {
   disconnect() {
     this._stopWaveformLoop()
     this._stopTimer()
+    this._stopReportPolling()
+    this._stopPdfPolling()
+    if (this.stream) {
+      this.stream.getTracks().forEach(t => t.stop())
+    }
+    if (this.audioContext) {
+      this.audioContext.close()
+    }
     if (this.countdownInterval) clearInterval(this.countdownInterval)
-    if (this.stream) this.stream.getTracks().forEach(t => t.stop())
-    if (this.audioContext) this.audioContext.close()
   }
 
   // ────────────────────────────────────────
@@ -59,6 +73,7 @@ export default class extends Controller {
 
     if (status === "processing") {
       this._transitionTo("processing")
+      this._startReportPolling()
     } else if (status === "completed") {
       if (report && Object.keys(report).length > 0) {
         this.reportData = report
@@ -122,6 +137,19 @@ export default class extends Controller {
     this.reviewControlsTarget.hidden     = (state !== "review")
     this.processingIndicatorTarget.hidden = (state !== "processing")
     this.stateCompletedTarget.hidden      = (state !== "completed")
+
+    // Keep sidebar status dot in sync without a page refresh.
+    // Rails dom_id(session, :sidebar_title) → "sidebar_title_recording_session_<id>"
+    const sidebarStatusMap = {
+      recording:  "recording",
+      processing: "processing",
+      completed:  "completed",
+    }
+    if (sidebarStatusMap[state]) {
+      const frame = document.getElementById(`sidebar_title_recording_session_${this.sessionIdValue}`)
+      const dot   = frame?.querySelector(".status-dot")
+      if (dot) dot.className = `status-dot status-dot--${sidebarStatusMap[state]}`
+    }
   }
 
   // ────────────────────────────────────────
@@ -400,15 +428,7 @@ export default class extends Controller {
 
       if (!response.ok) throw new Error(`Upload failed: ${response.status}`)
 
-      const data = await response.json()
-      this.reportData = data.report
-
-      if (data.suggested_title) {
-        this._updateTitleDisplay(data.suggested_title)
-      }
-
-      this._renderReport(data.report)
-      this._transitionTo("completed")
+      this._startReportPolling()
 
     } catch (err) {
       console.error("Upload error:", err)
@@ -555,6 +575,11 @@ export default class extends Controller {
       })
 
       if (!response.ok) throw new Error(`Save failed: ${response.status}`)
+
+      // Update sidebar label instantly without a page refresh
+      const frame = document.getElementById(`sidebar_title_recording_session_${this.sessionIdValue}`)
+      const label = frame?.querySelector(".recent-label")
+      if (label) label.textContent = newTitle
     } catch (err) {
       console.error("Title save error:", err)
       el.textContent = this._titleOriginal
@@ -567,80 +592,168 @@ export default class extends Controller {
   }
 
   // ────────────────────────────────────────
+  // START OVER / TRY AGAIN
+  // ────────────────────────────────────────
+
+  startOver() { this._transitionTo("ready") }
+  tryAgain()   { this._transitionTo("ready") }
+
+  // ────────────────────────────────────────
+  // REPORT STATUS POLLING
+  // ────────────────────────────────────────
+
+  _startReportPolling() {
+    this._stopReportPolling()
+    this.reportPollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(this.reportStatusUrlValue, {
+          headers: { "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content }
+        })
+        const data = await response.json()
+
+        if (data.status === "completed") {
+          this._stopReportPolling()
+          this.reportData = data.report
+          this._renderReport(data.report)
+          this._transitionTo("completed")
+        } else if (data.status === "failed") {
+          this._stopReportPolling()
+          alert("Something went wrong processing your recording. Please try again.")
+          this._transitionTo("ready")
+        }
+      } catch (err) {
+        console.error("Report status check failed:", err)
+      }
+    }, 3000)
+  }
+
+  _stopReportPolling() {
+    if (this.reportPollInterval) {
+      clearInterval(this.reportPollInterval)
+      this.reportPollInterval = null
+    }
+  }
+
+  // ────────────────────────────────────────
+  // PDF STATUS POLLING
+  // ────────────────────────────────────────
+
+  _setPdfButtonState(ready) {
+    if (!this.hasDownloadButtonTarget) return
+    const btn = this.downloadButtonTarget
+    if (ready) {
+      btn.removeAttribute("disabled")
+      btn.style.pointerEvents = ""
+      btn.style.opacity = ""
+      btn.innerHTML = '<i class="fa fa-download"></i> Download full report'
+    } else {
+      btn.setAttribute("disabled", "disabled")
+      btn.style.pointerEvents = "none"
+      btn.style.opacity = "0.6"
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Generating PDF...'
+    }
+  }
+
+  _startPdfPolling() {
+    this._stopPdfPolling()
+    this.pdfPollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(this.pdfStatusUrlValue, {
+          headers: { "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content }
+        })
+        const data = await response.json()
+        if (data.ready) {
+          this._stopPdfPolling()
+          this._setPdfButtonState(true)
+        }
+      } catch (err) {
+        console.error("PDF status check failed:", err)
+      }
+    }, 3000)
+  }
+
+  _stopPdfPolling() {
+    if (this.pdfPollInterval) {
+      clearInterval(this.pdfPollInterval)
+      this.pdfPollInterval = null
+    }
+  }
+
+  // ────────────────────────────────────────
   // REPORT RENDERING
   // ────────────────────────────────────────
 
   _renderReport(report) {
     if (!report) return
 
-    // Overall score
-    const scoreEl  = this.overallScoreTarget
+    // PDF button
+    this._setPdfButtonState(report.pdf_ready || false)
+    if (!report.pdf_ready) this._startPdfPolling()
+
+    // Overall score (1-100)
+    const scoreEl = this.overallScoreTarget
     const scoreNum = scoreEl.querySelector(".score-number")
     scoreNum.textContent = report.overall_score
-    scoreEl.className    = `report-overall-score ${this._scoreClass(report.overall_score)}`
+    scoreEl.className = `report-overall-score flex-shrink-0 ${this._overallScoreClass(report.overall_score)}`
 
     // Summary
-    this.reportSummaryTarget.innerHTML = `
-      <h4 class="mb-2">Summary</h4>
-      <p>${report.summary}</p>
+    this.reportSummaryTarget.innerHTML = `<p class="mb-0">${report.summary || ""}</p>`
+
+    // Strengths
+    const strengths = report.top_strengths || []
+    this.reportStrengthsTarget.innerHTML = `
+      <div class="insight-header mb-3">
+        <span class="insight-icon insight-icon--success"><i class="fa fa-star"></i></span>
+        <h5 class="mb-0">Strengths</h5>
+      </div>
+      <ul class="report-insight-list">
+        ${strengths.map(s => `<li>${s}</li>`).join("")}
+      </ul>
     `
 
-    // Focus feedbacks
-    const scoresContainer = this.reportScoresTarget
-    scoresContainer.innerHTML = ""
+    // Improvements
+    const improvements = report.top_improvements || []
+    this.reportImprovementsTarget.innerHTML = `
+      <div class="insight-header mb-3">
+        <span class="insight-icon insight-icon--accent"><i class="fa fa-arrow-up"></i></span>
+        <h5 class="mb-0">To Improve</h5>
+      </div>
+      <ul class="report-insight-list">
+        ${improvements.map(i => `<li>${i}</li>`).join("")}
+      </ul>
+    `
 
-    const feedbacks = report.focus_feedbacks || {}
-    Object.entries(feedbacks).forEach(([key, data]) => {
-      const card = document.createElement("div")
-      card.className = "report-score-card info-card p-3 mb-3"
-
-      let detailsHtml = ""
-      if (data.details) {
-        if (key === "filler_words" && data.details.words) {
-          detailsHtml = `
-            <div class="score-details mt-2">
-              <span class="text-caption">Count: <strong>${data.details.count}</strong></span>
-              <div class="filler-word-tags mt-1">
-                ${data.details.words.map(w =>
-                  `<span class="filler-tag">${w.word} <span class="text-caption">&times;${w.count}</span></span>`
-                ).join("")}
-              </div>
-            </div>
-          `
-        }
-        if (key === "pace" && data.details.wpm) {
-          detailsHtml = `
-            <div class="score-details mt-2">
-              <span class="text-caption">${data.details.wpm} words per minute</span>
-            </div>
-          `
-        }
-      }
-
-      card.innerHTML = `
-        <div class="d-flex justify-content-between align-items-start mb-2">
-          <h4 class="mb-0">${this._formatLabel(key)}</h4>
-          <span class="score-badge ${this._scoreClass(data.score)}">${data.score}</span>
+    // Recommended focus
+    const focus = report.recommended_focus || ""
+    const focusData = (report.focus_feedbacks || {})[focus]
+    const focusScore = focusData?.score
+    const focusWhy = focusData?.summary || ""
+    this.reportFocusTarget.innerHTML = `
+      <div class="report-focus-card">
+        <div class="insight-header mb-2">
+          <span class="insight-icon insight-icon--primary"><i class="fa fa-bullseye"></i></span>
+          <h5 class="mb-0">Recommended Focus</h5>
         </div>
-        <div class="score-bar-track">
-          <div class="score-bar-fill ${this._scoreClass(data.score)}" style="width: ${data.score}%"></div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="focus-category-label">${this._formatLabel(focus)}</span>
+          ${focusScore != null ? `<span class="score-badge ${this._scoreClass(focusScore)}">${focusScore} / 10</span>` : ""}
         </div>
-        <p class="text-caption mt-2 mb-0">${data.feedback}</p>
-        ${detailsHtml}
-      `
-      scoresContainer.appendChild(card)
-    })
+        ${focusWhy ? `<p class="text-caption mb-0">${focusWhy}</p>` : ""}
+      </div>
+    `
 
-    // Metrics bar
+    // Metrics
     if (report.metrics) {
+      const dur = report.metrics.duration_seconds
+      const durLabel = dur >= 60 ? `${Math.floor(dur / 60)}m ${dur % 60}s` : `${dur}s`
       this.reportMetricsTarget.innerHTML = `
         <div class="report-metric text-center">
-          <span class="metric-value">${report.metrics.duration_seconds}s</span>
+          <span class="metric-value">${durLabel}</span>
           <span class="text-caption">Duration</span>
         </div>
         <div class="report-metric text-center">
           <span class="metric-value">${report.metrics.words_per_minute}</span>
-          <span class="text-caption">Words/min</span>
+          <span class="text-caption">Words / min</span>
         </div>
         <div class="report-metric text-center">
           <span class="metric-value">${report.metrics.filler_word_count}</span>
@@ -650,9 +763,15 @@ export default class extends Controller {
     }
   }
 
-  _scoreClass(score) {
+  _overallScoreClass(score) {
     if (score >= 80) return "score-high"
     if (score >= 60) return "score-mid"
+    return "score-low"
+  }
+
+  _scoreClass(score) {
+    if (score >= 8) return "score-high"
+    if (score >= 6) return "score-mid"
     return "score-low"
   }
 

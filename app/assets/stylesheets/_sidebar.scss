@@ -239,7 +239,13 @@
 
   &--recording {
     background-color: #E05C5C;
+    animation: dot-pulse 1.2s ease-in-out infinite;
   }
+}
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.15; }
 }
 
 // ── Recent item with inline action buttons ────────────────────
