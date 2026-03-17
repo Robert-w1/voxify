@@ -7,11 +7,25 @@ class PdfReportService
   BLACK   = "1C1C1C"
   MUTED   = "6B6B6B"
   BORDER  = "DDD8D0"
-  HIGH    = "16A34A"   # score ≥ 80
-  MID     = "D97706"   # score ≥ 60
-  LOW     = "DC2626"   # score  < 60
+  HIGH    = "16A34A"   # score ≥ 8 (per-category) or ≥ 80 (overall)
+  MID     = "D97706"   # score ≥ 6 / ≥ 60
+  LOW     = "DC2626"   # score  < 6 / < 60
   BAR_BG  = "E5E7EB"
   WHITE   = "FFFFFF"
+  FOCUS_ACCENT = "0D7377"   # teal header for user-chosen focus sections
+
+  # Maps the 9 user-facing focus options → LLM category keys
+  FOCUS_TO_CATEGORY = {
+    "filler_words" => "delivery_context",
+    "tone"         => "delivery_context",
+    "pace"         => "delivery_context",
+    "clarity"      => "clarity",
+    "confidence"   => "confidence",
+    "vocabulary"   => "word_choice",
+    "conciseness"  => "conciseness",
+    "engagement"   => "engagement",
+    "storytelling" => "engagement"
+  }.freeze
 
   def initialize(session, recording, report)
     @session   = session
@@ -32,11 +46,13 @@ class PdfReportService
     divider
     render_summary
     divider
+    render_strengths_improvements
+    divider
     render_feedback
     divider
     render_metrics
     divider
-    render_transcript_excerpt
+    render_transcript
     render_footer
 
     @pdf.render
@@ -50,19 +66,21 @@ class PdfReportService
 
   def summary_text
     return @report.summary.to_s unless @report.summary.is_a?(Hash)
-    @report.summary["text"].to_s
+    @report.summary["summary"].to_s
   end
 
   def overall_score
-    @report.llm_raw_response&.dig("overall_score") || begin
+    @report.summary&.dig("score") || begin
       scores = (@report.focus_feedbacks || {}).values
                  .filter_map { |v| v["score"].to_i if v.is_a?(Hash) }
-      scores.any? ? (scores.sum.to_f / scores.size).round : 0
+      scores.any? ? ((scores.sum.to_f / scores.size) * 10).round : 0
     end
   end
 
-  def score_color(score)  = score.to_i >= 80 ? HIGH : score.to_i >= 60 ? MID : LOW
-  def score_label(score)  = score.to_i >= 80 ? "Excellent" : score.to_i >= 60 ? "Good" : "Needs work"
+  # overall score is 1-100; per-category scores are 1-10
+  def overall_score_color(score)  = score.to_i >= 80 ? HIGH : score.to_i >= 60 ? MID : LOW
+  def overall_score_label(score)  = score.to_i >= 80 ? "Excellent" : score.to_i >= 60 ? "Good" : "Needs work"
+  def score_color(score)          = score.to_i >= 8 ? HIGH : score.to_i >= 6 ? MID : LOW
 
   def format_duration(seconds)
     seconds >= 60 ? "#{seconds / 60}m #{seconds % 60}s" : "#{seconds}s"
@@ -98,25 +116,36 @@ class PdfReportService
   # ── Sections ─────────────────────────────────────────────────────────────────
 
   def render_header
-    # Brand name (top-left) + date (top-right) on same line
+    logo_top = @pdf.cursor
+    logo_mid  = logo_top - 7
+
+    # Waveform logo bars (mirrored waveform: short, mid, tall, mid, short)
+    bars = [[0, 4], [5, 10], [10, 14], [15, 10], [20, 4]]
+    @pdf.fill_color BRAND
+    bars.each do |x, h|
+      @pdf.fill_rounded_rectangle [x, logo_mid + (h / 2.0)], 3, h, 1.5
+    end
+
+    # Brand name next to logo
     @pdf.fill_color BRAND
     @pdf.text_box "VOXIFY",
-                  at: [0, @pdf.cursor],
-                  width: 80,
+                  at: [28, logo_top],
+                  width: 70,
                   size: 10,
                   style: :bold,
                   character_spacing: 2
 
+    # Date top-right
     @pdf.fill_color MUTED
     @pdf.text_box @session.created_at.strftime("%-d %B %Y · %l:%M %p").strip,
-                  at: [0, @pdf.cursor],
+                  at: [0, logo_top],
                   width: w,
                   size: 8,
                   align: :right
 
-    @pdf.move_down 16
+    @pdf.move_down 22
 
-    # Thick brand-coloured rule under brand line
+    # Thick brand rule
     @pdf.stroke_color BRAND
     @pdf.line_width 1.5
     @pdf.stroke_horizontal_rule
@@ -155,7 +184,7 @@ class PdfReportService
 
   def render_overall_score
     score = overall_score
-    color = score_color(score)
+    color = overall_score_color(score)
 
     section_label "OVERALL SCORE"
     @pdf.move_down 10
@@ -165,7 +194,7 @@ class PdfReportService
     @pdf.move_down 4
 
     @pdf.fill_color MUTED
-    @pdf.text safe("out of 100  -  #{score_label(score)}"), size: 9, align: :center
+    @pdf.text safe("out of 100  -  #{overall_score_label(score)}"), size: 9, align: :center
     @pdf.move_down 6
   end
 
@@ -182,7 +211,25 @@ class PdfReportService
     feedbacks = @report.focus_feedbacks || {}
     return if feedbacks.empty?
 
-    section_label "DETAILED FEEDBACK"
+    # Determine which category keys the user specifically focused on
+    chosen_categories = (@session.focus || [])
+                          .reject(&:blank?)
+                          .map { |f| FOCUS_TO_CATEGORY[f] }
+                          .compact.uniq
+
+    focus_feedbacks = chosen_categories.any? ? feedbacks.select { |k, _| chosen_categories.include?(k) } : {}
+    other_feedbacks = feedbacks.reject { |k, _| chosen_categories.include?(k) }
+
+    if focus_feedbacks.any?
+      render_feedback_section("YOUR FOCUS AREAS", focus_feedbacks, accent: true)
+      divider
+    end
+
+    render_feedback_section("ALL CATEGORIES", other_feedbacks) if other_feedbacks.any?
+  end
+
+  def render_feedback_section(title, feedbacks, accent: false)
+    section_label title
     @pdf.move_down 12
 
     feedbacks.each_with_index do |(key, data), idx|
@@ -194,51 +241,49 @@ class PdfReportService
 
       @pdf.move_down 10 if idx > 0
 
-      # Label (left) + score (right) on the same line
+      # Teal left accent bar for user-chosen focus categories
+      if accent
+        @pdf.fill_color FOCUS_ACCENT
+        @pdf.fill_rounded_rectangle [0, @pdf.cursor + 2], 3, 18, 1.5
+      end
+
+      indent = accent ? 8 : 0
+
       y = @pdf.cursor
       @pdf.fill_color BLACK
-      @pdf.text_box label, at: [0, y], width: w - 75, size: 11, style: :bold
+      @pdf.text_box label, at: [indent, y], width: w - indent - 75, size: 11, style: :bold
       @pdf.fill_color color
-      @pdf.text_box "#{score} / 100", at: [w - 70, y], width: 70,
+      @pdf.text_box "#{score} / 10", at: [w - 70, y], width: 70,
                     size: 11, style: :bold, align: :right
       @pdf.move_down 16
 
-      # Score bar
       bar_y = @pdf.cursor
       @pdf.fill_color BAR_BG
-      @pdf.fill_rounded_rectangle [0, bar_y], w, 5, 2
-      fill_w = [[(score / 100.0 * w).round, 6].max, w].min
+      @pdf.fill_rounded_rectangle [indent, bar_y], w - indent, 5, 2
+      fill_w = [[(score / 10.0 * (w - indent)).round, 6].max, w - indent].min
       @pdf.fill_color color
-      @pdf.fill_rounded_rectangle [0, bar_y], fill_w, 5, 2
+      @pdf.fill_rounded_rectangle [indent, bar_y], fill_w, 5, 2
       @pdf.move_down 11
 
-      # Feedback text
-      if data["feedback"].present?
+      if data["summary"].present?
         @pdf.fill_color MUTED
-        @pdf.text safe(data["feedback"].to_s), size: 9, leading: 3
+        @pdf.text safe(data["summary"].to_s), size: 9, leading: 3
         @pdf.move_down 5
       end
 
-      # Filler words detail
-      if key.to_s == "filler_words" && data.dig("details", "words").present?
-        tags = data.dig("details", "words")
-                   .map { |fw| "#{fw["word"]} ×#{fw["count"]}" }.join("   ")
-        @pdf.fill_color MUTED
-        @pdf.text "Words detected:  #{tags}", size: 8
-        @pdf.move_down 3
-      end
-
-      # Pace detail
-      if key.to_s == "pace" && data.dig("details", "wpm").present?
-        @pdf.fill_color MUTED
-        @pdf.text "#{data.dig("details", "wpm")} words per minute", size: 8
+      # Improvements list for this category
+      improvements = data["improvements"] || []
+      if improvements.any?
+        improvements.each do |item|
+          render_bullet(item, color: MID)
+        end
         @pdf.move_down 3
       end
     end
   end
 
   def render_metrics
-    metrics = @report.llm_raw_response&.dig("metrics") || {}
+    metrics = @report.llm_raw_response&.dig("meta") || {}
 
     items = []
     items << { label: "Duration",    value: format_duration(@recording.duration_seconds) } if @recording&.duration_seconds
@@ -266,22 +311,47 @@ class PdfReportService
     @pdf.move_down 44
   end
 
-  def render_transcript_excerpt
-    excerpt = @report.llm_raw_response&.dig("transcript_excerpt")
+  def render_strengths_improvements
+    strengths    = @report.summary&.dig("top_strengths") || []
+    improvements = @report.summary&.dig("top_improvements") || []
+    return if strengths.empty? && improvements.empty?
 
-    # Fall back to first 60 words of the raw transcript
-    if excerpt.blank? && @recording&.transcript.present?
-      words   = @recording.transcript.split
-      excerpt = words.first(60).join(" ")
-      excerpt += " \u2026" if words.size > 60
+    if strengths.any?
+      section_label "KEY STRENGTHS"
+      @pdf.move_down 8
+      strengths.each do |item|
+        render_bullet(item, color: HIGH)
+      end
+      @pdf.move_down 6
     end
 
-    return if excerpt.blank?
+    if improvements.any?
+      section_label "AREAS TO IMPROVE"
+      @pdf.move_down 8
+      improvements.each do |item|
+        render_bullet(item, color: MID)
+      end
+    end
+  end
 
-    section_label "TRANSCRIPT EXCERPT"
+  def render_bullet(text, color:)
+    y = @pdf.cursor
+    @pdf.fill_color color
+    @pdf.fill_circle [4, y - 4], 2.5
+    @pdf.bounding_box([12, y], width: w - 12) do
+      @pdf.fill_color BLACK
+      @pdf.text safe(text), size: 9, leading: 3
+    end
+    @pdf.move_down 5
+  end
+
+  def render_transcript
+    return if @recording&.transcript.blank?
+
+    section_label "TRANSCRIPT"
     @pdf.move_down 8
     @pdf.fill_color MUTED
-    @pdf.text safe("\"#{excerpt}\""), size: 9, leading: 4, style: :italic
+    @pdf.text safe(@recording.transcript), size: 9, leading: 4
     @pdf.move_down 4
   end
 

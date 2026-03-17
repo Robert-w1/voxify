@@ -32,22 +32,23 @@ class AnalyzeTranscriptJob < ApplicationJob
     # recording.create_report!(llm_raw_response: response.content.first.text)
     # --- End: Use of Anthropic API
 
-    # --- Start: Use of Github API
     client = RubyLLM.chat
     response = client.with_instructions(system_prompt).ask(build_user_message(recording, session))
 
-    recording.create_report!(
-      llm_raw_response: JSON.parse(response.content),
-      # Placeholders
-      summary: {
-        overall_score: 72,
-        strengths: ["Placeholder strength 1", "Placeholder strength 2"],
-        improvements: ["Placeholder improvement 1", "Placeholder improvement 2"],
-        overall_feedback: "Placeholder overall feedback"
-      },
-      focus_feedbacks: { feedback: "This is placeholder focus feedback" }
-      )
-    # --- End: Use of Github API
+    llm_data = parse_llm_json(response.content)
+
+    focus_categories = %w[
+      structure content rhetoric clarity confidence word_choice
+      technical_depth engagement conciseness persuasiveness delivery_context
+    ]
+
+    report = recording.create_report!(
+      llm_raw_response: llm_data,
+      summary:          llm_data["overall"],
+      focus_feedbacks:  llm_data.slice(*focus_categories)
+    )
+
+    GenerateReportPdfJob.perform_later(report.id)
     session.completed!
   rescue => e
     Recording.find_by(id: recording_id)&.recording_session&.failed!
@@ -67,6 +68,16 @@ class AnalyzeTranscriptJob < ApplicationJob
       - context.duration_seconds: #{recording.duration_seconds}
       - context.focus: #{ session.focus.empty? ? [] : session.focus.join(", ")}
     MSG
+  end
+
+  def parse_llm_json(content)
+    JSON.parse(content)
+  rescue JSON::ParserError
+    # Strip markdown fences if present, then extract the outermost {...}
+    cleaned = content.gsub(/\A```(?:json)?\s*/i, "").gsub(/\s*```\z/, "").strip
+    match = cleaned.match(/\{.+\}/m)
+    raise "Could not extract JSON from LLM response" unless match
+    JSON.parse(match[0])
   end
 
   def system_prompt

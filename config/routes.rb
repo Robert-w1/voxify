@@ -6,9 +6,10 @@ Rails.application.routes.draw do
 
   resources :recording_sessions, path: "sessions" do
     resources :recordings, only: [:create]
-    resources :reports, only: [:show]
     member do
       get :download_pdf
+      get :pdf_status
+      get :report_status
       patch :update_folder
     end
   end

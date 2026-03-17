@@ -1,7 +1,9 @@
+require "open-uri"
+
 class RecordingSessionsController < ApplicationController
   before_action :authenticate_user!
   before_action :enable_sidebar
-  before_action :set_recording_session, only: [:show, :edit, :update, :destroy, :update_folder]
+  before_action :set_recording_session, only: [:show, :edit, :update, :destroy, :download_pdf, :pdf_status, :report_status, :update_folder]
 
   def new
     @recording_session = RecordingSession.new
@@ -47,19 +49,57 @@ class RecordingSessionsController < ApplicationController
     @report_json = build_report_json(@report, @recording).to_json if @report
   end
 
+  def report_status
+    recording = @recording_session.recordings.order(created_at: :desc).first
+    report    = recording&.report
+
+    if @recording_session.completed? && report
+      render json: { status: "completed", report: build_report_json(report, recording) }
+    elsif @recording_session.failed?
+      render json: { status: "failed" }
+    else
+      render json: { status: "processing" }
+    end
+  end
+
+  def pdf_status
+    recording = @recording_session.recordings.order(created_at: :desc).first
+    report = recording&.report
+    render json: { ready: report&.pdf_file&.attached? || false }
+  end
+
+  # def download_pdf
+  #   recording = @recording_session.recordings.order(created_at: :desc).first
+  #   report = recording&.report
+
+  #   if report&.pdf_file&.attached?
+  #     # redirect_to url_for(report.pdf_file), allow_other_host: true
+  #     redirect_to Cloudinary::Utils.cloudinary_url("#{Rails.env}/#{report.pdf_file.blob.key}",resource_type: "raw", flags: "attachment:voxify-report-#{report.id}.pdf"), allow_other_host: true
+  #   else
+  #     redirect_to recording_session_path(@recording_session), alert: "PDF not available"
+  #   end
+  # end
+
   def download_pdf
     recording = @recording_session.recordings.order(created_at: :desc).first
     report = recording&.report
 
-    if report.present?
-      pdf_binary = PdfReportService.new(@recording_session, recording, report).generate
-      send_data pdf_binary,
-                filename: "voxify-report-#{report.id}.pdf",
-                type: "application/pdf",
-                disposition: "attachment"
-    else
+    unless report&.pdf_file&.attached?
       redirect_to recording_session_path(@recording_session), alert: "PDF not available"
+      return
     end
+
+    url = Cloudinary::Utils.cloudinary_url(
+      "#{Rails.env}/#{report.pdf_file.blob.key}",
+      resource_type: "raw"
+    )
+
+    pdf_data = URI.open(url, &:read)
+
+    send_data pdf_data,
+              filename: "voxify-report-#{report.id}.pdf",
+              type: "application/pdf",
+              disposition: "attachment"
   end
 
   def edit; end
@@ -88,19 +128,23 @@ class RecordingSessionsController < ApplicationController
   def build_report_json(report, recording)
     feedbacks = report.focus_feedbacks || {}
     scores = feedbacks.values.filter_map { |v| v["score"].to_i if v.is_a?(Hash) }
-    overall = report.llm_raw_response&.dig("overall_score") ||
-              (scores.any? ? (scores.sum.to_f / scores.size).round : 0)
+    overall = report.summary&.dig("score") ||
+              (scores.any? ? ((scores.sum.to_f / scores.size) * 10).round : 0)
 
-    summary_text = report.summary.is_a?(Hash) ? report.summary["text"] : report.summary.to_s
+    summary_text = report.summary.is_a?(Hash) ? report.summary["summary"] : report.summary.to_s
 
     {
       overall_score: overall,
       summary: summary_text,
+      top_strengths: report.summary&.dig("top_strengths") || [],
+      top_improvements: report.summary&.dig("top_improvements") || [],
+      recommended_focus: report.summary&.dig("recommended_focus") || "",
       focus_feedbacks: feedbacks,
+      pdf_ready: report.pdf_file.attached?,
       metrics: {
         duration_seconds: recording&.duration_seconds || 0,
-        words_per_minute: report.llm_raw_response&.dig("metrics", "words_per_minute") || 0,
-        filler_word_count: report.llm_raw_response&.dig("metrics", "filler_word_count") || 0
+        words_per_minute: report.llm_raw_response&.dig("meta", "words_per_minute") || 0,
+        filler_word_count: report.llm_raw_response&.dig("meta", "filler_word_count") || 0
       }
     }
   end

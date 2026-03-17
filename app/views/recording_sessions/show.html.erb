@@ -4,6 +4,8 @@
      data-recorder-max-duration-value="30"
      data-recorder-focuses-value="<%= @recording_session.focus.reject(&:blank?).to_json %>"
      data-recorder-initial-status-value="<%= @recording_session.status %>"
+     data-recorder-pdf-status-url-value="<%= pdf_status_recording_session_path(@recording_session) %>"
+     data-recorder-report-status-url-value="<%= report_status_recording_session_path(@recording_session) %>"
      <% if @report_json %>data-recorder-initial-report-value="<%= @report_json %>"<% end %>>
 
 
@@ -165,37 +167,49 @@
         <%# ──────────────────────────────────────── %>
         <div data-recorder-target="stateCompleted" hidden>
 
-          <%# Overall score %>
-          <div class="report-header text-center mb-4">
-            <div class="report-overall-score" data-recorder-target="overallScore">
+          <%# Score + Summary row %>
+          <div class="report-top d-flex gap-4 align-items-start mb-4">
+            <div class="report-overall-score flex-shrink-0" data-recorder-target="overallScore">
               <span class="score-number">--</span>
-              <span class="score-label text-caption">Overall</span>
+              <span class="score-label">Overall</span>
+            </div>
+            <div class="flex-grow-1 pt-1" data-recorder-target="reportSummary">
+              <p class="text-caption mb-0">Loading...</p>
             </div>
           </div>
 
-          <%# Summary %>
-          <div class="report-summary mb-4" data-recorder-target="reportSummary">
-            <h4 class="mb-2">Summary</h4>
-            <p class="text-caption">Loading...</p>
+          <hr class="report-divider" />
+
+          <%# Strengths & Improvements %>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="report-insight-block h-100" data-recorder-target="reportStrengths">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="report-insight-block h-100" data-recorder-target="reportImprovements">
+              </div>
+            </div>
           </div>
 
-          <hr class="my-4" style="border-color: var(--color-border-light, #ede9e3);" />
+          <hr class="report-divider" />
 
-          <%# Detailed scores grid %>
-          <div class="report-scores" data-recorder-target="reportScores">
-            <%# Populated by JS %>
+          <%# Recommended focus %>
+          <div class="mb-4" data-recorder-target="reportFocus">
           </div>
 
-          <%# Metrics bar %>
-          <div class="report-metrics d-flex justify-content-center gap-4 mt-4 mb-4"
+          <hr class="report-divider" />
+
+          <%# Metrics %>
+          <div class="report-metrics d-flex justify-content-center gap-4 mb-4"
                data-recorder-target="reportMetrics">
-            <%# Populated by JS %>
           </div>
 
           <%# Download %>
-          <div class="text-center mt-4">
+          <div class="text-center mt-2">
             <%= link_to download_pdf_recording_session_path(@recording_session),
-                        class: "btn btn-primary w-100" do %>
+                        class: "btn btn-primary w-100",
+                        data: { recorder_target: "downloadButton", turbo: false } do %>
               <i class="fa fa-download"></i>
               Download full report
             <% end %>
