@@ -107,6 +107,7 @@ class RecordingSessionsController < ApplicationController
   def update
     @recording_session.update(update_params)
     respond_to do |format|
+      format.json { render json: { ok: true } }
       format.turbo_stream
       format.html { redirect_to recording_sessions_path }
     end
