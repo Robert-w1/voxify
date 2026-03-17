@@ -27,6 +27,9 @@
   <% end %>
 <% end %>
 
+<%# Update the show page <h1> if the user is currently on that page -%>
+<%= turbo_stream.update "session-page-title", @recording_session.title.split(" - ").first %>
+
 <%# Directly replace the sidebar title frame (if present) -%>
 <%= turbo_stream.replace dom_id(@recording_session, :sidebar_title) do %>
   <%= turbo_frame_tag dom_id(@recording_session, :sidebar_title), class: "recent-item__frame" do %>

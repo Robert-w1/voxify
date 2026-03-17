@@ -35,6 +35,8 @@
         <div class="sidebar-search-active" hidden data-sidebar-search-target="activeArea">
           <i data-feather="search" class="search-field-icon"></i>
           <input type="text"
+                 id="sidebar-search"
+                 name="sidebar_search"
                  class="sidebar-search-input"
                  placeholder="Search..."
                  autocomplete="off"
@@ -77,7 +79,7 @@
 
           <%# Title — Turbo Frame so Rename swaps it inline -%>
           <%= turbo_frame_tag dom_id(session, :sidebar_title), class: "recent-item__frame" do %>
-            <%= link_to recording_session_path(session), class: "nav-item recent-item", data: { turbo_frame: "_top" } do %>
+            <%= link_to recording_session_path(session), class: "nav-item recent-item", data: { turbo_frame: "_top", turbo_prefetch: false } do %>
               <span class="status-dot status-dot--<%= session.status %>"></span>
               <span class="label recent-label"><%= session.title.presence || "Untitled" %></span>
             <% end %>

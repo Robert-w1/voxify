@@ -12,7 +12,8 @@
       <%# ── TITLE ── %>
       <div class="session-title-row mb-4">
         <div class="d-flex align-items-center gap-2">
-          <h1 class="mb-0"
+          <h1 id="session-page-title"
+              class="mb-0"
               data-recorder-target="titleDisplay"
               data-action="blur->recorder#saveTitle keydown->recorder#titleKeydown"><%= @recording_session.title.split(' - ').first %></h1>
           <button data-action="click->recorder#editTitle"

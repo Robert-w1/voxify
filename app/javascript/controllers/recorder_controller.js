@@ -137,6 +137,19 @@ export default class extends Controller {
     this.reviewControlsTarget.hidden     = (state !== "review")
     this.processingIndicatorTarget.hidden = (state !== "processing")
     this.stateCompletedTarget.hidden      = (state !== "completed")
+
+    // Keep sidebar status dot in sync without a page refresh.
+    // Rails dom_id(session, :sidebar_title) → "sidebar_title_recording_session_<id>"
+    const sidebarStatusMap = {
+      recording:  "recording",
+      processing: "processing",
+      completed:  "completed",
+    }
+    if (sidebarStatusMap[state]) {
+      const frame = document.getElementById(`sidebar_title_recording_session_${this.sessionIdValue}`)
+      const dot   = frame?.querySelector(".status-dot")
+      if (dot) dot.className = `status-dot status-dot--${sidebarStatusMap[state]}`
+    }
   }
 
   // ────────────────────────────────────────
@@ -562,6 +575,11 @@ export default class extends Controller {
       })
 
       if (!response.ok) throw new Error(`Save failed: ${response.status}`)
+
+      // Update sidebar label instantly without a page refresh
+      const frame = document.getElementById(`sidebar_title_recording_session_${this.sessionIdValue}`)
+      const label = frame?.querySelector(".recent-label")
+      if (label) label.textContent = newTitle
     } catch (err) {
       console.error("Title save error:", err)
       el.textContent = this._titleOriginal

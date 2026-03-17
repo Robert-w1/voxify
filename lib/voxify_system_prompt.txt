@@ -109,7 +109,7 @@ Unescaped double quotes inside JSON strings will break the parser.
 
 {
   "overall": {
-    "score": <1-10>,
+    "score": <1-100>,
     "summary": "<overall impression in 2-3 sentences — lead with
                 what is working before identifying problems>",
     "top_strengths": [

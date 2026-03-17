@@ -126,10 +126,10 @@ class PdfReportService
       @pdf.fill_rounded_rectangle [x, logo_mid + (h / 2.0)], 3, h, 1.5
     end
 
-    # Brand name next to logo
+    # Brand name next to logo — vertically centred with the waveform bars
     @pdf.fill_color BRAND
     @pdf.text_box "VOXIFY",
-                  at: [28, logo_top],
+                  at: [28, logo_mid + 4],
                   width: 70,
                   size: 10,
                   style: :bold,
@@ -240,6 +240,14 @@ class PdfReportService
       label = safe(key.to_s.gsub("_", " ").split.map(&:capitalize).join(" "))
 
       @pdf.move_down 10 if idx > 0
+
+      # Guard: ensure there's enough room for the header row + bar + at least one line of summary.
+      # If not, start a new page and re-print the section label so context isn't lost.
+      if @pdf.cursor < 120
+        @pdf.start_new_page
+        section_label title
+        @pdf.move_down 12
+      end
 
       # Teal left accent bar for user-chosen focus categories
       if accent
