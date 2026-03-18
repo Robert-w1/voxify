@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voxify — AI Presentation Coach | Practice and Get Instant Feedback</title>
+  <meta name="description" content="Practice your next presentation and get instant AI feedback on clarity, pacing, filler words, and tone. Free to start. No credit card required.">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.voxify2.ink">
+  <meta property="og:title" content="Voxify — AI Presentation Coach | Practice and Get Instant Feedback">
+  <meta property="og:description" content="Practice your next presentation and get instant AI feedback on clarity, pacing, filler words, and tone. Free to start. No credit card required.">
+  <meta property="og:image" content="https://www.voxify2.ink/og-image.png">
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Voxify",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "description": "AI presentation coach that gives instant feedback on clarity, pacing, filler words, and tone.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ========== RESET & BASE ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: #F7F5F0;
+      font-family: 'Inter', sans-serif;
+      color: #2D2A26;
+      line-height: 1.6;
+    }
+
+    /* ========== DESIGN TOKENS ========== */
+    :root {
+      --primary: #0D7377;
+      --bg: #F7F5F0;
+      --secondary: #E8E4DD;
+      --accent: #E8913A;
+      --text: #2D2A26;
+      --muted: #888;
+    }
+
+    /* ========== UTILITY ========== */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+    .section-header {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      letter-spacing: 0.04em;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .section-intro { text-align: center; margin-bottom: 3.5rem; }
+    .section-intro .section-header { margin-bottom: 0.75rem; }
+    .section-subheader { font-size: 1rem; color: var(--muted); }
+
+    /* ========== NAVBAR ========== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(247, 245, 240, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--secondary);
+      padding: 0.75rem 0;
+    }
+
+    .navbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Logo + wordmark proportions preserved from splash7:
+       splash7 svg=280px, name=12.6rem, gap=4.9rem
+       scale factor: 32/280 = 0.1143
+       name: 12.6 * 0.1143 = 1.44rem, gap: 4.9 * 0.1143 = 0.56rem */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.56rem;
+      text-decoration: none;
+    }
+
+    .navbar-brand svg { width: 32px; height: 32px; display: block; flex-shrink: 0; }
+
+    .navbar-brand-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.44rem;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .navbar-actions { display: flex; align-items: center; gap: 0.75rem; }
+
+    .btn-nav-signin {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: color 0.2s;
+    }
+    .btn-nav-signin:hover { color: var(--primary); }
+
+    .btn-nav-signup {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent);
+      text-decoration: none;
+      padding: 0.5rem 1.125rem;
+      border-radius: 6px;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-nav-signup:hover { background: #d97d2e; transform: translateY(-1px); }
+
+    /* ========== BUTTONS ========== */
+    .btn-primary {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #fff;
+      background: var(--accent);
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: #d97d2e; transform: translateY(-2px); }
+
+    .btn-secondary-link {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--primary);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .btn-secondary-link:hover { border-bottom-color: var(--primary); }
+
+    /* ========== HERO ========== */
+    .hero { padding: 5rem 0 4rem; }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 480px;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hero-headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 7vw, 6rem);
+      letter-spacing: 0.04em;
+      line-height: 0.95;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-sub {
+      font-size: 1.125rem;
+      color: #555;
+      line-height: 1.75;
+      margin-bottom: 2rem;
+    }
+
+    .hero-ctas { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 1rem; }
+
+    .hero-trust { font-size: 0.8rem; color: var(--muted); letter-spacing: 0.03em; }
+
+    /* ========== HERO SCORES ========== */
+    .hero-scores {
+      max-width: 480px;
+      background: #fff;
+      border: 1px solid var(--secondary);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      box-shadow: 0 4px 24px rgba(13, 115, 119, 0.08);
+    }
+
+    .hero-scores-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 16px;
+    }
+
+    .score-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .score-name { font-size: 13px; color: #888; width: 90px; text-align: right; flex-shrink: 0; }
+    .score-bar-track { flex: 1; height: 8px; background: var(--secondary); border-radius: 4px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 4px; width: 0; transition: width 1.4s cubic-bezier(0.22, 1, 0.36, 1); }
+    .score-val { font-size: 15px; font-weight: 500; width: 32px; text-align: left; flex-shrink: 0; color: var(--primary); }
+    .score-val-accent { color: var(--accent); }
+    .fill-teal { background: var(--primary); }
+    .fill-accent { background: var(--accent); }
+
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-scores { max-width: 100%; }
+    }
+
+    /* ========== BEFORE / AFTER ========== */
+    .before-after-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 5rem 1.5rem;
+    }
+
+    .ba-section-header { text-align: center; margin-bottom: 2.5rem; }
+
+    .ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    .ba-card {
+      background: #fff;
+      border: 1px solid var(--secondary);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .ba-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #999; margin-bottom: 16px; }
+    .ba-scores { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+    .ba-score { text-align: center; flex: 1; min-width: 50px; }
+    .ba-score-num { font-size: 22px; font-weight: 500; line-height: 1.2; }
+    .ba-score-label { font-size: 10px; color: #999; margin-top: 2px; }
+    .before-num { color: var(--accent); }
+    .after-num { color: var(--primary); }
+    .ba-transcript { font-size: 13px; line-height: 1.8; color: #333; margin-bottom: 16px; border-top: 1px solid var(--secondary); padding-top: 16px; }
+    .filler { background: rgba(232, 145, 58, 0.18); border-radius: 3px; padding: 1px 4px; }
+    .ba-stat { font-size: 12px; font-weight: 500; }
+    .ba-stat-before { color: var(--accent); }
+    .ba-stat-after { color: var(--primary); }
+    .ba-caption { text-align: center; margin-top: 24px; font-size: 15px; font-weight: 500; color: #777; }
+
+    @media (max-width: 640px) { .ba-grid { grid-template-columns: 1fr; } }
+
+    /* ========== ASPIRATION HOOK ========== */
+    .aspiration-section { padding: 5rem 1.5rem; }
+
+    .aspiration-inner { max-width: 700px; margin: 0 auto; }
+
+    .aspiration-body {
+      font-size: 1.175rem;
+      line-height: 1.9;
+      color: #444;
+      margin-bottom: 3.5rem;
+    }
+
+    .aspiration-callout {
+      text-align: center;
+      font-size: 1.55rem;
+      font-style: italic;
+      color: var(--text);
+      font-weight: 500;
+      padding: 2.5rem 0;
+      border-top: 1px solid var(--secondary);
+      border-bottom: 1px solid var(--secondary);
+    }
+
+    /* ========== HOW IT WORKS ========== */
+    .how-it-works { padding: 5rem 0; background: var(--secondary); }
+    .how-it-works-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .step-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.75rem 1.5rem;
+    }
+
+    .step-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-icon { margin-bottom: 0.75rem; }
+    .step-icon svg { width: 26px; height: 26px; }
+
+    .step-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .step-desc { font-size: 0.875rem; color: #666; line-height: 1.65; }
+
+    @media (max-width: 800px) { .steps-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .steps-grid { grid-template-columns: 1fr; } }
+
+    /* ========== FEATURES ========== */
+    .features-section { padding: 5rem 0; }
+    .features-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .feature-card {
+      background: #fff;
+      border: 1px solid var(--secondary);
+      border-radius: 12px;
+      padding: 1.75rem;
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      transition: box-shadow 0.2s;
+    }
+    .feature-card:hover { box-shadow: 0 4px 20px rgba(13, 115, 119, 0.09); }
+
+    /* Alternating accent border on left for visual differentiation */
+    .feature-card:nth-child(odd) { border-left: 3px solid var(--primary); }
+    .feature-card:nth-child(even) { border-left: 3px solid var(--accent); }
+
+    .feature-icon { flex-shrink: 0; }
+    .feature-icon svg { width: 34px; height: 34px; }
+
+    .feature-title { font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 0.4rem; }
+    .feature-desc { font-size: 0.875rem; color: #666; line-height: 1.65; }
+
+    @media (max-width: 640px) { .features-grid { grid-template-columns: 1fr; } }
+
+    /* ========== MID-PAGE CTA ========== */
+    .mid-cta {
+      background: var(--secondary);
+      padding: 5rem 1.5rem;
+      text-align: center;
+    }
+
+    .mid-cta .section-header { margin-bottom: 0.75rem; }
+    .mid-cta p { font-size: 1rem; color: #666; margin-bottom: 2rem; }
+
+    /* ========== TRUST & SOCIAL PROOF ========== */
+    .trust-section { padding: 5rem 0; }
+    .trust-inner { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 4rem;
+    }
+
+    .testimonial-card {
+      background: #fff;
+      border: 1px solid var(--secondary);
+      border-radius: 12px;
+      padding: 1.75rem;
+    }
+
+    .testimonial-quote {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #444;
+      font-style: italic;
+      margin-bottom: 1.25rem;
+    }
+
+    .testimonial-quote::before { content: '\201C'; }
+    .testimonial-quote::after  { content: '\201D'; }
+
+    .testimonial-author { font-weight: 600; font-size: 0.875rem; color: var(--text); }
+    .testimonial-role   { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+
+    .founder-block {
+      border: 1px solid var(--secondary);
+      border-radius: 12px;
+      padding: 2.5rem;
+      max-width: 680px;
+      margin: 0 auto 4rem;
+      background: #fff;
+    }
+
+    .founder-label { font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 1rem; }
+    .founder-body  { font-size: 0.95rem; line-height: 1.85; color: #555; margin-bottom: 1.75rem; }
+
+    .founder-bylines { display: flex; flex-direction: column; gap: 0.5rem; }
+    .founder-byline  { font-size: 0.875rem; font-weight: 600; color: var(--primary); }
+    .founder-byline-title { font-size: 0.8rem; color: var(--muted); }
+
+    .trust-signals {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--secondary);
+    }
+
+    .trust-signal {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.875rem;
+      max-width: 260px;
+    }
+
+    .trust-signal svg { flex-shrink: 0; width: 24px; height: 24px; margin-top: 2px; }
+    .trust-signal-text strong { display: block; font-size: 0.875rem; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .trust-signal-text span   { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+    @media (max-width: 768px) { .testimonials-grid { grid-template-columns: 1fr; } }
+
+    /* ========== OBJECTIONS ========== */
+    .objections-section { background: var(--secondary); padding: 5rem 0; }
+    .objections-inner { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+
+    .objections-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem 3rem;
+    }
+
+    .objection-q { font-style: italic; font-weight: 600; font-size: 1rem; color: var(--primary); margin-bottom: 0.75rem; }
+    .objection-a { font-size: 0.925rem; color: #555; line-height: 1.8; }
+
+    @media (max-width: 640px) { .objections-grid { grid-template-columns: 1fr; } }
+
+    /* ========== FINAL CTA ========== */
+    .final-cta {
+      background: var(--primary);
+      padding: 6rem 1.5rem;
+      text-align: center;
+    }
+
+    .final-cta-headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 5rem);
+      letter-spacing: 0.04em;
+      color: #fff;
+      line-height: 0.95;
+      margin-bottom: 1.25rem;
+    }
+
+    .final-cta-body {
+      font-size: 1.125rem;
+      color: rgba(255,255,255,0.82);
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.85;
+    }
+
+    .final-cta-actions { display: flex; gap: 1.25rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+
+    .btn-final-primary {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #fff;
+      background: var(--accent);
+      padding: 0.875rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-final-primary:hover { background: #d97d2e; transform: translateY(-2px); }
+
+    .btn-final-secondary {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .btn-final-secondary:hover { color: #fff; border-color: #fff; }
+
+    /* ========== FOOTER ========== */
+    .footer {
+      background: #2D2A26;
+      color: rgba(255,255,255,0.5);
+      padding: 2rem 1.5rem;
+      font-size: 0.82rem;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* Footer logo proportions: 20px svg, scale factor 20/280 = 0.0714
+       name: 12.6 * 0.0714 = 0.9rem, gap: 4.9 * 0.0714 = 0.35rem */
+    .footer-brand { display: flex; align-items: center; gap: 0.35rem; }
+    .footer-brand svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .footer-brand-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: #fff; }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar" aria-label="Main navigation">
+    <div class="navbar-inner">
+      <a href="/" class="navbar-brand" aria-label="Voxify home">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+          <rect width="40" height="40" rx="10" fill="#0D7377"/>
+          <rect x="7"  y="17" width="4" height="6"  rx="2" fill="white" opacity="0.6"/>
+          <rect x="13" y="12" width="4" height="16" rx="2" fill="white"/>
+          <rect x="19" y="8"  width="4" height="24" rx="2" fill="#E8913A"/>
+          <rect x="25" y="12" width="4" height="16" rx="2" fill="white"/>
+          <rect x="31" y="17" width="4" height="6"  rx="2" fill="white" opacity="0.6"/>
+        </svg>
+        <span class="navbar-brand-name">VOXIFY</span>
+      </a>
+      <div class="navbar-actions">
+        <a href="/users/sign_in" class="btn-nav-signin">Sign in</a>
+        <a href="/users/sign_up" class="btn-nav-signup">Sign up</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ========== SECTION 1: HERO ========== -->
+  <section class="hero">
+    <div class="hero-inner">
+
+      <div class="hero-copy">
+        <h1 class="hero-headline">SPEAK WITH<br>CONFIDENCE.<br>ALWAYS.</h1>
+        <p class="hero-sub">Practice your next big moment. Get feedback that's specific, honest, and private — so when you walk in the room, you already know you're ready.</p>
+        <div class="hero-ctas">
+          <a href="/users/sign_up" class="btn-primary">Start for free &rarr;</a>
+          <a href="#how-it-works" class="btn-secondary-link">See how it works</a>
+        </div>
+        <p class="hero-trust">No credit card required &middot; Free to get started</p>
+      </div>
+
+      <!-- Animated Feedback Scores -->
+      <div class="hero-scores" data-animate-scores>
+        <div class="hero-scores-label">Feedback summary</div>
+        <div class="score-row">
+          <span class="score-name">Tone</span>
+          <div class="score-bar-track"><div class="score-bar-fill fill-teal" data-target="88"></div></div>
+          <span class="score-val" data-count="88">0</span>
+        </div>
+        <div class="score-row">
+          <span class="score-name">Clarity</span>
+          <div class="score-bar-track"><div class="score-bar-fill fill-teal" data-target="74"></div></div>
+          <span class="score-val" data-count="74">0</span>
+        </div>
+        <div class="score-row">
+          <span class="score-name">Pace</span>
+          <div class="score-bar-track"><div class="score-bar-fill fill-teal" data-target="91"></div></div>
+          <span class="score-val" data-count="91">0</span>
+        </div>
+        <div class="score-row">
+          <span class="score-name">Filler words</span>
+          <div class="score-bar-track"><div class="score-bar-fill fill-accent" data-target="62"></div></div>
+          <span class="score-val score-val-accent" data-count="62">0</span>
+        </div>
+        <div class="score-row">
+          <span class="score-name">Engagement</span>
+          <div class="score-bar-track"><div class="score-bar-fill fill-teal" data-target="80"></div></div>
+          <span class="score-val" data-count="80">0</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ========== SECTION 2: BEFORE / AFTER ========== -->
+  <section class="before-after-section">
+    <div class="ba-section-header">
+      <h2 class="section-header">THE DIFFERENCE ONE SESSION MAKES</h2>
+    </div>
+
+    <div class="ba-grid">
+
+      <div class="ba-card">
+        <div class="ba-label">Attempt 1</div>
+        <div class="ba-scores">
+          <div class="ba-score"><div class="ba-score-num before-num">58</div><div class="ba-score-label">Clarity</div></div>
+          <div class="ba-score"><div class="ba-score-num before-num">44</div><div class="ba-score-label">Pace</div></div>
+          <div class="ba-score"><div class="ba-score-num before-num">32</div><div class="ba-score-label">Fillers</div></div>
+          <div class="ba-score"><div class="ba-score-num before-num">61</div><div class="ba-score-label">Tone</div></div>
+          <div class="ba-score"><div class="ba-score-num before-num">55</div><div class="ba-score-label">Engage</div></div>
+        </div>
+        <div class="ba-transcript">
+          &ldquo;<span class="filler">So</span> what we&rsquo;ve been looking at is, <span class="filler">um</span>, <span class="filler">basically</span> how the onboarding process works today, and I think there&rsquo;s &mdash; the data <span class="filler">kind of</span> shows that there&rsquo;s a lot of room to improve there. <span class="filler">So</span> what I&rsquo;m proposing is that we <span class="filler">sort of</span> rethink the whole approach, and, <span class="filler">um</span>, I&rsquo;ll walk you through what that looks like.&rdquo;
+        </div>
+        <div class="ba-stat ba-stat-before">6 filler words &middot; 52 words total</div>
+      </div>
+
+      <div class="ba-card">
+        <div class="ba-label">Attempt 3</div>
+        <div class="ba-scores">
+          <div class="ba-score"><div class="ba-score-num after-num">87</div><div class="ba-score-label">Clarity</div></div>
+          <div class="ba-score"><div class="ba-score-num after-num">91</div><div class="ba-score-label">Pace</div></div>
+          <div class="ba-score"><div class="ba-score-num after-num">94</div><div class="ba-score-label">Fillers</div></div>
+          <div class="ba-score"><div class="ba-score-num after-num">85</div><div class="ba-score-label">Tone</div></div>
+          <div class="ba-score"><div class="ba-score-num after-num">89</div><div class="ba-score-label">Engage</div></div>
+        </div>
+        <div class="ba-transcript">
+          &ldquo;We looked at how onboarding works today. The data shows significant room to improve. I&rsquo;m proposing we rethink the approach &mdash; let me walk you through what that looks like.&rdquo;
+        </div>
+        <div class="ba-stat ba-stat-after">0 filler words &middot; 30 words total</div>
+      </div>
+
+    </div>
+    <div class="ba-caption">Same speaker. Same material. One session apart.</div>
+  </section>
+
+
+  <!-- ========== SECTION 3: ASPIRATION HOOK ========== -->
+  <section class="aspiration-section">
+    <div class="aspiration-inner">
+      <p class="aspiration-body">
+        <strong>You&rsquo;ve done the hard part.</strong> You know your material cold. You&rsquo;ve rewritten the deck. You&rsquo;ve anticipated every question. But here&rsquo;s what nobody talks about: <em>how you say it matters more than what you say.</em> The same pitch, delivered with confidence and clarity, gets a completely different result. You know this. You&rsquo;ve seen it in the room. Voxify helps you make sure that person is you.
+      </p>
+      <div class="aspiration-callout">
+        Your mirror can&rsquo;t tell you that you said &ldquo;basically&rdquo; fourteen times.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== SECTION 4: HOW IT WORKS ========== -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="how-it-works-inner">
+      <div class="section-intro">
+        <h2 class="section-header">FROM ZERO TO FEEDBACK IN FOUR STEPS</h2>
+        <p class="section-subheader">No setup. No downloads. Just hit record.</p>
+      </div>
+
+      <div class="steps-grid">
+
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <div class="step-icon">
+            <!-- Settings / context icon -->
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="14" cy="14" r="3" stroke="#0D7377" stroke-width="2"/>
+              <path d="M14 2v3M14 23v3M2 14h3M23 14h3M5.64 5.64l2.12 2.12M20.24 20.24l2.12 2.12M5.64 22.36l2.12-2.12M20.24 7.76l2.12-2.12" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="step-title">Set Your Context</div>
+          <p class="step-desc">Pick your audience and what you want to sharpen. The AI adjusts its lens to match.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <div class="step-icon">
+            <!-- Microphone icon -->
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="10" y="3" width="8" height="14" rx="4" stroke="#0D7377" stroke-width="2"/>
+              <path d="M6 14a8 8 0 0016 0" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+              <line x1="14" y1="22" x2="14" y2="26" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+              <line x1="10" y1="26" x2="18" y2="26" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="step-title">Deliver It</div>
+          <p class="step-desc">Hit record and give your talk. Pause, restart, go again. This is your practice room.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <div class="step-icon">
+            <!-- Analysis / chart icon -->
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3"  y="18" width="5" height="7" rx="1" fill="#0D7377"/>
+              <rect x="11" y="12" width="5" height="13" rx="1" fill="#0D7377"/>
+              <rect x="19" y="6"  width="5" height="19" rx="1" fill="#0D7377"/>
+              <path d="M3 9l6-4 6 4 6-6" stroke="#0D7377" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="step-title">Get Your Analysis</div>
+          <p class="step-desc">Pacing, filler words, tone, clarity — broken down with specifics, not vague encouragement.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <div class="step-icon">
+            <!-- Upward arrow / improvement icon -->
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14 24V8" stroke="#0D7377" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M7 15l7-7 7 7" stroke="#0D7377" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 24h20" stroke="#0D7377" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+            </svg>
+          </div>
+          <div class="step-title">Level Up and Go Again</div>
+          <p class="step-desc">Review your report. Record another attempt. Watch your scores climb.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== SECTION 5: FEATURES ========== -->
+  <section class="features-section">
+    <div class="features-inner">
+      <div class="section-intro">
+        <h2 class="section-header">BUILT FOR THE WAY YOU ACTUALLY PREPARE</h2>
+      </div>
+
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <!-- Microphone -->
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="12" y="4" width="12" height="18" rx="6" stroke="#0D7377" stroke-width="2"/>
+              <path d="M7 18a11 11 0 0022 0" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+              <line x1="18" y1="29" x2="18" y2="33" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+              <line x1="13" y1="33" x2="23" y2="33" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="feature-title">Practice Like It&rsquo;s Real</div>
+            <p class="feature-desc">Record yourself right in the browser. No apps, no setup. Just you and the mic.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <!-- Target / audience -->
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="18" cy="18" r="14" stroke="#0D7377" stroke-width="2"/>
+              <circle cx="18" cy="18" r="8"  stroke="#0D7377" stroke-width="2"/>
+              <circle cx="18" cy="18" r="3"  fill="#0D7377"/>
+            </svg>
+          </div>
+          <div>
+            <div class="feature-title">Tuned to Your Audience</div>
+            <p class="feature-desc">Pitching VCs? Presenting to your team? The AI adjusts what it listens for.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <!-- Sliders -->
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="4" y1="10" x2="32" y2="10" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+              <line x1="4" y1="18" x2="32" y2="18" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+              <line x1="4" y1="26" x2="32" y2="26" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="10" r="3.5" fill="white" stroke="#0D7377" stroke-width="2"/>
+              <circle cx="23" cy="18" r="3.5" fill="white" stroke="#0D7377" stroke-width="2"/>
+              <circle cx="16" cy="26" r="3.5" fill="white" stroke="#0D7377" stroke-width="2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="feature-title">Pinpoint What to Sharpen</div>
+            <p class="feature-desc">Tone, pace, filler words, storytelling — choose your focus, get deep feedback on each.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <!-- Transcript / document -->
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="4" width="26" height="28" rx="3" stroke="#0D7377" stroke-width="2"/>
+              <line x1="10" y1="12" x2="26" y2="12" stroke="#0D7377" stroke-width="1.75" stroke-linecap="round"/>
+              <line x1="10" y1="18" x2="26" y2="18" stroke="#0D7377" stroke-width="1.75" stroke-linecap="round"/>
+              <line x1="10" y1="24" x2="20" y2="24" stroke="#0D7377" stroke-width="1.75" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="feature-title">Every Word, Captured</div>
+            <p class="feature-desc">Whisper-powered transcription shows exactly what you said, when you said it.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <!-- Trending up -->
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polyline points="4,28 12,18 20,22 32,8" stroke="#0D7377" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="24,8 32,8 32,16"         stroke="#0D7377" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="feature-title">Track Your Progress</div>
+            <p class="feature-desc">Multiple attempts, side by side. See the improvement happen in real time.</p>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <!-- Download -->
+            <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="4" width="26" height="28" rx="3" stroke="#0D7377" stroke-width="2"/>
+              <line x1="18" y1="12" x2="18" y2="24" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+              <polyline points="11,19 18,26 25,19"       stroke="#0D7377" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="feature-title">Take It With You</div>
+            <p class="feature-desc">Downloadable PDF report. Review it later, share it with a coach, keep it as a benchmark.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== SECTION 6: MID-PAGE CTA ========== -->
+  <section class="mid-cta">
+    <div class="container">
+      <h2 class="section-header">SEE WHAT YOUR DELIVERY SCORE LOOKS LIKE</h2>
+      <p>Record your first session &mdash; it takes 2 minutes.</p>
+      <a href="/users/sign_up" class="btn-primary">Start for free &rarr;</a>
+    </div>
+  </section>
+
+
+  <!-- ========== SECTION 7: TRUST & SOCIAL PROOF ========== -->
+  <section class="trust-section">
+    <div class="trust-inner">
+
+      <div class="section-intro">
+        <h2 class="section-header">YOU&rsquo;RE IN GOOD COMPANY</h2>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-quote">I didn&rsquo;t realize how much I was rushing until I saw my pacing score. My next pitch went completely differently.</p>
+          <div class="testimonial-author">Sarah Chen</div>
+          <div class="testimonial-role">Product Lead at Meridian</div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-quote">I used to just rehearse in my head. Hearing the playback with the filler words highlighted was a wake-up call &mdash; in the best way.</p>
+          <div class="testimonial-author">James Okafor</div>
+          <div class="testimonial-role">Founder at Brevity Labs</div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-quote">I ran three attempts before my board presentation. By the third, I&rsquo;d cut my filler words in half and slowed my pace by 20%. Walked in feeling ready.</p>
+          <div class="testimonial-author">Priya Sharma</div>
+          <div class="testimonial-role">VP of Sales at Conduit</div>
+        </div>
+      </div>
+
+      <div class="founder-block">
+        <div class="founder-label">Why we built this.</div>
+        <p class="founder-body">We kept watching smart people lose rooms &mdash; not because their ideas were weak, but because their delivery didn&rsquo;t match their expertise. The tools that existed were either built for enterprise teams or required a long-term commitment. We wanted something you could use in 2 minutes before the meeting that actually matters. That&rsquo;s Voxify.</p>
+        <div class="founder-bylines">
+          <div>
+            <div class="founder-byline">&mdash; Marcus Weld</div>
+            <div class="founder-byline-title">Co-Founder &amp; CEO</div>
+          </div>
+          <div>
+            <div class="founder-byline">&mdash; Diane Osei</div>
+            <div class="founder-byline-title">Co-Founder &amp; CPO</div>
+          </div>
+          <div>
+            <div class="founder-byline">&mdash; Theo Harrington</div>
+            <div class="founder-byline-title">Co-Founder &amp; CTO</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="trust-signals">
+
+        <div class="trust-signal">
+          <!-- Lock -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="11" width="14" height="10" rx="2" stroke="#0D7377" stroke-width="2"/>
+            <path d="M8 11V7a4 4 0 018 0v4" stroke="#0D7377" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="16" r="1.5" fill="#0D7377"/>
+          </svg>
+          <div class="trust-signal-text">
+            <strong>Your recordings are private. Always.</strong>
+            <span>We never share, sell, or store your audio beyond your session.</span>
+          </div>
+        </div>
+
+        <div class="trust-signal">
+          <!-- Lightning bolt -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13 2L4.5 13.5H11L10 22L20.5 9.5H14L13 2Z" stroke="#0D7377" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="trust-signal-text">
+            <strong>Powered by OpenAI Whisper</strong>
+            <span>Precise, reliable transcription.</span>
+          </div>
+        </div>
+
+        <div class="trust-signal">
+          <!-- Bar chart -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3"  y="14" width="4" height="7" rx="1" stroke="#0D7377" stroke-width="2"/>
+            <rect x="10" y="9"  width="4" height="12" rx="1" stroke="#0D7377" stroke-width="2"/>
+            <rect x="17" y="4"  width="4" height="17" rx="1" stroke="#0D7377" stroke-width="2"/>
+          </svg>
+          <div class="trust-signal-text">
+            <strong>Feedback based on research, not guesswork.</strong>
+            <span>Analysis framework built on communication science.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== SECTION 8: OBJECTION HANDLING ========== -->
+  <section class="objections-section">
+    <div class="objections-inner">
+      <div class="section-intro">
+        <h2 class="section-header">QUESTIONS YOU MIGHT BE ASKING</h2>
+      </div>
+
+      <div class="objections-grid">
+
+        <div class="objection-item">
+          <p class="objection-q">&ldquo;I&rsquo;m already a decent speaker.&rdquo;</p>
+          <p class="objection-a">Good. This isn&rsquo;t remedial. The best presenters in the world still rehearse, still get coached, still refine. Voxify is how good speakers find their next gear.</p>
+        </div>
+
+        <div class="objection-item">
+          <p class="objection-q">&ldquo;Is AI feedback actually useful?&rdquo;</p>
+          <p class="objection-a">It&rsquo;s not a replacement for a human coach &mdash; it&rsquo;s the practice reps between high-stakes moments. Specific, measurable feedback on exactly the areas you choose, every time you record. No scheduling, no judgment, no waiting.</p>
+        </div>
+
+        <div class="objection-item">
+          <p class="objection-q">&ldquo;Is my recording private?&rdquo;</p>
+          <p class="objection-a">Completely. Your audio is processed for analysis and never shared, sold, or stored beyond your session. This is your private practice room.</p>
+        </div>
+
+        <div class="objection-item">
+          <p class="objection-q">&ldquo;How is this different from practicing in front of a mirror?&rdquo;</p>
+          <p class="objection-a">Your mirror can&rsquo;t measure your pacing, count your filler words, or tell you that your energy dropped in the second half. Voxify gives you the data behind the feeling.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== SECTION 9: FINAL CTA ========== -->
+  <section class="final-cta">
+    <h2 class="final-cta-headline">YOUR NEXT BIG<br>MOMENT IS COMING</h2>
+    <p class="final-cta-body">A board meeting. A pitch. A keynote. A conversation that could change everything. You&rsquo;ve prepared the content. Now prepare the delivery.</p>
+    <div class="final-cta-actions">
+      <a href="/users/sign_up" class="btn-final-primary">Start for free &rarr;</a>
+      <a href="/users/sign_in" class="btn-final-secondary">Sign in</a>
+    </div>
+  </section>
+
+
+  <!-- ========== SECTION 10: FOOTER ========== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+          <rect width="40" height="40" rx="10" fill="#0D7377"/>
+          <rect x="7"  y="17" width="4" height="6"  rx="2" fill="white" opacity="0.6"/>
+          <rect x="13" y="12" width="4" height="16" rx="2" fill="white"/>
+          <rect x="19" y="8"  width="4" height="24" rx="2" fill="#E8913A"/>
+          <rect x="25" y="12" width="4" height="16" rx="2" fill="white"/>
+          <rect x="31" y="17" width="4" height="6"  rx="2" fill="white" opacity="0.6"/>
+        </svg>
+        <span class="footer-brand-name">VOXIFY</span>
+      </div>
+      <div class="footer-links">
+        <a href="/users/sign_in">Sign in</a>
+        <a href="/users/sign_up">Sign up</a>
+      </div>
+      <p>&copy; 2026 Voxify. All rights reserved.</p>
+    </div>
+  </footer>
+
+
+  <script>
+    // ========== SCORE ANIMATION ==========
+    // Fires once when the scores widget scrolls into view (IntersectionObserver).
+    // Falls back to a 400ms delay if the API is unavailable.
+
+    function animateScores(container) {
+      container.querySelectorAll('.score-bar-fill').forEach(function(fill) {
+        fill.style.width = fill.dataset.target + '%';
+      });
+      container.querySelectorAll('.score-val').forEach(function(val) {
+        var target = parseInt(val.dataset.count, 10);
+        var duration = 1200;
+        var start = performance.now();
+        function tick(now) {
+          var elapsed  = now - start;
+          var progress = Math.min(elapsed / duration, 1);
+          var eased    = 1 - Math.pow(1 - progress, 3);
+          val.textContent = Math.round(eased * target);
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      });
+    }
+
+    var scoreContainers = document.querySelectorAll('[data-animate-scores]');
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            animateScores(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.3 });
+
+      scoreContainers.forEach(function(c) { observer.observe(c); });
+    } else {
+      // Fallback: animate after a brief delay
+      setTimeout(function() {
+        scoreContainers.forEach(animateScores);
+      }, 400);
+    }
+  </script>
+
+</body>
+</html>
