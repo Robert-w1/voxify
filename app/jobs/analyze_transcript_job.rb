@@ -32,9 +32,9 @@ class AnalyzeTranscriptJob < ApplicationJob
     # recording.create_report!(llm_raw_response: response.content.first.text)
     # --- End: Use of Anthropic API
 
-    client = RubyLLM.chat
+    # client = RubyLLM.chat(model: "gpt-4.1")
+    client = RubyLLM.chat # gpt-4.1-nano
     response = client.with_instructions(system_prompt).ask(build_user_message(recording, session))
-
     llm_data = parse_llm_json(response.content)
 
     focus_categories = %w[
