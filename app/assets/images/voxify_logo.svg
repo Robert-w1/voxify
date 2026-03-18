@@ -4,7 +4,7 @@
   <!-- Waveform bars: 5 vertical bars of varying height, centered -->
   <rect x="7"  y="17" width="4" height="6"  rx="2" fill="white" opacity="0.6"/>
   <rect x="13" y="12" width="4" height="16" rx="2" fill="white"/>
-  <rect x="19" y="8"  width="4" height="24" rx="2" fill="white"/>
+  <rect x="19" y="8"  width="4" height="24" rx="2" fill="#E8913A"/>
   <rect x="25" y="12" width="4" height="16" rx="2" fill="white"/>
   <rect x="31" y="17" width="4" height="6"  rx="2" fill="white" opacity="0.6"/>
 </svg>
