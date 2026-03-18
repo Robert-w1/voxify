@@ -44,7 +44,7 @@ class FoldersController < ApplicationController
         session_record = current_user.recording_sessions.find_by(id: @session_id)
         session_record&.update(folder_id: @folder.id)
       end
-      redirect_to folder_path(@folder), notice: "Folder created."
+      redirect_to folder_path(@folder)
     else
       render :new, status: :unprocessable_entity
     end
