@@ -15,17 +15,17 @@ class PdfReportService
   FOCUS_ACCENT = "0D7377"   # teal header for user-chosen focus sections
 
   # Maps the 9 user-facing focus options → LLM category keys
-  FOCUS_TO_CATEGORY = {
-    "filler_words" => "delivery_context",
-    "tone"         => "delivery_context",
-    "pace"         => "delivery_context",
-    "clarity"      => "clarity",
-    "confidence"   => "confidence",
-    "vocabulary"   => "word_choice",
-    "conciseness"  => "conciseness",
-    "engagement"   => "engagement",
-    "storytelling" => "engagement"
-  }.freeze
+  # FOCUS_TO_CATEGORY = {
+  #   "filler_words" => "delivery_context",
+  #   "tone"         => "delivery_context",
+  #   "pacing"       => "delivery_context",
+  #   "clarity"      => "clarity",
+  #   "confidence"   => "confidence",
+  #   "vocabulary"   => "vocabulary",
+  #   "conciseness"  => "conciseness",
+  #   "engagement"   => "engagement",
+  #   "storytelling" => "engagement"
+  # }.freeze
 
   def initialize(session, recording, report)
     @session   = session
@@ -214,7 +214,7 @@ class PdfReportService
     # Determine which category keys the user specifically focused on
     chosen_categories = (@session.focus || [])
                           .reject(&:blank?)
-                          .map { |f| FOCUS_TO_CATEGORY[f] }
+                          #.map { |f| FOCUS_TO_CATEGORY[f] }
                           .compact.uniq
 
     focus_feedbacks = chosen_categories.any? ? feedbacks.select { |k, _| chosen_categories.include?(k) } : {}

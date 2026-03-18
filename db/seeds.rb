@@ -46,7 +46,7 @@ TRANSCRIPTS = [
   "Good morning everyone. Today I'd like to walk you through our Q3 results and what we're planning for the next quarter. Um, so first let's look at revenue. We grew by about, uh, fifteen percent quarter over quarter which is, you know, really exciting for the team.",
   "Thanks for having me. So the core idea behind our product is pretty simple. We help sales teams close deals faster by, like, automating the follow-up process. Um, we've seen customers reduce their sales cycle by up to thirty percent.",
   "Alright team, quick update on where we are with the product roadmap. So basically we finished the authentication epic last sprint, and this week we're moving into the recording flow. Uh, there are a few blockers I want to flag.",
-  "Hi, I'm here to talk about the future of machine learning in healthcare. Uh, it's a really fascinating space, and I think there's a lot of, you know, untapped potential. Let me start by sharing some statistics.",
+  "Hi, I'm here to talk about the future of machine learning in healthcare. Uh, it's a really fascinating spacing, and I think there's a lot of, you know, untapped potential. Let me start by sharing some statistics.",
   "Welcome everyone. I'll keep this brief. Um, the main ask today is budget approval for the new infrastructure upgrade. We're looking at roughly fifty thousand dollars over two quarters.",
 ].freeze
 
@@ -67,9 +67,9 @@ FOCUS_FEEDBACK_POOL = {
     feedback: "Your tone was generally warm and approachable, well-suited to the audience. There were a few moments mid-section where your tone became slightly flat. Vary your emotional register to keep listeners engaged.",
     details: {}
   },
-  pace: {
+  pacing: {
     score: 70,
-    feedback: "Your average pace was around 165 words per minute, which is slightly fast. The ideal range for presentations is 130–150 wpm. Slowing down at key points gives your audience time to absorb information.",
+    feedback: "Your average pacing was around 165 words per minute, which is slightly fast. The ideal range for presentations is 130–150 wpm. Slowing down at key points gives your audience time to absorb information.",
     details: { wpm: 165 }
   },
   clarity: {
@@ -191,7 +191,7 @@ build_session(
   title:             "Q3 Board Review",
   audience:          "board",
   presentation_type: "all_hands",
-  focus:             %w[clarity conciseness pace],
+  focus:             %w[clarity conciseness pacing],
   transcript:        TRANSCRIPTS[0],
   duration:          12
 )
@@ -202,7 +202,7 @@ build_session(
   status:            "completed",
   title:             "Product Demo — Enterprise Clients",
   audience:          "clients",
-  presentation_type: "product_demo",
+  presentation_type: "daily_practice",
   focus:             %w[engagement vocabulary filler_words],
   transcript:        TRANSCRIPTS[3],
   duration:          19
@@ -215,7 +215,7 @@ build_session(
   title:             "Conference Talk Rehearsal",
   audience:          "conference",
   presentation_type: "conference_talk",
-  focus:             %w[storytelling technical_depth pace],
+  focus:             %w[storytelling technical_depth pacing],
   transcript:        TRANSCRIPTS[3],
   duration:          20
 )
@@ -241,7 +241,7 @@ build_session(
   title:             "Untitled",
   audience:          "colleagues",
   presentation_type: "team_update",
-  focus:             %w[clarity pace],
+  focus:             %w[clarity pacing],
   transcript:        nil,
   duration:          nil
 )
@@ -290,7 +290,7 @@ build_session(
   status:            "completed",
   title:             "Enterprise Demo — ACME Corp",
   audience:          "executives",
-  presentation_type: "product_demo",
+  presentation_type: "daily_practice",
   focus:             %w[tone vocabulary technical_depth],
   transcript:        TRANSCRIPTS[4],
   duration:          30
@@ -303,7 +303,7 @@ build_session(
   title:             "Untitled",
   audience:          "general_public",
   presentation_type: "conference_talk",
-  focus:             %w[pace engagement storytelling],
+  focus:             %w[pacing engagement storytelling],
   transcript:        TRANSCRIPTS[3],
   duration:          19
 )

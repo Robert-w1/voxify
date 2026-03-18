@@ -20,8 +20,6 @@ class TranscribeRecordingJob < ApplicationJob
 
     raise "Unauthorized" unless recording.user.id == user_id
 
-    session = recording.recording_session
-
     recording.audio.blob.open do |tempfile|
       result = call_deepgram(tempfile, recording.audio.blob.content_type)
       recording.update!(
