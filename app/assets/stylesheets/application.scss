@@ -147,7 +147,7 @@ a {
 
 .btn-primary,
 input[type="submit"].btn-primary {
-  background-color: $color-primary;
+  background-color: $color-primary !important;
   border-color:     $color-primary;
   color:            #F7F5F0;
 
