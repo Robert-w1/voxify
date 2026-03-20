@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voxify</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      background-color: #F7F5F0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .splash {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 5rem;
+    }
+
+    .logo-link {
+      display: block;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .logo-link svg {
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .logo-link:hover svg {
+      transform: scale(1.06);
+      filter: drop-shadow(0 6px 24px rgba(13, 115, 119, 0.3));
+    }
+
+    .logo-link svg {
+      width: 340px;
+      height: 340px;
+      display: block;
+    }
+
+    .text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .brand-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 10vw, 9rem);
+      letter-spacing: 0.06em;
+      color: #2D2A26;
+      line-height: 1;
+    }
+
+    .tagline-main {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 4.5vw, 4rem);
+      line-height: 0.96;
+      letter-spacing: 0.02em;
+      color: #2D2A26;
+    }
+
+    .tagline-main .accent {
+      color: #0D7377;
+    }
+
+    .tagline-main .dot-orange {
+      color: #E8913A;
+    }
+
+    .tagline-main .dot {
+      color: #0D7377;
+    }
+  </style>
+</head>
+<body>
+  <div class="splash">
+
+    <a href="https://www.voxify.ink" class="logo-link" aria-label="Voxify — go to website">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
+        <rect width="40" height="40" rx="10" fill="#0D7377"/>
+        <rect x="7"  y="17" width="4" height="6"  rx="2" fill="white" opacity="0.6"/>
+        <rect x="13" y="12" width="4" height="16" rx="2" fill="white"/>
+        <rect x="19" y="8"  width="4" height="24" rx="2" fill="#E8913A"/>
+        <rect x="25" y="12" width="4" height="16" rx="2" fill="white"/>
+        <rect x="31" y="17" width="4" height="6"  rx="2" fill="white" opacity="0.6"/>
+      </svg>
+    </a>
+
+    <div class="text-group">
+      <p class="brand-name">VOXIFY</p>
+      <h1 class="tagline-main">
+        SPEAK WITH<br>
+        <span class="accent">CONFIDENCE</span><span class="dot">.</span><br>
+        ALWAYS<span class="dot">.</span>
+      </h1>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -304,40 +304,6 @@
   gap: 8px;
 }
 
-.delete-confirm__btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 34px;
-  padding: 0 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  border: none;
-  transition: background-color 0.15s ease;
-
-  &--cancel {
-    background: none;
-    color: $color-body;
-    border: 1px solid $color-border;
-
-    &:hover {
-      background-color: $color-bg-card;
-      color: $color-heading;
-      text-decoration: none;
-    }
-  }
-
-  &--delete {
-    background-color: $color-error;
-    color: #fff;
-
-    &:hover { background-color: darken($color-error, 6%); }
-  }
-}
-
 .delete-confirm__form {
   display: contents;
 }

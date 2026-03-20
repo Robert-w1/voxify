@@ -77,6 +77,9 @@
 
         <div class="recent-item-wrapper" id="<%= dom_id(session, :sidebar_item) %>">
 
+          <%# Hidden checkbox — toggled by the label in the dropdown below -%>
+          <input type="checkbox" class="delete-trigger" id="<%= dom_id(session, :sidebar_delete_trigger) %>">
+
           <%# Title — Turbo Frame so Rename swaps it inline -%>
           <%= turbo_frame_tag dom_id(session, :sidebar_title), class: "recent-item__frame" do %>
             <% full_title = session.title.presence || "Untitled" %>
@@ -151,15 +154,35 @@
 
               <li><hr class="dropdown-divider"></li>
               <li>
-                <%= button_to recording_session_path(session),
-                              method: :delete,
-                              class: "dropdown-item session-dropdown-item session-dropdown-item--danger",
-                              form_class: "session-row__delete-form",
-                              data: { turbo_confirm: "Delete \"#{session.title.presence || 'Untitled'}\"? This cannot be undone." } do %>
+                <label for="<%= dom_id(session, :sidebar_delete_trigger) %>"
+                       class="dropdown-item session-dropdown-item session-dropdown-item--danger">
                   <i class="fa-solid fa-trash"></i> Delete
-                <% end %>
+                </label>
               </li>
             </ul>
+          </div>
+
+          <%# ── Delete confirmation modal -%>
+          <% session_label = session.title.presence || "Untitled" %>
+          <div class="delete-confirm">
+            <label for="<%= dom_id(session, :sidebar_delete_trigger) %>" class="delete-confirm__backdrop"></label>
+            <div class="delete-confirm__card">
+              <p class="delete-confirm__title">Delete session?</p>
+              <p class="delete-confirm__body">
+                <span class="delete-confirm__name">&ldquo;<%= session_label %>&rdquo;</span>
+                will be permanently deleted.
+              </p>
+              <div class="delete-confirm__actions">
+                <label for="<%= dom_id(session, :sidebar_delete_trigger) %>"
+                       class="btn btn-secondary">Cancel</label>
+                <%= button_to recording_session_path(session),
+                              method: :delete,
+                              class: "btn btn-primary",
+                              form_class: "delete-confirm__form" do %>
+                  Delete
+                <% end %>
+              </div>
+            </div>
           </div>
 
         </div>
