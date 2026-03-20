@@ -27,20 +27,31 @@ class RecordingSession < ApplicationRecord
 
   PRESENTATION_TYPE_OPTIONS = %w[
     investor_pitch
-    product_demo
+    presentation
+    job_interview
     sales_pitch
+    daily_practice
+    casual_chat
     manager_1on1
     team_update
-    all_hands
     conference_talk
-    job_interview
-    casual_chat
   ].freeze
 
-    FEEDBACK_FOCUS_OPTIONS = %w[
+  #   FEEDBACK_FOCUS_OPTIONS = %w[
+  #   filler_words
+  #   tone
+  #   pace
+  #   clarity
+  #   confidence
+  #   vocabulary
+  #   conciseness
+  #   engagement
+  #   storytelling
+  # ].freeze
+  FEEDBACK_FOCUS_OPTIONS = %w[
     filler_words
     tone
-    pace
+    pacing
     clarity
     confidence
     vocabulary

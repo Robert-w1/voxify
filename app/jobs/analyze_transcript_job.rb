@@ -37,15 +37,10 @@ class AnalyzeTranscriptJob < ApplicationJob
     response = client.with_instructions(system_prompt).ask(build_user_message(recording, session))
     llm_data = parse_llm_json(response.content)
 
-    focus_categories = %w[
-      structure content rhetoric clarity confidence word_choice
-      technical_depth engagement conciseness persuasiveness delivery_context
-    ]
-
     report = recording.create_report!(
       llm_raw_response: llm_data,
       summary:          llm_data["overall"],
-      focus_feedbacks:  llm_data.slice(*focus_categories)
+      focus_feedbacks:  llm_data.except(*["overall", "meta"])
     )
 
     GenerateReportPdfJob.perform_later(report.id)
@@ -81,7 +76,7 @@ class AnalyzeTranscriptJob < ApplicationJob
   end
 
   def system_prompt
-    file_path = Rails.root.join("lib", "voxify_system_prompt.txt")
+    file_path = Rails.root.join("lib", "2_voxify_system_prompt.txt")
     File.read(file_path)
   end
 end
