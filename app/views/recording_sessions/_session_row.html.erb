@@ -1,4 +1,20 @@
-<% session_label = session.title.presence || "Untitled" %>
+<div class="session-row" id="<%= dom_id(session) %>">
+
+  <%# ── Title + meta area wrapped in a Turbo Frame ────────────
+      Clicking the pencil button loads edit.html.erb into this
+      frame, swapping the title for an inline form in-place.      -%>
+  <%= turbo_frame_tag dom_id(session, :title), class: "session-row__main" do %>
+
+    <%= link_to recording_session_path(session), class: "session-row__link", data: { turbo_frame: "_top" } do %>
+
+      <% full_title = session.title.presence || "Untitled" %>
+      <% ts_match = full_title.match(/^(.+?) - (.+)$/) %>
+      <div class="session-row__title">
+        <span class="status-dot status-dot--<%= session.status %>"></span>
+        <span class="session-row__title-text">
+          <%= ts_match ? ts_match[1] : full_title %>
+        </span>
+      </div>
 
 <%# Wrapper groups the checkbox, row, and modal as siblings for the CSS ~ selector -%>
 <div class="session-row-group" id="<%= dom_id(session) %>">
@@ -46,7 +62,7 @@
           <time class="session-row__date text-caption"
                 datetime="<%= session.created_at.iso8601 %>"
                 data-localize>
-            <%= session.created_at.strftime("%-d %b %Y · %H:%M UTC") %>
+            <%= session.created_at.strftime("%-d %B %Y") %>
           </time>
         </div>
 

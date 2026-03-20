@@ -35,19 +35,47 @@
         document.querySelectorAll("time[data-localize]").forEach(el => {
           const dt = new Date(el.getAttribute("datetime"))
           if (isNaN(dt.getTime())) return
-          el.textContent = dt.toLocaleString(undefined, {
-            year: "numeric", month: "short", day: "numeric",
-            hour: "numeric", minute: "2-digit", timeZoneName: "short"
-          })
+          const day   = dt.getDate()
+          const month = dt.toLocaleString(undefined, { month: "long" })
+          const year  = dt.getFullYear()
+          const time  = dt.toLocaleString(undefined, { hour: "numeric", minute: "2-digit", timeZoneName: "short" })
+          el.textContent = `${day} ${month} ${year} · ${time}`
         })
       }
       function initTooltips() {
+        document.querySelectorAll("[data-tooltip-datetime]").forEach(el => {
+          const dt = new Date(el.getAttribute("data-tooltip-datetime"))
+          if (isNaN(dt.getTime())) return
+          const day   = dt.getDate()
+          const month = dt.toLocaleString(undefined, { month: "long" })
+          const year  = dt.getFullYear()
+          const time  = dt.toLocaleString(undefined, { hour: "numeric", minute: "2-digit", timeZoneName: "short" })
+          el.setAttribute("title", `${day} ${month} ${year} · ${time}`)
+        })
         document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
-          bootstrap.Tooltip.getOrCreateInstance(el)
+          bootstrap.Tooltip.getOrCreateInstance(el, { trigger: "hover" })
         })
       }
       document.addEventListener("turbo:load", () => { feather.replace(); localizeTimestamps(); initTooltips() })
       document.addEventListener("turbo:render", () => { feather.replace(); localizeTimestamps(); initTooltips() })
+      document.addEventListener("turbo:before-stream-render", (event) => {
+        const original = event.detail.render
+        event.detail.render = function(streamElement) {
+          // Dispose any tooltips on the element being replaced before it leaves the DOM
+          if (streamElement.action === "replace" || streamElement.action === "update") {
+            const target = document.getElementById(streamElement.target)
+            if (target) {
+              bootstrap.Tooltip.getInstance(target)?.dispose()
+              target.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+                bootstrap.Tooltip.getInstance(el)?.dispose()
+              })
+            }
+          }
+          original(streamElement)
+          localizeTimestamps()
+          initTooltips()
+        }
+      })
     </script>
   </body>
 

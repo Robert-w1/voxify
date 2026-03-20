@@ -18,7 +18,7 @@ class FoldersController < ApplicationController
         return render json: [] if q.length < 2
 
         results = current_user.folders.search_by_name(q).limit(8).map do |f|
-          { type: "folder", label: f.name, url: folder_path(f) }
+          { type: "folder", label: f.name, url: folder_path(f), created_at: f.created_at.iso8601 }
         end
 
         render json: results

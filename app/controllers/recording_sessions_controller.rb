@@ -14,7 +14,7 @@ class RecordingSessionsController < ApplicationController
     @recording_session.status = :recording
 
     if @recording_session.save
-      redirect_to recording_session_path(@recording_session)
+      redirect_to recording_session_path(@recording_session, source: "new")
     else
       render :new, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class RecordingSessionsController < ApplicationController
         return render json: [] if q.length < 2
 
         results = current_user.recording_sessions.search_by_title(q).limit(8).map do |s|
-          { type: "session", label: s.title.presence || "Untitled", url: recording_session_path(s) }
+          { type: "session", label: s.title.presence || "Untitled", url: recording_session_path(s), created_at: s.created_at.iso8601 }
         end
 
         render json: results
@@ -166,7 +166,7 @@ class RecordingSessionsController < ApplicationController
   end
 
   def recording_session_params
-    params.require(:recording_session).permit(:audience, :presentation_type, focus: [])
+    params.require(:recording_session).permit(:audience, :presentation_type, :timezone, focus: [])
   end
 
   def update_params

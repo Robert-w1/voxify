@@ -45,9 +45,9 @@
 .btn-check:checked + .btn-option:hover,
 .btn-check:checked + .btn-option:focus {
   background-color: $color-bg-card  !important;
-  border:           2.5px solid $color-accent !important;
+  border:           1.5px solid $color-accent !important;
   color:            $color-heading !important;
-  box-shadow:       none !important;
+  box-shadow:       0 0 0 1.5px $color-accent !important;
 }
 
 // ── Step indicator ──

@@ -6,6 +6,7 @@
                   url: recording_session_path(@recording_session),
                   class: "session-row__rename-form" do |f| %>
       <%= f.text_field :title,
+                       value: @recording_session.title.to_s.split(' - ').first,
                        class: "session-row__title-input input-field",
                        autofocus: true,
                        required: true,
@@ -20,6 +21,7 @@
                   url: recording_session_path(@recording_session),
                   class: "recent-rename-form" do |f| %>
       <%= f.text_field :title,
+                       value: @recording_session.title.to_s.split(' - ').first,
                        class: "recent-rename-input input-field",
                        autofocus: true,
                        required: true,
