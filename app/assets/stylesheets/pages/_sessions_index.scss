@@ -242,7 +242,102 @@
   }
 }
 
-// button_to wraps the button in a <form> — make it invisible to layout
-.session-row__delete-form {
+// ── Delete confirmation modal (checkbox hack — no JS, no URL change) ──
+
+.delete-trigger {
+  display: none;
+
+  // When checked, show the sibling .delete-confirm inside the same .session-row-group
+  &:checked ~ .delete-confirm {
+    display: flex;
+  }
+}
+
+.delete-confirm {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-confirm__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.delete-confirm__card {
+  position: relative;
+  z-index: 1;
+  background: $color-bg;
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.delete-confirm__title {
+  font-size: 16px;
+  font-weight: 600;
+  color: $color-heading;
+  margin: 0 0 6px;
+}
+
+.delete-confirm__body {
+  font-size: 14px;
+  color: $color-body;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+.delete-confirm__name {
+  color: $color-heading;
+  font-weight: 500;
+}
+
+.delete-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.delete-confirm__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: background-color 0.15s ease;
+
+  &--cancel {
+    background: none;
+    color: $color-body;
+    border: 1px solid $color-border;
+
+    &:hover {
+      background-color: $color-bg-card;
+      color: $color-heading;
+      text-decoration: none;
+    }
+  }
+
+  &--delete {
+    background-color: $color-error;
+    color: #fff;
+
+    &:hover { background-color: darken($color-error, 6%); }
+  }
+}
+
+.delete-confirm__form {
   display: contents;
 }
