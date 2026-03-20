@@ -76,6 +76,6 @@ class RecordingSession < ApplicationRecord
   private
 
   def set_default_title
-  self.title ||= "#{presentation_type&.titleize} - #{Time.current.strftime('%b %d, %Y %I:%M %p')}"
+    self.title ||= "#{presentation_type&.humanize&.gsub('1on1', '1-on-1')} - #{Time.current.strftime('%-d %B %Y')}"
   end
 end

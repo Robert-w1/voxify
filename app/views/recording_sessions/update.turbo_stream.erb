@@ -1,16 +1,16 @@
 <%# Directly replace the title frame on the sessions index page (if present) -%>
 <%= turbo_stream.replace dom_id(@recording_session, :title) do %>
   <%= turbo_frame_tag dom_id(@recording_session, :title), class: "session-row__main" do %>
-    <%= link_to recording_session_path(@recording_session), class: "session-row__link" do %>
+    <%= link_to recording_session_path(@recording_session), class: "session-row__link", data: { turbo_frame: "_top" } do %>
       <div class="session-row__title">
         <span class="status-dot status-dot--<%= @recording_session.status %>"></span>
-        <span class="session-row__title-text"><%= @recording_session.title.presence || "Untitled" %></span>
+        <span class="session-row__title-text"><%= (@recording_session.title.presence || "Untitled").split(' - ').first %></span>
       </div>
       <div class="session-row__meta">
         <% if @recording_session.presentation_type.present? %>
           <span class="session-row__badge session-row__badge--type">
             <span class="session-row__badge-label">Presentation</span>
-            <%= @recording_session.presentation_type.humanize %>
+            <%= @recording_session.presentation_type.humanize.gsub("1on1", "1-on-1") %>
           </span>
         <% end %>
         <% if @recording_session.audience.present? %>
@@ -19,23 +19,29 @@
             <%= @recording_session.audience.humanize %>
           </span>
         <% end %>
-        <span class="session-row__date text-caption">
-          <%= @recording_session.created_at.strftime("%-d %b %Y") %>
-        </span>
+        <time class="session-row__date text-caption"
+              datetime="<%= @recording_session.created_at.iso8601 %>"
+              data-localize>
+          <%= @recording_session.created_at.strftime("%-d %B %Y") %>
+        </time>
       </div>
     <% end %>
   <% end %>
 <% end %>
 
 <%# Update the show page <h1> if the user is currently on that page -%>
-<%= turbo_stream.update "session-page-title", @recording_session.title.split(" - ").first %>
+<%= turbo_stream.update "session-page-title-#{@recording_session.id}", @recording_session.title.split(" - ").first %>
 
 <%# Directly replace the sidebar title frame (if present) -%>
 <%= turbo_stream.replace dom_id(@recording_session, :sidebar_title) do %>
   <%= turbo_frame_tag dom_id(@recording_session, :sidebar_title), class: "recent-item__frame" do %>
-    <%= link_to recording_session_path(@recording_session), class: "nav-item recent-item" do %>
+    <%= link_to recording_session_path(@recording_session),
+                  class: "nav-item recent-item",
+                  data: { turbo_frame: "_top", turbo_prefetch: false,
+                          bs_toggle: "tooltip", bs_placement: "right",
+                          tooltip_datetime: @recording_session.created_at.iso8601 } do %>
       <span class="status-dot status-dot--<%= @recording_session.status %>"></span>
-      <span class="label recent-label"><%= @recording_session.title.presence || "Untitled" %></span>
+      <span class="label recent-label"><%= (@recording_session.title.presence || "Untitled").split(' - ').first %></span>
     <% end %>
   <% end %>
 <% end %>

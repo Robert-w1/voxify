@@ -24,7 +24,10 @@ export default class extends Controller {
     "reviewControls",
     "processingIndicator",
     "playIcon",
-    "processingMessage"
+    "processingMessage",
+    "cardBody",
+    "card",
+    "reportSecondary", "reportFadeOverlay", "reportFocusAll", "focusChevron"
   ]
 
   static values = {
@@ -105,10 +108,28 @@ export default class extends Controller {
     }
     this.stateLabelTarget.textContent = labels[state] || state
 
-    // Waveform opacity per state; hide entirely when completed
-    const opacities = { ready: 0.2, countdown: 0.1, recording: 1, review: 1, processing: 0.1, completed: 0 }
+    // Card: lock height in completed state, release on other states
+    if (this.hasCardTarget) {
+      if (state === "completed") {
+        this.cardTarget.classList.add("session-card--completed")
+      } else {
+        this.cardTarget.classList.remove("session-card--completed", "expanded")
+      }
+    }
+
+    // Card body: hidden in completed state so the report section fills the space
+    if (this.hasCardBodyTarget) {
+      this.cardBodyTarget.style.display = (state === "completed") ? "none" : ""
+      // Top-align content during waveform states so the waveform stays at the same Y
+      // position regardless of how much content is below it. Center in ready/countdown.
+      const topAlignStates = ["recording", "review", "processing"]
+      this.cardBodyTarget.style.justifyContent = topAlignStates.includes(state) ? "flex-start" : ""
+    }
+
+    // Waveform: hidden in ready (not yet recording) and completed states
+    const opacities = { countdown: 0.1, recording: 1, review: 1, processing: 0.1 }
     this.waveformWrapperTarget.style.opacity = opacities[state] ?? 0.2
-    this.waveformWrapperTarget.style.display = (state === "completed") ? "none" : ""
+    this.waveformWrapperTarget.style.display = (state === "completed" || state === "ready") ? "none" : ""
     this.waveformWrapperTarget.style.cursor  = (state === "review") ? "pointer" : ""
 
     // Timer: visible during recording + review only
@@ -131,8 +152,8 @@ export default class extends Controller {
       this.buttonLabelTarget.textContent = "Tap to record"
     }
 
-    // Mic bar: visible in ready + recording
-    this.micBarTarget.hidden = !["ready", "recording"].includes(state)
+    // Mic bar: visible in ready only (hide once recording starts to reduce card height)
+    this.micBarTarget.hidden = (state !== "ready")
 
     // Grant prompt: hidden once we've left the ready state (or never shown if permission already held)
     if (state !== "ready") this.micGrantAreaTarget.hidden = true
@@ -433,6 +454,10 @@ export default class extends Controller {
   }
 
   async submitRecording() {
+    if (this.reviewAudio) {
+      this.reviewAudio.pause()
+      if (this.hasPlayIconTarget) this.playIconTarget.className = "fa-solid fa-play"
+    }
     if (this.stream) {
       this.stream.getTracks().forEach(t => t.stop())
       this.stream = null
@@ -502,7 +527,7 @@ export default class extends Controller {
       this.animationFrame = requestAnimationFrame(draw)
       this.analyser.getByteFrequencyData(this.dataArray)
 
-      ctx.fillStyle = "#E8E4DD"
+      ctx.fillStyle = "#F7F5F0"
       ctx.fillRect(0, 0, width, height)
 
       const barCount = this.bufferLength
@@ -746,6 +771,25 @@ export default class extends Controller {
   }
 
   // ────────────────────────────────────────
+  // REPORT EXPAND / BREAKDOWN
+  // ────────────────────────────────────────
+
+  expandReport() {
+    if (this.hasCardTarget) this.cardTarget.classList.add("expanded")
+    if (this.hasReportSecondaryTarget) this.reportSecondaryTarget.hidden = false
+    if (this.hasReportFadeOverlayTarget) this.reportFadeOverlayTarget.hidden = true
+  }
+
+  toggleFocusBreakdown() {
+    if (!this.hasReportFocusAllTarget) return
+    const el = this.reportFocusAllTarget
+    el.hidden = !el.hidden
+    if (this.hasFocusChevronTarget) {
+      this.focusChevronTarget.classList.toggle("report-chevron--open", !el.hidden)
+    }
+  }
+
+  // ────────────────────────────────────────
   // REPORT RENDERING
   // ────────────────────────────────────────
 
@@ -760,7 +804,10 @@ export default class extends Controller {
     const scoreEl = this.overallScoreTarget
     const scoreNum = scoreEl.querySelector(".score-number")
     scoreNum.textContent = report.overall_score
-    scoreEl.className = `report-overall-score flex-shrink-0 ${this._overallScoreClass(report.overall_score)}`
+    scoreEl.className = "report-overall-score flex-shrink-0"
+    const overallColor = this._scoreColor(report.overall_score, 100)
+    scoreEl.style.borderColor = overallColor
+    scoreNum.style.color = overallColor
 
     // Summary
     this.reportSummaryTarget.innerHTML = `<p class="mb-0">${report.summary || ""}</p>`
@@ -802,7 +849,7 @@ export default class extends Controller {
         </div>
         <div class="d-flex justify-content-between align-items-center mb-2">
           <span class="focus-category-label">${this._formatLabel(focus)}</span>
-          ${focusScore != null ? `<span class="score-badge ${this._scoreClass(focusScore)}">${focusScore} / 10</span>` : ""}
+          ${focusScore != null ? `<span class="score-badge" style="background-color:${this._scoreColor(focusScore)}">${focusScore} / 10</span>` : ""}
         </div>
         ${focusWhy ? `<p class="text-caption mb-0">${focusWhy}</p>` : ""}
       </div>
@@ -811,7 +858,7 @@ export default class extends Controller {
     // Metrics
     if (report.metrics) {
       const dur = report.metrics.duration_seconds
-      const durLabel = dur >= 60 ? `${Math.floor(dur / 60)}m ${dur % 60}s` : `${dur}s`
+      const durLabel = `${String(Math.floor(dur / 60)).padStart(2, "0")}:${String(dur % 60).padStart(2, "0")}`
       this.reportMetricsTarget.innerHTML = `
         <div class="report-metric text-center">
           <span class="metric-value">${durLabel}</span>
@@ -827,22 +874,43 @@ export default class extends Controller {
         </div>
       `
     }
+
+    // Focus breakdown bars (all focus areas)
+    if (this.hasReportFocusAllTarget && report.focus_feedbacks) {
+      const recommended = report.recommended_focus || ""
+      this.reportFocusAllTarget.innerHTML = Object.entries(report.focus_feedbacks).map(([key, data]) => {
+        const score    = data.score ?? 0
+        const pct      = Math.round((score / 10) * 100)
+        const isRec    = key === recommended
+        const barColor = this._scoreColor(score)
+        return `
+          <div class="focus-bar-item${isRec ? " focus-bar-item--recommended" : ""}">
+            <div class="focus-bar-header">
+              <span class="focus-bar-label">${this._formatLabel(key)}${isRec ? ' <span class="focus-bar-rec-tag">Recommended focus</span>' : ""}</span>
+              <span class="score-badge" style="background-color:${barColor}">${score}<span style="font-size:10px;opacity:0.7">/10</span></span>
+            </div>
+            <div class="focus-bar-track">
+              <div class="focus-bar-fill" style="width:${pct}%; background-color:${barColor};"></div>
+            </div>
+            ${data.summary ? `<p class="focus-bar-summary">${data.summary}</p>` : ""}
+          </div>
+        `
+      }).join("")
+    }
   }
 
-  _overallScoreClass(score) {
-    if (score >= 80) return "score-high"
-    if (score >= 60) return "score-mid"
-    return "score-low"
-  }
-
-  _scoreClass(score) {
-    if (score >= 8) return "score-high"
-    if (score >= 6) return "score-mid"
-    return "score-low"
+  // Interpolates between orange (#E8750A) at 1 and teal (#0D7377) at max
+  _scoreColor(score, max = 10) {
+    const t = Math.max(0, Math.min((score - 1) / (max - 1), 1))
+    const r = Math.round(232 + (13  - 232) * t)
+    const g = Math.round(117 + (115 - 117) * t)
+    const b = Math.round(10  + (119 - 10)  * t)
+    return `rgb(${r},${g},${b})`
   }
 
   _formatLabel(key) {
-    return key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())
+    const s = key.replace(/_/g, " ").toLowerCase()
+    return s.charAt(0).toUpperCase() + s.slice(1)
   }
 
   // ────────────────────────────────────────
@@ -882,7 +950,7 @@ export default class extends Controller {
     const width  = canvas.width
     const height = canvas.height
 
-    ctx.fillStyle = "#E8E4DD"
+    ctx.fillStyle = "#F7F5F0"
     ctx.fillRect(0, 0, width, height)
     if (!this._waveformData || !this._waveformDuration) return
 
@@ -916,10 +984,32 @@ export default class extends Controller {
     }
 
     ctx.globalAlpha = 1
+
     // Playhead line
     const px = playheadRatio * width
-    ctx.fillStyle = "#2D2A26"
-    ctx.fillRect(px, 0, 2, height)
+    ctx.fillStyle = "#0D7377"
+    ctx.fillRect(px - 1, 0, 3, height)
+
+    // Time label bubble above playhead
+    if (playheadTime > 0 && this._waveformDuration) {
+      const mins = Math.floor(playheadTime / 60).toString()
+      const secs = Math.floor(playheadTime % 60).toString().padStart(2, "0")
+      const label = `${mins}:${secs}`
+      ctx.font = "bold 11px Inter, sans-serif"
+      const textW = ctx.measureText(label).width
+      const bubbleW = textW + 10
+      const bubbleH = 18
+      const bubbleX = Math.min(Math.max(px - bubbleW / 2, 2), width - bubbleW - 2)
+      const bubbleY = 4
+
+      ctx.fillStyle = "#0D7377"
+      ctx.beginPath()
+      ctx.roundRect(bubbleX, bubbleY, bubbleW, bubbleH, 4)
+      ctx.fill()
+
+      ctx.fillStyle = "#fff"
+      ctx.fillText(label, bubbleX + 5, bubbleY + 13)
+    }
   }
 
   seekWaveform(event) {

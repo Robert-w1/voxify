@@ -8,13 +8,15 @@
 
   <%# ── Form — centered, constrained width ── %>
   <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-lg-10">
 
       <%= form_with(
         model: @recording_session,
         html: { class: "session-form" },
         data: { controller: "session-form", action: "change->session-form#validate" }
       ) do |f| %>
+        <%= f.hidden_field :timezone, value: "", data: { tz_field: true } %>
+        <script>document.querySelector('[data-tz-field]').value = Intl.DateTimeFormat().resolvedOptions().timeZone</script>
 
         <% if @recording_session.errors.any? %>
           <div class="p-3 mb-4" style="background-color: #f8d7da; border: 1px solid #912519; border-radius: 10px; color: #912519;">

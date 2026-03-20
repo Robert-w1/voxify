@@ -1,7 +1,7 @@
 // ── Card shell ──
 
 .session-card {
-  min-height: 580px;
+  min-height: 500px;
   display:    flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -12,6 +12,22 @@
     background-color: $color-bg-card;
     border-color:     $color-border-light;
   }
+}
+
+// Body: flex-grows and centers its content vertically
+.session-card-body {
+  flex:            1;
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  width:           100%;
+}
+
+// Report section: stretches to fill remaining space
+.session-card-report {
+  flex:        1;
+  align-self:  stretch;
 }
 
 // ── Show page header ──
@@ -54,28 +70,87 @@
 
 // ── State 1: Ready ──
 
-.session-ready-prompt {
-  .session-ready-icon {
-    width:           72px;
-    height:          72px;
-    margin:          0 auto;
-    display:         flex;
-    align-items:     center;
-    justify-content: center;
-    border-radius:   50%;
-    background-color: rgba($color-primary, 0.1);
+// Record button + label
+.session-ready-record {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  gap:             14px;
+  margin-bottom:   28px;
+}
 
-    .fa {
-      font-size: 28px;
-      color:     $color-primary;
-    }
+.session-ready-label {
+  font-size:      13px;
+  color:          $color-caption;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+// Mic row — borderless, just icon + select
+.session-mic-row {
+  display:         flex;
+  align-items:     center;
+  gap:             8px;
+  justify-content: center;
+  margin-bottom:   20px;
+}
+
+.session-mic-icon {
+  color:     $color-caption;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+// Upload area
+.session-upload-area {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            12px;
+}
+
+.session-or-divider {
+  display:     flex;
+  align-items: center;
+  gap:         10px;
+  width:       140px;
+  color:       $color-caption;
+  font-size:   11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  &::before,
+  &::after {
+    content:          '';
+    flex:             1;
+    height:           1px;
+    background-color: $color-border;
+  }
+}
+
+.session-upload-btn {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             7px;
+  font-size:       13px;
+  color:           $color-caption;
+  background:      none;
+  border:          none;
+  cursor:          pointer;
+  padding:         6px 14px;
+  border-radius:   $radius-md;
+  transition:      color $transition, background-color $transition;
+
+  &:hover {
+    color:            $color-heading;
+    background-color: $color-border-light;
   }
 }
 
 // ── State 2: Recording ──
 
 .session-waveform-wrapper {
-  background-color: $color-bg-card;
+  background-color: $color-bg;
   border:           1px solid $color-border;
   border-radius:    $radius-md;
   overflow:         hidden;
@@ -104,6 +179,7 @@
   background-color: rgba($color-bg-card, 0.96);
   border-radius:    $radius-lg;
   gap:              10px;
+  padding-top:      10%;  // shift number down past the badge area
 }
 
 .session-countdown-number {
@@ -193,30 +269,12 @@
   }
 }
 
-// Mic bar
-
-.session-mic-bar {
-  padding:          12px 16px;
-  background-color: $color-bg;
-  border:           1px solid $color-border-light;
-  border-radius:    $radius-md;
-  display:          flex;
-  align-items:      center;
-  justify-content:  center;
-}
-
 .select-input--sm {
   font-size:   13px;
   padding:     6px 32px 6px 10px;
   width:       auto;
   min-width:   180px;
   border-color: $color-border-light;
-}
-
-.mic-bar-divider {
-  width:            1px;
-  height:           24px;
-  background-color: $color-border;
 }
 
 // ── State 3: Processing ──
@@ -330,6 +388,136 @@
   }
 }
 
+// ── Card: completed state (locked height + expand) ──
+
+.session-card--completed {
+  height: 500px;
+  min-height: unset;
+  overflow: hidden;
+
+  &.expanded {
+    height: auto;
+    overflow: visible;
+
+    .report-fade-overlay { display: none; }
+  }
+}
+
+// Fade-out overlay at bottom of card
+.report-fade-overlay {
+  position:      absolute;
+  bottom:        0;
+  left:          0;
+  right:         0;
+  height:        130px;
+  background:    linear-gradient(to bottom, transparent, $color-bg-card 65%);
+  display:       flex;
+  align-items:   flex-end;
+  justify-content: center;
+  padding-bottom: 20px;
+  border-radius: 0 0 $radius-lg $radius-lg;
+  pointer-events: none;
+}
+
+.report-see-more-btn {
+  pointer-events: all;
+  display:        inline-flex;
+  align-items:    center;
+  gap:            6px;
+  font-size:      13px;
+  font-weight:    600;
+  color:          $color-primary;
+  background:     $color-bg-card;
+  border:         1.5px solid $color-border;
+  padding:        7px 18px;
+  border-radius:  $radius-md;
+  cursor:         pointer;
+  transition:     background-color $transition, border-color $transition;
+
+  &:hover {
+    background-color: $color-bg-card-hover;
+    border-color:     $color-caption;
+  }
+}
+
+// Chevron rotation when focus breakdown is open
+.report-chevron--open {
+  transform:  rotate(180deg);
+  transition: transform 0.2s ease;
+}
+
+// ── Focus breakdown bars ──
+
+.report-focus-all {
+  display:        flex;
+  flex-direction: column;
+  gap:            10px;
+}
+
+.focus-bar-item {
+  padding:          12px 14px;
+  border-radius:    $radius-md;
+  background-color: $color-bg;
+  border:           1px solid $color-border-light;
+
+  &--recommended {
+    border-color:     rgba($color-primary, 0.3);
+    background-color: rgba($color-primary, 0.04);
+  }
+}
+
+.focus-bar-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             8px;
+  margin-bottom:   8px;
+}
+
+.focus-bar-label {
+  font-size:   14px;
+  font-weight: 600;
+  color:       $color-heading;
+  text-transform: capitalize;
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+}
+
+.focus-bar-rec-tag {
+  font-size:        10px;
+  font-weight:      600;
+  letter-spacing:   0.05em;
+  text-transform:   uppercase;
+  color:            $color-primary;
+  background-color: rgba($color-primary, 0.1);
+  padding:          2px 6px;
+  border-radius:    4px;
+}
+
+.focus-bar-track {
+  height:           6px;
+  background-color: $color-border;
+  border-radius:    3px;
+  overflow:         hidden;
+  margin-bottom:    8px;
+}
+
+.focus-bar-fill {
+  height:        100%;
+  border-radius: 3px;
+  transition:    width 0.4s ease;
+
+  // background gradient applied via JS inline style (linear-gradient orange → _scoreColor)
+}
+
+.focus-bar-summary {
+  font-size:   12px;
+  color:       $color-caption;
+  margin:      0;
+  line-height: 1.5;
+}
+
 // ── State 4: Completed (Report) ──
 
 .report-divider {
@@ -392,7 +580,7 @@
   gap:        10px;
 
   li {
-    font-size:    13px;
+    font-size:    15px;
     color:        $color-body;
     line-height:  1.55;
     padding-left: 16px;
@@ -421,7 +609,7 @@
 }
 
 .focus-category-label {
-  font-size:      15px;
+  font-size:      16px;
   font-weight:    600;
   color:          $color-heading;
   text-transform: capitalize;
@@ -453,20 +641,7 @@
     letter-spacing: 0.06em;
   }
 
-  &.score-high {
-    border-color: $color-success;
-    .score-number { color: $color-success; }
-  }
-
-  &.score-mid {
-    border-color: $color-accent;
-    .score-number { color: $color-accent; }
-  }
-
-  &.score-low {
-    border-color: $color-error;
-    .score-number { color: $color-error; }
-  }
+  // border-color and .score-number color applied via JS inline styles (_scoreColor)
 }
 
 // Score badge (small inline number)
@@ -484,9 +659,7 @@
   font-weight:     700;
   color:           #fff;
 
-  &.score-high { background-color: $color-success; }
-  &.score-mid  { background-color: $color-accent;  }
-  &.score-low  { background-color: $color-error;   }
+  // background-color applied via JS inline style (_scoreColor)
 }
 
 // Metrics bar

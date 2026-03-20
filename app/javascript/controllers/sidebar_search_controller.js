@@ -77,9 +77,10 @@ export default class extends Controller {
       this.resultsTarget.innerHTML = `<div class="search-popup-empty">No results</div>`
     } else {
       this.resultsTarget.innerHTML = results.map(r => {
-        const { short, timestamp } = this._parseTitle(r.label)
-        const tooltipAttrs = timestamp
-          ? `data-bs-toggle="tooltip" data-bs-placement="right" title="${this._escape(timestamp)}"`
+        const short = this._shortLabel(r.label)
+        const tooltip = r.created_at ? this._formatDatetime(r.created_at) : null
+        const tooltipAttrs = tooltip
+          ? `data-bs-toggle="tooltip" data-bs-placement="right" title="${this._escape(tooltip)}"`
           : ""
         return `
           <a href="${r.url}" class="search-popup-item" data-turbo-frame="_top" ${tooltipAttrs}>
@@ -94,13 +95,22 @@ export default class extends Controller {
     this.resultsTarget.hidden = false
 
     this.resultsTarget.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
-      bootstrap.Tooltip.getOrCreateInstance(el)
+      bootstrap.Tooltip.getOrCreateInstance(el, { trigger: "hover" })
     })
   }
 
-  _parseTitle(label) {
-    const match = label.match(/^(.+?) - (\w{3} \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M)$/)
-    return match ? { short: match[1], timestamp: match[2] } : { short: label, timestamp: null }
+  _shortLabel(label) {
+    return label.split(" - ")[0] || label
+  }
+
+  _formatDatetime(iso) {
+    const dt = new Date(iso)
+    if (isNaN(dt.getTime())) return null
+    const day   = dt.getDate()
+    const month = dt.toLocaleString(undefined, { month: "long" })
+    const year  = dt.getFullYear()
+    const time  = dt.toLocaleString(undefined, { hour: "numeric", minute: "2-digit", timeZoneName: "short" })
+    return `${day} ${month} ${year} · ${time}`
   }
 
   _positionPopup() {
