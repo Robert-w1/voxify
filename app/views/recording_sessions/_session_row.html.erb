@@ -16,67 +16,112 @@
         </span>
       </div>
 
-      <div class="session-row__meta">
-        <% if session.folder.present? %>
-          <span class="session-row__badge session-row__badge--folder">
-            <i class="fa-solid fa-folder"></i>
-            <%= session.folder.name %>
+<%# Wrapper groups the checkbox, row, and modal as siblings for the CSS ~ selector -%>
+<div class="session-row-group" id="<%= dom_id(session) %>">
+
+  <%# Hidden checkbox — toggled by labels below; drives the modal via CSS -%>
+  <input type="checkbox" class="delete-trigger" id="<%= dom_id(session, :delete_trigger) %>">
+
+  <div class="session-row">
+
+    <%# ── Title + meta area wrapped in a Turbo Frame ────────────
+        Clicking the pencil button loads edit.html.erb into this
+        frame, swapping the title for an inline form in-place.      -%>
+    <%= turbo_frame_tag dom_id(session, :title), class: "session-row__main" do %>
+
+      <%= link_to recording_session_path(session), class: "session-row__link", data: { turbo_frame: "_top" } do %>
+
+        <% full_title = session.title.presence || "Untitled" %>
+        <% ts_match = full_title.match(/^(.+?) - (\w{3} \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M)$/) %>
+        <div class="session-row__title">
+          <span class="status-dot status-dot--<%= session.status == 'recording' ? 'pending' : session.status %>"></span>
+          <span class="session-row__title-text">
+            <%= ts_match ? ts_match[1] : full_title %>
           </span>
-        <% end %>
-        <% if session.presentation_type.present? %>
-          <span class="session-row__badge session-row__badge--type">
-            <span class="session-row__badge-label">Presentation</span>
-            <%= session.presentation_type.humanize %>
-          </span>
-        <% end %>
-        <% if session.audience.present? %>
-          <span class="session-row__badge session-row__badge--audience">
-            <span class="session-row__badge-label">Audience</span>
-            <%= session.audience.humanize %>
-          </span>
-        <% end %>
-        <time class="session-row__date text-caption"
-              datetime="<%= session.created_at.iso8601 %>"
-              data-localize>
-          <%= session.created_at.strftime("%-d %B %Y") %>
-        </time>
+        </div>
+
+        <div class="session-row__meta">
+          <% if session.folder.present? %>
+            <span class="session-row__badge session-row__badge--folder">
+              <i class="fa-solid fa-folder"></i>
+              <%= session.folder.name %>
+            </span>
+          <% end %>
+          <% if session.presentation_type.present? %>
+            <span class="session-row__badge session-row__badge--type">
+              <span class="session-row__badge-label">Presentation</span>
+              <%= session.presentation_type.humanize %>
+            </span>
+          <% end %>
+          <% if session.audience.present? %>
+            <span class="session-row__badge session-row__badge--audience">
+              <span class="session-row__badge-label">Audience</span>
+              <%= session.audience.humanize %>
+            </span>
+          <% end %>
+          <time class="session-row__date text-caption"
+                datetime="<%= session.created_at.iso8601 %>"
+                data-localize>
+            <%= session.created_at.strftime("%-d %B %Y") %>
+          </time>
+        </div>
+
+      <% end %>
+
+    <% end %>
+
+    <%# ── Action buttons ─────────────────────────────────────── -%>
+    <div class="session-row__actions">
+
+      <%# Rename: targets the turbo frame above — loads edit form inline -%>
+      <%= link_to edit_recording_session_path(session),
+                  data: { turbo_frame: dom_id(session, :title) },
+                  class: "session-row__action-btn",
+                  title: "Rename" do %>
+        <i class="fa-solid fa-pencil"></i>
+      <% end %>
+
+      <%# Folder picker -%>
+      <div class="folder-picker-wrapper" data-controller="folder-picker">
+        <button class="session-row__action-btn"
+                title="Add to folder"
+                data-action="click->folder-picker#toggle">
+          <i class="fa-solid fa-folder-plus"></i>
+        </button>
+        <%= render "shared/folder_picker_popup", session: session %>
       </div>
 
-    <% end %>
+      <%# Delete: toggles the checkbox which shows the confirm modal -%>
+      <label for="<%= dom_id(session, :delete_trigger) %>"
+             class="session-row__action-btn session-row__action-btn--danger"
+             title="Delete">
+        <i class="fa-solid fa-trash"></i>
+      </label>
 
-  <% end %>
-
-  <%# ── Action buttons ─────────────────────────────────────── -%>
-  <div class="session-row__actions">
-
-    <%# Rename: targets the turbo frame above — loads edit form inline -%>
-    <%= link_to edit_recording_session_path(session),
-                data: { turbo_frame: dom_id(session, :title) },
-                class: "session-row__action-btn",
-                title: "Rename" do %>
-      <i class="fa-solid fa-pencil"></i>
-    <% end %>
-
-    <%# Folder picker -%>
-    <div class="folder-picker-wrapper" data-controller="folder-picker">
-      <button class="session-row__action-btn"
-              title="Add to folder"
-              data-action="click->folder-picker#toggle">
-        <i class="fa-solid fa-folder-plus"></i>
-      </button>
-      <%= render "shared/folder_picker_popup", session: session %>
     </div>
 
-    <%# Delete: standard Rails form, no JS -%>
-    <%= button_to recording_session_path(session),
-                  method: :delete,
-                  class: "session-row__action-btn session-row__action-btn--danger",
-                  title: "Delete",
-                  form_class: "session-row__delete-form",
-                  data: { turbo_confirm: "Delete \"#{session.title.presence || 'Untitled'}\"? This cannot be undone." } do %>
-      <i class="fa-solid fa-trash"></i>
-    <% end %>
+  </div>
 
+  <%# ── Delete confirmation modal (CSS checkbox hack, no JS, no URL change) -%>
+  <div class="delete-confirm">
+    <label for="<%= dom_id(session, :delete_trigger) %>" class="delete-confirm__backdrop"></label>
+    <div class="delete-confirm__card">
+      <p class="delete-confirm__title">Delete session?</p>
+      <p class="delete-confirm__body">
+        <span class="delete-confirm__name">&ldquo;<%= session_label %>&rdquo;</span>
+        will be permanently deleted.
+      </p>
+      <div class="delete-confirm__actions">
+        <label for="<%= dom_id(session, :delete_trigger) %>"
+               class="btn btn-secondary">Cancel</label>
+        <%= button_to recording_session_path(session),
+                      method: :delete,
+                      class: "btn btn-primary",
+                      form_class: "delete-confirm__form" do %>
+          Delete
+        <% end %>
+      </div>
+    </div>
   </div>
 
 </div>

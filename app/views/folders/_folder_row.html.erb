@@ -1,50 +1,77 @@
-<div class="session-row" id="<%= dom_id(folder) %>">
+<div class="session-row-group" id="<%= dom_id(folder) %>">
 
-  <%= turbo_frame_tag dom_id(folder, :title), class: "session-row__main" do %>
-    <%= link_to folder_path(folder), class: "session-row__link", data: { turbo_frame: "_top" } do %>
+  <%# Hidden checkbox — toggled by labels below; drives the modal via CSS -%>
+  <input type="checkbox" class="delete-trigger" id="<%= dom_id(folder, :delete_trigger) %>">
 
-      <div class="session-row__title">
-        <i class="fa-solid fa-folder folder-row__icon"></i>
-        <span class="session-row__title-text"><%= folder.name %></span>
-      </div>
+  <div class="session-row">
 
-      <div class="session-row__meta">
-        <span class="session-row__badge session-row__badge--folder-count">
-          <span class="session-row__badge-label">Sessions</span>
-          <%= folder.recording_sessions.size %>
-        </span>
-        <% if folder.description.present? %>
-          <span class="session-row__badge session-row__badge--description">
-            <span class="session-row__badge-label">Description</span>
-            <%= folder.description.split.first(10).join(" ") %><%= "…" if folder.description.split.size > 10 %>
+    <%= turbo_frame_tag dom_id(folder, :title), class: "session-row__main" do %>
+      <%= link_to folder_path(folder), class: "session-row__link", data: { turbo_frame: "_top" } do %>
+
+        <div class="session-row__title">
+          <i class="fa-solid fa-folder folder-row__icon"></i>
+          <span class="session-row__title-text"><%= folder.name %></span>
+        </div>
+
+        <div class="session-row__meta">
+          <span class="session-row__badge session-row__badge--folder-count">
+            <span class="session-row__badge-label">Sessions</span>
+            <%= folder.recording_sessions.size %>
           </span>
+          <% if folder.description.present? %>
+            <span class="session-row__badge session-row__badge--description">
+              <span class="session-row__badge-label">Description</span>
+              <%= folder.description.split.first(10).join(" ") %><%= "…" if folder.description.split.size > 10 %>
+            </span>
+          <% end %>
+          <span class="session-row__date text-caption">
+            <%= folder.created_at.strftime("%-d %b %Y") %>
+          </span>
+        </div>
+
+      <% end %>
+    <% end %>
+
+    <div class="session-row__actions">
+
+      <%= link_to edit_folder_path(folder),
+                  data: { turbo_frame: dom_id(folder, :title) },
+                  class: "session-row__action-btn",
+                  title: "Rename" do %>
+        <i class="fa-solid fa-pencil"></i>
+      <% end %>
+
+      <%# Delete: toggles the checkbox which shows the confirm modal -%>
+      <label for="<%= dom_id(folder, :delete_trigger) %>"
+             class="session-row__action-btn session-row__action-btn--danger"
+             title="Delete">
+        <i class="fa-solid fa-trash"></i>
+      </label>
+
+    </div>
+
+  </div>
+
+  <%# ── Delete confirmation modal (CSS checkbox hack, no JS, no URL change) -%>
+  <div class="delete-confirm">
+    <label for="<%= dom_id(folder, :delete_trigger) %>" class="delete-confirm__backdrop"></label>
+    <div class="delete-confirm__card">
+      <p class="delete-confirm__title">Delete folder?</p>
+      <p class="delete-confirm__body">
+        <span class="delete-confirm__name">&ldquo;<%= folder.name %>&rdquo;</span>
+        will be permanently deleted. Sessions inside will not be deleted.
+      </p>
+      <div class="delete-confirm__actions">
+        <label for="<%= dom_id(folder, :delete_trigger) %>"
+               class="btn btn-secondary">Cancel</label>
+        <%= button_to folder_path(folder),
+                      method: :delete,
+                      class: "btn btn-primary",
+                      form_class: "delete-confirm__form" do %>
+          Delete
         <% end %>
-        <span class="session-row__date text-caption">
-          <%= folder.created_at.strftime("%-d %B %Y") %>
-        </span>
       </div>
-
-    <% end %>
-  <% end %>
-
-  <div class="session-row__actions">
-
-    <%= link_to edit_folder_path(folder),
-                data: { turbo_frame: dom_id(folder, :title) },
-                class: "session-row__action-btn",
-                title: "Rename" do %>
-      <i class="fa-solid fa-pencil"></i>
-    <% end %>
-
-    <%= button_to folder_path(folder),
-                  method: :delete,
-                  class: "session-row__action-btn session-row__action-btn--danger",
-                  title: "Delete",
-                  form_class: "session-row__delete-form",
-                  data: { turbo_confirm: "Delete \"#{folder.name}\"? Sessions inside will not be deleted." } do %>
-      <i class="fa-solid fa-trash"></i>
-    <% end %>
-
+    </div>
   </div>
 
 </div>
