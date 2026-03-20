@@ -1,23 +1,55 @@
-// ============================================================
-// SESSION PAGE
-// Covers all 4 states: ready, recording, processing, completed
-// ============================================================
-
 // ── Card shell ──
 
 .session-card {
-  min-height: 360px;
+  min-height: 580px;
   display:    flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  position:   relative;
+
+  // Override the generic info-card hover
+  &:hover {
+    background-color: $color-bg-card;
+    border-color:     $color-border-light;
+  }
 }
 
-// ── Title row ──
+// ── Show page header ──
 
-.session-title-row {
-  h1 {
-    display: inline;
+.session-show-header h1[contenteditable]:focus {
+  outline: none;
+}
+
+.session-show-title-row {
+  display:     flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.session-show-actions {
+  display:    flex;
+  gap:        4px;
+  opacity:    0;
+  transition: opacity $transition;
+  flex-shrink: 0;
+}
+
+.session-show-header {
+  padding:       10px 12px;
+  border-radius: $radius-md;
+  transition:    background-color $transition;
+
+  &:hover {
+    background-color: $color-bg-card;
+    .session-show-actions { opacity: 1; }
   }
+}
+
+// ── Show page badges (larger than list) ──
+
+.session-show-badges .session-row__badge {
+  font-size: 13px;
+  padding:   4px 10px;
 }
 
 // ── State 1: Ready ──
@@ -43,19 +75,42 @@
 // ── State 2: Recording ──
 
 .session-waveform-wrapper {
-  background-color: $color-bg;
-  border:           1px solid $color-border-light;
+  background-color: $color-bg-card;
+  border:           1px solid $color-border;
   border-radius:    $radius-md;
   overflow:         hidden;
   display:          flex;
   align-items:      center;
   justify-content:  center;
+  position:         relative;
 }
 
 .session-waveform-canvas {
   display: block;
   width:   100%;
   height:  120px;
+}
+
+// Countdown overlay (full-card, absolutely positioned)
+
+.session-countdown-overlay {
+  position:         absolute;
+  inset:            0;
+  z-index:          10;
+  display:          flex;
+  flex-direction:   column;
+  align-items:      center;
+  justify-content:  center;
+  background-color: rgba($color-bg-card, 0.96);
+  border-radius:    $radius-lg;
+  gap:              10px;
+}
+
+.session-countdown-number {
+  font-family:    $font-display;
+  font-size:      80px;
+  color:          $color-primary;
+  line-height:    1;
 }
 
 // Timer
@@ -67,10 +122,6 @@
     letter-spacing: 0.04em;
     color:          $color-heading;
     line-height:    1;
-  }
-
-  .timer-limit {
-    font-size: 15px;
   }
 }
 
@@ -140,11 +191,6 @@
       color:            #fff;
     }
   }
-
-  // Restart
-  &--restart {
-    // Uses default styling (outlined)
-  }
 }
 
 // Mic bar
@@ -154,6 +200,9 @@
   background-color: $color-bg;
   border:           1px solid $color-border-light;
   border-radius:    $radius-md;
+  display:          flex;
+  align-items:      center;
+  justify-content:  center;
 }
 
 .select-input--sm {
@@ -172,7 +221,13 @@
 
 // ── State 3: Processing ──
 
-.session-processing {
+.session-processing-card {
+  background-color: $color-bg-card;
+  border-radius:    $radius-md;
+  padding:          20px 24px;
+}
+
+.session-processing-card {
   .processing-spinner {
     display: flex;
     align-items: center;
@@ -250,11 +305,17 @@
   justify-content: center;
   cursor:          pointer;
   color:           $color-heading;
-  transition:      background-color $transition, border-color $transition;
+  transition:      border-color $transition, box-shadow $transition;
 
   &:hover {
-    background-color: $color-bg;
-    border-color:     $color-caption;
+    background-color: transparent;
+    border-color:     $color-accent;
+  }
+
+  &:active {
+    background-color: transparent;
+    border-color:     $color-accent;
+    box-shadow:       0 0 0 2px $color-accent;
   }
 
   &--primary {

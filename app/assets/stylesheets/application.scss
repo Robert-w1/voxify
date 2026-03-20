@@ -107,7 +107,7 @@ p {
 }
 
 .text-caption {
-  font-size: 13px;
+  font-size: 14px;
   color:     $color-caption;
 }
 
@@ -132,7 +132,7 @@ a {
   justify-content: center;
   gap:             8px;
   font-family:     $font-body;
-  font-size:       15px;
+  font-size:       16px;
   font-weight:     600;
   line-height:     1;
   border-radius:   $radius-md;
@@ -154,6 +154,14 @@ input[type="submit"].btn-primary {
   &:hover {
     background-color: $color-primary-hover;
     border-color:     $color-primary-hover;
+    color:            #F7F5F0;
+  }
+
+  &:active,
+  &:focus-visible,
+  &:active:focus-visible {
+    background-color: $color-primary-hover !important;
+    border-color:     $color-primary-hover !important;
     color:            #F7F5F0;
   }
 }
@@ -178,8 +186,8 @@ input[type="submit"].btn-primary {
   pointer-events:   none;
 }
 
-.btn-sm { font-size: 13px; }
-.btn-lg { font-size: 17px; border-radius: $radius-lg; }
+.btn-sm { font-size: 16px; }
+.btn-lg { font-size: 16px; border-radius: $radius-lg; }
 
 // ============================================================
 // CARDS
@@ -190,11 +198,6 @@ input[type="submit"].btn-primary {
   border:           1px solid $color-border-light;
   border-radius:    $radius-lg;
   transition:       background-color $transition, border-color $transition;
-
-  &:hover {
-    background-color: $color-bg-card-hover;
-    border-color:     $color-border;
-  }
 }
 
 // ============================================================
@@ -239,5 +242,5 @@ input[type="submit"].btn-primary {
 .container-app {
   max-width: 1400px;
   margin:    0 auto;
-  padding:   0 48px;
+  padding:   0 100px;
 }

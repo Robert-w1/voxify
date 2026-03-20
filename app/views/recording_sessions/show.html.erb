@@ -6,66 +6,101 @@
      data-recorder-report-status-url-value="<%= report_status_recording_session_path(@recording_session) %>"
      <% if @report_json %>data-recorder-initial-report-value="<%= @report_json %>"<% end %>>
 
+  <%= link_to recording_sessions_path, class: "folder-show__back text-caption" do %>
+    <i class="fa-solid fa-chevron-left"></i> All sessions
+  <% end %>
+
+  <%# ── TITLE (left-aligned, matches Sessions / Folders / New session) ── %>
+  <div class="session-show-header mb-5" style="margin-top: 16px;">
+    <div class="session-show-title-row mb-1">
+      <h1 id="session-page-title"
+          class="mb-0"
+          data-recorder-target="titleDisplay"
+          data-action="blur->recorder#saveTitle keydown->recorder#titleKeydown"><%= @recording_session.title.split(' - ').first %></h1>
+
+      <div class="session-show-actions">
+        <%# Rename -%>
+        <button data-action="click->recorder#editTitle"
+                class="session-row__action-btn"
+                aria-label="Rename">
+          <i class="fa-solid fa-pencil"></i>
+        </button>
+
+        <%# Add to folder -%>
+        <div class="folder-picker-wrapper" data-controller="folder-picker">
+          <button class="session-row__action-btn"
+                  title="Add to folder"
+                  data-action="click->folder-picker#toggle">
+            <i class="fa-solid fa-folder-plus"></i>
+          </button>
+          <%= render "shared/folder_picker_popup", session: @recording_session %>
+        </div>
+      </div>
+    </div>
+    <time class="text-caption fst-italic mb-0 d-block"
+          datetime="<%= @recording_session.created_at.iso8601 %>"
+          data-localize>
+      <%= @recording_session.created_at.strftime('%b %d, %Y · %H:%M UTC') %>
+    </time>
+  </div>
+
+  <%# ── SESSION CARD (centered) ── %>
   <div class="row justify-content-center">
     <div class="col-lg-8">
 
-      <%# ── TITLE ── %>
-      <div class="session-title-row mb-4">
-        <div class="d-flex align-items-center gap-2">
-          <h1 id="session-page-title"
-              class="mb-0"
-              data-recorder-target="titleDisplay"
-              data-action="blur->recorder#saveTitle keydown->recorder#titleKeydown"><%= @recording_session.title.split(' - ').first %></h1>
-          <button data-action="click->recorder#editTitle"
-                  class="btn btn-secondary btn-sm" aria-label="Edit session title">
-            <i class="fa fa-pencil"></i>
-          </button>
-        </div>
-        <p class="text-caption mb-0"><%= @recording_session.created_at.strftime('%b %d, %Y %I:%M %p') %></p>
-      </div>
-
-      <%# ── SESSION CARD ── %>
       <div class="session-card info-card p-4">
 
-        <%# ── Top bar: state label + context chips ── %>
-        <div class="d-flex justify-content-between align-items-start mb-4">
-          <span data-recorder-target="stateLabel"
-                class="text-muted small text-uppercase"
-                style="letter-spacing: 0.05em;">
-            Ready to record
-          </span>
-          <div class="d-flex gap-2">
-            <span class="badge bg-light text-muted border">
-              <%= @recording_session.presentation_type&.titleize %>
-            </span>
-            <% @recording_session.focus.reject(&:blank?).each do |f| %>
-              <span class="badge bg-light text-muted border">
-                <%= f.titleize %> focus
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <%# ── Timer (shown in recording + review) ── %>
-        <div data-recorder-target="timerDisplay" class="text-center mb-3" hidden>
-          <span data-recorder-target="timer"
-                class="timer-display"
-                style="font-size: 36px; font-variant-numeric: tabular-nums;">
-            0:00
-          </span>
-        </div>
-
-        <%# ── Countdown ── %>
-        <div data-recorder-target="countdownArea" class="text-center py-4" hidden>
+        <%# ── Countdown overlay (covers full card, z-index 10) ── %>
+        <div data-recorder-target="countdownArea"
+             class="session-countdown-overlay"
+             hidden>
           <div data-recorder-target="countdown"
-               style="font-size: 56px; font-weight: 700; color: #0D7377; line-height: 1;">
+               class="session-countdown-number">
             3
           </div>
           <button data-action="click->recorder#skipCountdown"
-                  class="btn btn-link text-muted small mt-3"
+                  class="btn btn-link text-muted small"
                   style="text-decoration: none;">
             Tap to skip
           </button>
+        </div>
+
+        <%# ── Top bar: state label + context chips ── %>
+        <div class="d-flex justify-content-between align-items-start mb-4"
+             style="position: relative; z-index: 11;">
+          <span data-recorder-target="stateLabel"
+                class="text-muted small text-uppercase"
+                style="letter-spacing: 0.05em; white-space: nowrap; flex-shrink: 0; margin-top: 4px;">
+            Ready to record
+          </span>
+          <div class="d-flex flex-column gap-2 align-items-end session-show-badges">
+            <% if @recording_session.presentation_type.present? || @recording_session.audience.present? %>
+              <div class="d-flex gap-2">
+                <% if @recording_session.presentation_type.present? %>
+                  <span class="session-row__badge session-row__badge--type">
+                    <span class="session-row__badge-label">Presentation</span>
+                    <%= @recording_session.presentation_type.humanize %>
+                  </span>
+                <% end %>
+                <% if @recording_session.audience.present? %>
+                  <span class="session-row__badge session-row__badge--audience">
+                    <span class="session-row__badge-label">Audience</span>
+                    <%= @recording_session.audience.humanize %>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+            <% focus_items = @recording_session.focus.reject(&:blank?) %>
+            <% if focus_items.any? %>
+              <% focus_text = focus_items.length == 1 ? focus_items.first.humanize : focus_items.first(focus_items.length - 1).map(&:humanize).join(", ") + " and " + focus_items.last.humanize %>
+              <div class="d-flex justify-content-end">
+                <span class="session-row__badge session-row__badge--focus">
+                  <span class="session-row__badge-label">Focus</span>
+                  <%= focus_text %>
+                </span>
+              </div>
+            <% end %>
+          </div>
         </div>
 
         <%# ── Waveform ── %>
@@ -73,11 +108,33 @@
              class="session-waveform-wrapper mb-4"
              style="opacity: 0.2; transition: opacity 0.3s ease;">
           <canvas data-recorder-target="waveformCanvas"
+                  data-action="click->recorder#seekWaveform"
                   class="session-waveform-canvas"
                   width="700" height="120"></canvas>
         </div>
 
-        <%# ── Mic permission prompt (shown when access not yet granted) ── %>
+        <%# ── Processing indicator (spinner, shown right below waveform during processing) ── %>
+        <div data-recorder-target="processingIndicator" class="session-processing-card text-center" hidden>
+          <div class="processing-spinner">
+            <div class="spinner-ring"></div>
+          </div>
+        </div>
+
+        <%# ── Processing message (right below spinner, only visible during processing) ── %>
+        <p data-recorder-target="processingMessage"
+           class="text-center text-caption fst-italic mb-3"
+           hidden></p>
+
+        <%# ── Timer (shown in recording + review, anchored below waveform) ── %>
+        <div data-recorder-target="timerDisplay" class="text-center mb-4" hidden>
+          <span data-recorder-target="timer"
+                class="timer-display"
+                style="font-size: 36px; font-variant-numeric: tabular-nums;">
+            0:00
+          </span>
+        </div>
+
+        <%# ── Mic permission prompt ── %>
         <div data-recorder-target="micGrantArea" class="text-center mb-4" hidden>
           <p class="text-muted small mb-3">
             Microphone access is required to record.<br>
@@ -89,7 +146,7 @@
           </button>
         </div>
 
-        <%# ── Record button (ready + recording states) ── %>
+        <%# ── Record button ── %>
         <div data-recorder-target="recordButtonArea" class="text-center mb-4">
           <button data-recorder-target="recordButton"
                   data-action="click->recorder#handleRecordButton"
@@ -102,9 +159,9 @@
           </div>
         </div>
 
-        <%# ── Mic selector (ready + recording states) ── %>
+        <%# ── Mic selector (d-flex handled by CSS so hidden attribute works correctly) ── %>
         <div data-recorder-target="micBar"
-             class="session-mic-bar d-flex align-items-center justify-content-center gap-2 mb-4">
+             class="session-mic-bar gap-2 mb-4">
           <i class="fa fa-microphone text-caption"></i>
           <select id="mic-select"
                   name="mic_device"
@@ -115,7 +172,7 @@
           </select>
         </div>
 
-        <%# ── Upload option (ready state only) ── %>
+        <%# ── Upload option ── %>
         <div data-recorder-target="uploadArea" class="text-center mb-3">
           <div class="text-muted small mb-2" style="letter-spacing: 0.03em;">or</div>
           <button data-action="click->recorder#triggerFileUpload"
@@ -129,43 +186,25 @@
                  style="display: none;" />
         </div>
 
-        <%# ── Review controls (review state) ── %>
-        <div data-recorder-target="reviewControls" class="text-center" hidden>
+        <%# ── Review controls ── %>
+        <div data-recorder-target="reviewControls" class="text-center mt-auto pt-3" hidden>
           <div class="d-flex justify-content-center gap-4">
-            <div class="text-center">
-              <button data-action="click->recorder#reRecord"
-                      aria-label="Re-record"
-                      class="review-btn">
-                <i class="fa fa-times"></i>
-              </button>
-              <div class="text-muted small mt-1">Re-record</div>
-            </div>
-            <div class="text-center">
-              <button data-action="click->recorder#playRecording"
-                      aria-label="Play recording"
-                      class="review-btn">
-                <i class="fa fa-play"></i>
-              </button>
-              <div class="text-muted small mt-1">Play</div>
-            </div>
-            <div class="text-center">
-              <button data-action="click->recorder#submitRecording"
-                      aria-label="Analyze recording"
-                      class="review-btn review-btn--primary">
-                <i class="fa fa-check"></i>
-              </button>
-              <div class="text-muted small mt-1">Analyze</div>
-            </div>
+            <button data-action="click->recorder#reRecord"
+                    aria-label="Re-record"
+                    class="review-btn">
+              <i class="fa-solid fa-arrow-rotate-left"></i>
+            </button>
+            <button data-action="click->recorder#playRecording"
+                    aria-label="Play recording"
+                    class="review-btn">
+              <i data-recorder-target="playIcon" class="fa-solid fa-play"></i>
+            </button>
+            <button data-action="click->recorder#submitRecording"
+                    aria-label="Analyze recording"
+                    class="review-btn review-btn--primary">
+              <i class="fa-solid fa-check"></i>
+            </button>
           </div>
-        </div>
-
-        <%# ── Processing indicator ── %>
-        <div data-recorder-target="processingIndicator" class="text-center py-5" hidden>
-          <div class="processing-spinner mb-4">
-            <div class="spinner-ring"></div>
-          </div>
-          <p class="mb-1" style="font-size: 14px; color: #6c757d;">Analyzing your delivery...</p>
-          <p class="mb-0" style="font-size: 12px; color: #adb5bd;">This usually takes 10–15 seconds</p>
         </div>
 
         <%# ── Completed (Report) ── %>
@@ -187,20 +226,17 @@
           <%# Strengths & Improvements %>
           <div class="row g-3 mb-4">
             <div class="col-md-6">
-              <div class="report-insight-block h-100" data-recorder-target="reportStrengths">
-              </div>
+              <div class="report-insight-block h-100" data-recorder-target="reportStrengths"></div>
             </div>
             <div class="col-md-6">
-              <div class="report-insight-block h-100" data-recorder-target="reportImprovements">
-              </div>
+              <div class="report-insight-block h-100" data-recorder-target="reportImprovements"></div>
             </div>
           </div>
 
           <hr class="report-divider" />
 
           <%# Recommended focus %>
-          <div class="mb-4" data-recorder-target="reportFocus">
-          </div>
+          <div class="mb-4" data-recorder-target="reportFocus"></div>
 
           <hr class="report-divider" />
 
@@ -215,12 +251,20 @@
                         class: "btn btn-primary w-100",
                         data: { recorder_target: "downloadButton", turbo: false } do %>
               <i class="fa fa-download"></i>
-              Download full report
+              Download report
             <% end %>
           </div>
         </div>
       </div>
 
+      <%# ── Previous button ── %>
+      <div class="flow-nav mt-3">
+        <%= link_to "javascript:history.back()", class: "btn btn-secondary" do %>
+          &larr; Previous
+        <% end %>
+      </div>
+
     </div>
   </div>
+
 </div>

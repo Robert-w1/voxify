@@ -1,9 +1,14 @@
 <div class="container-app py-5">
+
+  <%# ── Page header (left-aligned, matches Sessions / Folders) ── %>
+  <div class="session-new-content mb-5">
+    <h1 class="mb-1">New session</h1>
+    <p class="text-caption fst-italic mb-0">Record yourself, get AI feedback, and track your progress session by session.</p>
+  </div>
+
+  <%# ── Form — centered, constrained width ── %>
   <div class="row justify-content-center">
     <div class="col-lg-8">
-
-      <h1 class="mb-1">Session goal</h1>
-      <p class="text-caption fst-italic mb-4">Set your goal before recording.</p>
 
       <%= form_with(
         model: @recording_session,
@@ -18,6 +23,9 @@
             <% end %>
           </div>
         <% end %>
+
+        <%# ── Section label ── %>
+        <p class="session-new-goal-label mb-4">Set the goal for your session</p>
 
         <%# ── STEP INDICATOR ── %>
         <div class="flow-steps mb-4">
@@ -57,9 +65,9 @@
                   class: "btn-check",
                   id: "presentation_type_#{option}",
                   data: { session_form_target: "requiredField", action: "click->session-form#toggleRadio" } %>
-                <%= f.label :presentation_type, option.titleize.gsub("1on1", "1-on-1"),
+                <%= f.label :presentation_type, option.humanize.gsub("1on1", "1-on-1"),
                   for: "presentation_type_#{option}",
-                  class: "btn btn-secondary" %>
+                  class: "btn btn-option" %>
               </div>
             <% end %>
           </div>
@@ -76,9 +84,9 @@
                   class: "btn-check",
                   id: "audience_#{option}",
                   data: { session_form_target: "requiredField", action: "click->session-form#toggleRadio" } %>
-                <%= f.label :audience, option.titleize.gsub("Vcs", "VCs"),
+                <%= f.label :audience, option.humanize,
                   for: "audience_#{option}",
-                  class: "btn btn-secondary" %>
+                  class: "btn btn-option" %>
               </div>
             <% end %>
           </div>
@@ -97,9 +105,9 @@
                   id: "focus_#{option}",
                   data: { session_form_target: "checkboxField" }
                 }, option, nil %>
-                <%= f.label :focus, option.titleize,
+                <%= f.label :focus, option.humanize,
                   for: "focus_#{option}",
-                  class: "btn btn-secondary" %>
+                  class: "btn btn-option" %>
               </div>
             <% end %>
           </div>
@@ -146,4 +154,5 @@
       <% end %>
     </div>
   </div>
+
 </div>

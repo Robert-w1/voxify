@@ -105,6 +105,9 @@ export default class extends Controller {
       if (s === step) dot.classList.remove("completed", "locked")
       if (s < step)   dot.classList.remove("active",    "locked")
     })
+
+    // Re-validate so the submit button reflects already-made selections
+    this.validate()
   }
 
   #maxUnlockedStep() {

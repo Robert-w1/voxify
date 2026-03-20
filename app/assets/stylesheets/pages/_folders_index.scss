@@ -23,15 +23,10 @@
   display: block;
   text-decoration: none;
   color: inherit;
-  border-radius: $radius-sm;
-  padding: 2px 6px;
-  margin: -2px -6px;
-  transition: background-color $transition;
 
-  h2 { margin: 0; }
+  h1, h2 { margin: 0; }
 
   &:hover {
-    background-color: $color-bg-card;
     color: inherit;
     text-decoration: none;
   }
@@ -46,24 +41,30 @@
   display: block;
   text-decoration: none;
   color: inherit;
-  border-radius: $radius-sm;
-  padding: 4px 6px;
-  margin: -4px -6px;
-  transition: background-color $transition;
+  background-color: $color-bg;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: 10px 14px;
 
   p { margin: 0; }
 
   &:hover {
-    background-color: $color-bg-card;
     text-decoration: none;
+    color: inherit;
   }
 }
 
+.folder-show__desc-label {
+  font-size:   16px;
+  font-weight: 600;
+  color:       $color-body;
+  margin-right: 4px;
+}
+
 .folder-show__desc-placeholder {
-  color: $color-caption;
-  opacity: 0.5;
-  font-style: italic;
-  margin: 0;
+  font-family: $font-body;
+  font-size:   16px;
+  color:       $color-caption;
 }
 
 .folder-show__inline-form {
@@ -72,21 +73,44 @@
 }
 
 .folder-show__name-input {
-  font-size: 33px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: $color-heading;
-  padding: 2px 6px;
-  height: auto;
-  width: 100%;
+  font-family:    $font-display;
+  font-size:      42px;
+  font-weight:    400;
+  line-height:    1.05;
+  letter-spacing: 0.02em;
+  color:          $color-heading;
+  padding:        0;
+  height:         auto;
+  width:          100%;
+  border:         none;
+  outline:        none;
+  background:     transparent;
+  box-shadow:     none;
+
+  &:focus {
+    outline:      none;
+    border:       none;
+    box-shadow:   none;
+  }
 }
 
 .folder-show__desc-input {
-  font-size: 13px;
-  color: $color-caption;
-  padding: 4px 6px;
-  width: 100%;
-  resize: none;
+  font-family:      $font-body;
+  font-size:        16px;
+  color:            $color-body;
+  background-color: $color-bg;
+  border:           1px solid $color-border;
+  border-radius:    $radius-md;
+  padding:          10px 14px;
+  width:            100%;
+  resize:           none;
+  outline:          none;
+
+  &:focus {
+    outline:      none;
+    border-color: $color-border;
+    box-shadow:   none;
+  }
 }
 
 // ── Folder show ───────────────────────────────────────────────

@@ -2,6 +2,54 @@
 // SESSION NEW — Card flow wizard
 // ============================================================
 
+.session-new-content {
+  max-width: 640px;
+}
+
+.session-new-goal-label {
+  font-size:      16px;
+  font-weight:    600;
+  color:          $color-caption;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin:         0;
+}
+
+// ── Option buttons ──
+
+.btn-option {
+  background-color: $color-bg-card !important;
+  border:           1.5px solid $color-border !important;
+  color:            $color-heading !important;
+  font-size:        14px;
+  text-transform:   none;
+  box-shadow:       none !important;
+
+  &:hover {
+    background-color: $color-bg-card  !important;
+    border-color:     $color-accent !important;
+    color:            $color-heading !important;
+  }
+
+  &:focus,
+  &:active,
+  &:focus-visible {
+    background-color: $color-bg-card  !important;
+    border-color:     $color-accent !important;
+    color:            $color-heading !important;
+    box-shadow:       none !important;
+  }
+}
+
+.btn-check:checked + .btn-option,
+.btn-check:checked + .btn-option:hover,
+.btn-check:checked + .btn-option:focus {
+  background-color: $color-bg-card  !important;
+  border:           2.5px solid $color-accent !important;
+  color:            $color-heading !important;
+  box-shadow:       none !important;
+}
+
 // ── Step indicator ──
 
 .flow-steps {

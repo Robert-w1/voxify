@@ -1,50 +1,52 @@
-<div class="sessions-page">
+<div class="container-app py-5">
+  <div class="sessions-page">
 
-  <div class="sessions-header">
-    <div class="sessions-header__left">
-      <h2>Folders</h2>
-      <p class="text-caption sessions-header__count"><%= pluralize(@folders.size, "folder") %></p>
+    <div class="sessions-header">
+      <div class="sessions-header__left">
+        <h1 class="mb-1">Folders</h1>
+        <p class="text-caption fst-italic mb-0">Organise your sessions into groups to track progress over time.</p>
+      </div>
+      <%= link_to new_folder_path, class: "btn btn-primary btn-sm sessions-header__new" do %>
+        <i class="fa-solid fa-plus"></i> New folder
+      <% end %>
     </div>
-    <%= link_to new_folder_path, class: "btn btn-primary btn-sm sessions-header__new" do %>
-      <i class="fa-solid fa-plus"></i> New folder
-    <% end %>
-  </div>
 
-  <div data-controller="folders-search" class="sessions-search-wrapper">
-    <%= form_with url: folders_path, method: :get, class: "sessions-search-form" do |f| %>
-      <div class="sessions-search-field">
-        <i class="fa-solid fa-magnifying-glass sessions-search-icon"></i>
-        <%= f.text_field :q, value: @query, placeholder: "Search folders...",
-              class: "sessions-search-input",
-              autocomplete: "off",
-              data: {
-                folders_search_target: "input",
-                action: "input->folders-search#onInput keydown->folders-search#onKeydown"
-              } %>
-        <% if @query.present? %>
-          <%= link_to folders_path, class: "sessions-search-clear" do %>
-            <i class="fa-solid fa-xmark"></i>
+    <div data-controller="folders-search" class="sessions-search-wrapper">
+      <%= form_with url: folders_path, method: :get, class: "sessions-search-form" do |f| %>
+        <div class="sessions-search-field">
+          <i class="fa-solid fa-magnifying-glass sessions-search-icon"></i>
+          <%= f.text_field :q, value: @query, placeholder: "Search folders...",
+                class: "sessions-search-input",
+                autocomplete: "off",
+                data: {
+                  folders_search_target: "input",
+                  action: "input->folders-search#onInput keydown->folders-search#onKeydown"
+                } %>
+          <% if @query.present? %>
+            <%= link_to folders_path, class: "sessions-search-clear" do %>
+              <i class="fa-solid fa-xmark"></i>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
+      <% end %>
+      <div class="sidebar-search-popup" hidden data-folders-search-target="results"></div>
+    </div>
+
+    <% if @folders.empty? %>
+      <div class="sessions-empty">
+        <div class="sessions-empty__icon">
+          <i class="fa-solid fa-folder-open"></i>
+        </div>
+        <h4>No folders yet</h4>
+        <p class="text-caption">Organise your sessions into folders.</p>
+        <%= link_to "New folder", new_folder_path, class: "btn btn-primary btn-sm mt-3" %>
+      </div>
+
+    <% else %>
+      <div class="sessions-list">
+        <%= render partial: "folder_row", collection: @folders, as: :folder %>
       </div>
     <% end %>
-    <div class="sidebar-search-popup" hidden data-folders-search-target="results"></div>
+
   </div>
-
-  <% if @folders.empty? %>
-    <div class="sessions-empty">
-      <div class="sessions-empty__icon">
-        <i class="fa-solid fa-folder-open"></i>
-      </div>
-      <h4>No folders yet</h4>
-      <p class="text-caption">Organise your sessions into folders.</p>
-      <%= link_to "New folder", new_folder_path, class: "btn btn-primary btn-sm mt-3" %>
-    </div>
-
-  <% else %>
-    <div class="sessions-list">
-      <%= render partial: "folder_row", collection: @folders, as: :folder %>
-    </div>
-  <% end %>
-
 </div>

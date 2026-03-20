@@ -1,50 +1,52 @@
-<div class="sessions-page">
+<div class="container-app py-5">
+  <div class="sessions-page">
 
-  <div class="sessions-header">
-    <div class="sessions-header__left">
-      <h2>Sessions</h2>
-      <p class="text-caption sessions-header__count"><%= pluralize(@recording_sessions.size, "session") %></p>
+    <div class="sessions-header">
+      <div class="sessions-header__left">
+        <h1 class="mb-1">Sessions</h1>
+        <p class="text-caption fst-italic mb-0">All your recorded practice sessions, analyzed and ready to review.</p>
+      </div>
+      <%= link_to new_recording_session_path, class: "btn btn-primary btn-sm sessions-header__new" do %>
+        <i class="fa-solid fa-plus"></i> New session
+      <% end %>
     </div>
-    <%= link_to new_recording_session_path, class: "btn btn-primary btn-sm sessions-header__new" do %>
-      <i class="fa-solid fa-plus"></i> New session
-    <% end %>
-  </div>
 
-  <div data-controller="sessions-search" class="sessions-search-wrapper">
-    <%= form_with url: recording_sessions_path, method: :get, class: "sessions-search-form" do |f| %>
-      <div class="sessions-search-field">
-        <i class="fa-solid fa-magnifying-glass sessions-search-icon"></i>
-        <%= f.text_field :q, value: @query, placeholder: "Search sessions...",
-              class: "sessions-search-input",
-              autocomplete: "off",
-              data: {
-                sessions_search_target: "input",
-                action: "input->sessions-search#onInput keydown->sessions-search#onKeydown"
-              } %>
-        <% if @query.present? %>
-          <%= link_to recording_sessions_path, class: "sessions-search-clear" do %>
-            <i class="fa-solid fa-xmark"></i>
+    <div data-controller="sessions-search" class="sessions-search-wrapper">
+      <%= form_with url: recording_sessions_path, method: :get, class: "sessions-search-form" do |f| %>
+        <div class="sessions-search-field">
+          <i class="fa-solid fa-magnifying-glass sessions-search-icon"></i>
+          <%= f.text_field :q, value: @query, placeholder: "Search sessions...",
+                class: "sessions-search-input",
+                autocomplete: "off",
+                data: {
+                  sessions_search_target: "input",
+                  action: "input->sessions-search#onInput keydown->sessions-search#onKeydown"
+                } %>
+          <% if @query.present? %>
+            <%= link_to recording_sessions_path, class: "sessions-search-clear" do %>
+              <i class="fa-solid fa-xmark"></i>
+            <% end %>
           <% end %>
-        <% end %>
+        </div>
+      <% end %>
+      <div class="sidebar-search-popup" hidden data-sessions-search-target="results"></div>
+    </div>
+
+    <% if @recording_sessions.empty? %>
+      <div class="sessions-empty">
+        <div class="sessions-empty__icon">
+          <i class="fa-solid fa-microphone-slash"></i>
+        </div>
+        <h4>No sessions yet</h4>
+        <p class="text-caption">Start by recording your first presentation.</p>
+        <%= link_to "New Session", new_recording_session_path, class: "btn btn-primary btn-sm mt-3" %>
+      </div>
+
+    <% else %>
+      <div class="sessions-list">
+        <%= render partial: "session_row", collection: @recording_sessions, as: :session %>
       </div>
     <% end %>
-    <div class="sidebar-search-popup" hidden data-sessions-search-target="results"></div>
+
   </div>
-
-  <% if @recording_sessions.empty? %>
-    <div class="sessions-empty">
-      <div class="sessions-empty__icon">
-        <i class="fa-solid fa-microphone-slash"></i>
-      </div>
-      <h4>No sessions yet</h4>
-      <p class="text-caption">Start by recording your first presentation.</p>
-      <%= link_to "New Session", new_recording_session_path, class: "btn btn-primary btn-sm mt-3" %>
-    </div>
-
-  <% else %>
-    <div class="sessions-list">
-      <%= render partial: "session_row", collection: @recording_sessions, as: :session %>
-    </div>
-  <% end %>
-
 </div>

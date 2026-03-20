@@ -31,8 +31,23 @@
     <%# Feather icons — re-initialised after every Turbo navigation %>
     <script src="https://unpkg.com/feather-icons"></script>
     <script>
-      document.addEventListener("turbo:load", () => feather.replace())
-      document.addEventListener("turbo:render", () => feather.replace())
+      function localizeTimestamps() {
+        document.querySelectorAll("time[data-localize]").forEach(el => {
+          const dt = new Date(el.getAttribute("datetime"))
+          if (isNaN(dt.getTime())) return
+          el.textContent = dt.toLocaleString(undefined, {
+            year: "numeric", month: "short", day: "numeric",
+            hour: "numeric", minute: "2-digit", timeZoneName: "short"
+          })
+        })
+      }
+      function initTooltips() {
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+          bootstrap.Tooltip.getOrCreateInstance(el)
+        })
+      }
+      document.addEventListener("turbo:load", () => { feather.replace(); localizeTimestamps(); initTooltips() })
+      document.addEventListener("turbo:render", () => { feather.replace(); localizeTimestamps(); initTooltips() })
     </script>
   </body>
 

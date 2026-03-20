@@ -22,7 +22,9 @@ export default class extends Controller {
     "micGrantArea",
     "uploadArea", "fileInput",
     "reviewControls",
-    "processingIndicator"
+    "processingIndicator",
+    "playIcon",
+    "processingMessage"
   ]
 
   static values = {
@@ -47,6 +49,7 @@ export default class extends Controller {
     this.selectedDeviceId = null
     this._initFromStatus()
     this._initMic()
+    this._localizeTimestamps()
   }
 
   disconnect() {
@@ -54,6 +57,7 @@ export default class extends Controller {
     this._stopTimer()
     this._stopReportPolling()
     this._stopPdfPolling()
+    this._stopProcessingMessages()
     if (this.stream) {
       this.stream.getTracks().forEach(t => t.stop())
     }
@@ -101,9 +105,11 @@ export default class extends Controller {
     }
     this.stateLabelTarget.textContent = labels[state] || state
 
-    // Waveform opacity per state
-    const opacities = { ready: 0.2, countdown: 0.1, recording: 1, review: 0.6, processing: 0.1, completed: 0 }
+    // Waveform opacity per state; hide entirely when completed
+    const opacities = { ready: 0.2, countdown: 0.1, recording: 1, review: 1, processing: 0.1, completed: 0 }
     this.waveformWrapperTarget.style.opacity = opacities[state] ?? 0.2
+    this.waveformWrapperTarget.style.display = (state === "completed") ? "none" : ""
+    this.waveformWrapperTarget.style.cursor  = (state === "review") ? "pointer" : ""
 
     // Timer: visible during recording + review only
     this.timerDisplayTarget.hidden = !["recording", "review"].includes(state)
@@ -138,18 +144,30 @@ export default class extends Controller {
     this.processingIndicatorTarget.hidden = (state !== "processing")
     this.stateCompletedTarget.hidden      = (state !== "completed")
 
+    // Processing message (sits right below waveform)
+    if (this.hasProcessingMessageTarget) {
+      this.processingMessageTarget.hidden = (state !== "processing")
+    }
+
+    if (state === "processing") {
+      this._startProcessingMessages()
+    } else {
+      this._stopProcessingMessages()
+    }
+
     // Keep sidebar status dot in sync without a page refresh.
     // Rails dom_id(session, :sidebar_title) → "sidebar_title_recording_session_<id>"
     const sidebarStatusMap = {
+      ready:      "pending",
+      countdown:  "pending",
       recording:  "recording",
+      review:     "pending",
       processing: "processing",
       completed:  "completed",
     }
-    if (sidebarStatusMap[state]) {
-      const frame = document.getElementById(`sidebar_title_recording_session_${this.sessionIdValue}`)
-      const dot   = frame?.querySelector(".status-dot")
-      if (dot) dot.className = `status-dot status-dot--${sidebarStatusMap[state]}`
-    }
+    const frame = document.getElementById(`sidebar_title_recording_session_${this.sessionIdValue}`)
+    const dot   = frame?.querySelector(".status-dot")
+    if (dot) dot.className = `status-dot status-dot--${sidebarStatusMap[state] ?? "pending"}`
   }
 
   // ────────────────────────────────────────
@@ -340,6 +358,7 @@ export default class extends Controller {
     this.mediaRecorder.onstop = () => {
       this.audioBlob       = new Blob(this.chunks, { type: "audio/webm" })
       this.durationSeconds = Math.round(this.elapsed)
+      this._setupReviewWaveform()
     }
 
     this.mediaRecorder.start(250)
@@ -372,6 +391,13 @@ export default class extends Controller {
     this.audioBlob = null
     this.elapsed   = 0
     this._updateTimerDisplay()
+    // Clean up review waveform
+    if (this.reviewAudio) { this.reviewAudio.pause(); this.reviewAudio = null }
+    this._waveformData     = null
+    this._waveformDuration = null
+    if (this.hasPlayIconTarget) this.playIconTarget.className = "fa-solid fa-play"
+    const canvas = this.waveformCanvasTarget
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height)
     // Keep stream alive — stopping it would re-trigger the permission dialog next time
     this._transitionTo("ready")
   }
@@ -388,13 +414,22 @@ export default class extends Controller {
     // Reset the input so the same file can be re-selected if needed
     event.target.value = ""
     this._transitionTo("review")
+    this._setupReviewWaveform()
   }
 
   playRecording() {
-    if (!this.audioBlob) return
-    const url   = URL.createObjectURL(this.audioBlob)
-    const audio = new Audio(url)
-    audio.play()
+    if (!this.reviewAudio) return
+    if (this.reviewAudio.paused) {
+      this.reviewAudio.play()
+      if (this.hasPlayIconTarget) {
+        this.playIconTarget.className = "fa-solid fa-pause"
+      }
+    } else {
+      this.reviewAudio.pause()
+      if (this.hasPlayIconTarget) {
+        this.playIconTarget.className = "fa-solid fa-play"
+      }
+    }
   }
 
   async submitRecording() {
@@ -467,7 +502,7 @@ export default class extends Controller {
       this.animationFrame = requestAnimationFrame(draw)
       this.analyser.getByteFrequencyData(this.dataArray)
 
-      ctx.fillStyle = "#F7F5F0"
+      ctx.fillStyle = "#E8E4DD"
       ctx.fillRect(0, 0, width, height)
 
       const barCount = this.bufferLength
@@ -645,7 +680,7 @@ export default class extends Controller {
       btn.removeAttribute("disabled")
       btn.style.pointerEvents = ""
       btn.style.opacity = ""
-      btn.innerHTML = '<i class="fa fa-download"></i> Download full report'
+      btn.innerHTML = '<i class="fa fa-download"></i> Download report'
     } else {
       btn.setAttribute("disabled", "disabled")
       btn.style.pointerEvents = "none"
@@ -676,6 +711,37 @@ export default class extends Controller {
     if (this.pdfPollInterval) {
       clearInterval(this.pdfPollInterval)
       this.pdfPollInterval = null
+    }
+  }
+
+  // ────────────────────────────────────────
+  // PROCESSING MESSAGES
+  // ────────────────────────────────────────
+
+  _startProcessingMessages() {
+    this._stopProcessingMessages()
+    const messages = [
+      "Listening to your delivery\u2026",
+      "Running speech recognition\u2026",
+      "Analyzing your speaking patterns\u2026",
+      "Measuring pacing, tone, and clarity\u2026",
+      "Writing your personalized report\u2026",
+    ]
+    let i = 0
+    const update = () => {
+      if (this.hasProcessingMessageTarget) {
+        this.processingMessageTarget.textContent = messages[i % messages.length]
+      }
+      i++
+    }
+    update()
+    this._processingMsgInterval = setInterval(update, 5000)
+  }
+
+  _stopProcessingMessages() {
+    if (this._processingMsgInterval) {
+      clearInterval(this._processingMsgInterval)
+      this._processingMsgInterval = null
     }
   }
 
@@ -777,6 +843,109 @@ export default class extends Controller {
 
   _formatLabel(key) {
     return key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())
+  }
+
+  // ────────────────────────────────────────
+  // REVIEW WAVEFORM
+  // ────────────────────────────────────────
+
+  async _setupReviewWaveform() {
+    if (!this.audioBlob) return
+    try {
+      const arrayBuffer = await this.audioBlob.arrayBuffer()
+      const tmpCtx = new (window.AudioContext || /** @type {any} */ (window).webkitAudioContext)()
+      const audioBuffer = await tmpCtx.decodeAudioData(arrayBuffer)
+      tmpCtx.close()
+
+      this._waveformData     = audioBuffer.getChannelData(0)
+      this._waveformDuration = audioBuffer.duration
+      this._drawStaticWaveform(0)
+
+      const url = URL.createObjectURL(this.audioBlob)
+      if (this.reviewAudio) this.reviewAudio.pause()
+      this.reviewAudio = new Audio(url)
+      this.reviewAudio.addEventListener("timeupdate", () => {
+        this._drawStaticWaveform(this.reviewAudio.currentTime)
+      })
+      this.reviewAudio.addEventListener("ended", () => {
+        this._drawStaticWaveform(0)
+        if (this.hasPlayIconTarget) this.playIconTarget.className = "fa-solid fa-play"
+      })
+    } catch (err) {
+      console.warn("Could not set up review waveform:", err)
+    }
+  }
+
+  _drawStaticWaveform(playheadTime = 0) {
+    const canvas = this.waveformCanvasTarget
+    const ctx    = canvas.getContext("2d")
+    const width  = canvas.width
+    const height = canvas.height
+
+    ctx.fillStyle = "#E8E4DD"
+    ctx.fillRect(0, 0, width, height)
+    if (!this._waveformData || !this._waveformDuration) return
+
+    const barCount      = 80
+    const samplesPerBar = Math.floor(this._waveformData.length / barCount)
+    const barWidth      = (width / barCount) * 0.65
+    const barGap        = (width / barCount) * 0.35
+    const playheadRatio = playheadTime / this._waveformDuration
+
+    for (let i = 0; i < barCount; i++) {
+      let sumSq = 0
+      const start = i * samplesPerBar
+      for (let j = start; j < start + samplesPerBar; j++) {
+        sumSq += this._waveformData[j] * this._waveformData[j]
+      }
+      const rms       = Math.sqrt(sumSq / samplesPerBar)
+      const barHeight = Math.max(rms * height * 4, 2)
+      const x         = i * (barWidth + barGap)
+      const y         = (height - barHeight) / 2
+
+      const ratio = i / barCount
+      const r = Math.round(13  + ratio * (232 - 13))
+      const g = Math.round(115 + ratio * (145 - 115))
+      const b = Math.round(119 + ratio * (58  - 119))
+
+      ctx.globalAlpha = (i / barCount) > playheadRatio ? 0.3 : 1.0
+      ctx.fillStyle   = `rgb(${r},${g},${b})`
+      ctx.beginPath()
+      ctx.roundRect(x, y, barWidth, barHeight, 2)
+      ctx.fill()
+    }
+
+    ctx.globalAlpha = 1
+    // Playhead line
+    const px = playheadRatio * width
+    ctx.fillStyle = "#2D2A26"
+    ctx.fillRect(px, 0, 2, height)
+  }
+
+  seekWaveform(event) {
+    if (this.currentState !== "review") return
+    if (!this._waveformData || !this._waveformDuration) return
+
+    const canvas    = this.waveformCanvasTarget
+    const rect      = canvas.getBoundingClientRect()
+    const ratio     = Math.max(0, Math.min((event.clientX - rect.left) / rect.width, 1))
+    const seekTime  = ratio * this._waveformDuration
+
+    if (this.reviewAudio) this.reviewAudio.currentTime = seekTime
+    this._drawStaticWaveform(seekTime)
+  }
+
+  // ────────────────────────────────────────
+  // TIMESTAMP LOCALIZATION
+  // ────────────────────────────────────────
+
+  _localizeTimestamps() {
+    this.element.querySelectorAll("time[data-localize]").forEach(el => {
+      const dt = new Date(el.getAttribute("datetime"))
+      if (isNaN(dt.getTime())) return
+      const opts = { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZoneName: "short" }
+      el.textContent = dt.toLocaleString(undefined, opts)
+    })
   }
 
 }

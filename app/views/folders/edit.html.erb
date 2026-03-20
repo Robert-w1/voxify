@@ -19,7 +19,7 @@
                   url: folder_path(@folder),
                   class: "folder-show__inline-form" do |f| %>
       <%= f.text_field :name,
-                       class: "folder-show__name-input input-field",
+                       class: "folder-show__name-input",
                        autofocus: true,
                        required: true,
                        onblur: "this.form.requestSubmit()" %>
@@ -32,7 +32,7 @@
                   url: folder_path(@folder),
                   class: "folder-show__inline-form" do |f| %>
       <%= f.text_area :description,
-                      class: "folder-show__desc-input input-field",
+                      class: "folder-show__desc-input",
                       rows: 2,
                       placeholder: "Add a description…",
                       autofocus: true,

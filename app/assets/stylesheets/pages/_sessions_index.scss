@@ -2,31 +2,19 @@
 // Sessions index page
 // ============================================================
 
-.sessions-page {
-  padding: 48px 40px;
-  max-width: 880px;
-  margin: 0 auto;
-}
-
 // ── Header ───────────────────────────────────────────────────
 
 .sessions-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 28px;
 }
 
 .sessions-header__left {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
-
-  h2 { margin: 0; }
-}
-
-.sessions-header__count {
-  margin: 0;
+  flex-direction: column;
+  gap: 2px;
 }
 
 // ── Search ────────────────────────────────────────────────────
@@ -52,7 +40,7 @@
 
 .sessions-search-icon {
   color: #B0ACA0;
-  font-size: 13px;
+  font-size: 15px;
   flex-shrink: 0;
 }
 
@@ -60,7 +48,7 @@
   border: none;
   outline: none;
   background: none;
-  font-size: 14px;
+  font-size: 15px;
   color: #5A533D;
   flex: 1;
 
@@ -181,6 +169,7 @@
 
   &--type     { background-color: rgba($color-primary, 0.1); color: $color-primary; }
   &--audience { background-color: rgba($color-accent, 0.12); color: darken($color-accent, 12%); }
+  &--focus    { background-color: rgba($color-body, 0.08); color: $color-body; }
 }
 
 .session-row__badge-label {
