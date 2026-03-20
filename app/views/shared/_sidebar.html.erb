@@ -75,13 +75,17 @@
       <div class="recent-title">Recent</div>
       <% @recent_sessions&.each do |session| %>
 
-        <div class="recent-item-wrapper">
+        <div class="recent-item-wrapper" id="<%= dom_id(session, :sidebar_item) %>">
 
           <%# Title — Turbo Frame so Rename swaps it inline -%>
           <%= turbo_frame_tag dom_id(session, :sidebar_title), class: "recent-item__frame" do %>
+            <% full_title = session.title.presence || "Untitled" %>
+            <% ts_match = full_title.match(/^(.+?) - (\w{3} \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M)$/) %>
+            <% short_title = ts_match ? ts_match[1] : full_title %>
+            <% timestamp   = ts_match ? ts_match[2] : nil %>
             <%= link_to recording_session_path(session), class: "nav-item recent-item", data: { turbo_frame: "_top", turbo_prefetch: false } do %>
-              <span class="status-dot status-dot--<%= session.status %>"></span>
-              <span class="label recent-label"><%= session.title.presence || "Untitled" %></span>
+              <span class="status-dot status-dot--<%= session.status == 'recording' ? 'pending' : session.status %>"></span>
+              <span class="label recent-label"<% if timestamp %> data-bs-toggle="tooltip" data-bs-placement="right" title="<%= timestamp %>"<% end %>><%= short_title %></span>
             <% end %>
           <% end %>
 

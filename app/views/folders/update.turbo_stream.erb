@@ -31,7 +31,7 @@
     <%= link_to edit_folder_path(@folder),
                 data: { turbo_frame: dom_id(@folder, :name) },
                 class: "folder-show__editable-name" do %>
-      <h2><%= @folder.name %></h2>
+      <h1 class="mb-0"><%= @folder.name %></h1>
     <% end %>
   <% end %>
 <% end %>
@@ -43,9 +43,9 @@
                 data: { turbo_frame: dom_id(@folder, :description) },
                 class: "folder-show__editable-desc" do %>
       <% if @folder.description.present? %>
-        <p class="text-caption folder-show__desc"><%= @folder.description %></p>
+        <p class="mb-0"><span class="folder-show__desc-label">Description:</span> <%= @folder.description %></p>
       <% else %>
-        <p class="text-caption folder-show__desc-placeholder">Add a description&hellip;</p>
+        <p class="folder-show__desc-placeholder mb-0">Add a description&hellip;</p>
       <% end %>
     <% end %>
   <% end %>

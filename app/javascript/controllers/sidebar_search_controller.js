@@ -24,6 +24,9 @@ export default class extends Controller {
   }
 
   deactivate() {
+    this.resultsTarget.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+      bootstrap.Tooltip.getInstance(el)?.dispose()
+    })
     this.triggerTarget.hidden = false
     this.activeAreaTarget.hidden = true
     this.resultsTarget.hidden = true
@@ -66,19 +69,38 @@ export default class extends Controller {
   }
 
   _render(results) {
+    this.resultsTarget.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+      bootstrap.Tooltip.getInstance(el)?.dispose()
+    })
+
     if (!results.length) {
       this.resultsTarget.innerHTML = `<div class="search-popup-empty">No results</div>`
     } else {
-      this.resultsTarget.innerHTML = results.map(r => `
-        <a href="${r.url}" class="search-popup-item" data-turbo-frame="_top">
-          <i class="fa-solid fa-${r.type === "folder" ? "folder" : "file-lines"}"></i>
-          <span class="search-popup-label">${this._escape(r.label)}</span>
-        </a>
-      `).join("")
+      this.resultsTarget.innerHTML = results.map(r => {
+        const { short, timestamp } = this._parseTitle(r.label)
+        const tooltipAttrs = timestamp
+          ? `data-bs-toggle="tooltip" data-bs-placement="right" title="${this._escape(timestamp)}"`
+          : ""
+        return `
+          <a href="${r.url}" class="search-popup-item" data-turbo-frame="_top" ${tooltipAttrs}>
+            <i class="fa-solid fa-${r.type === "folder" ? "folder" : "file-lines"}"></i>
+            <span class="search-popup-label">${this._escape(short)}</span>
+          </a>
+        `
+      }).join("")
     }
 
     this._positionPopup()
     this.resultsTarget.hidden = false
+
+    this.resultsTarget.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+      bootstrap.Tooltip.getOrCreateInstance(el)
+    })
+  }
+
+  _parseTitle(label) {
+    const match = label.match(/^(.+?) - (\w{3} \d{1,2}, \d{4} \d{1,2}:\d{2} [AP]M)$/)
+    return match ? { short: match[1], timestamp: match[2] } : { short: label, timestamp: null }
   }
 
   _positionPopup() {

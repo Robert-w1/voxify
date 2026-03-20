@@ -89,8 +89,8 @@
 }
 
 .brand-logo {
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
   display:   block;       // removes inline image gap
   position:  relative;
@@ -99,7 +99,7 @@
 
 .brand-name {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
+  font-size: 26px;
   font-weight: 400;
   color: #5A533D;
   white-space: nowrap;
@@ -225,6 +225,15 @@
   max-width: 150px;
 }
 
+// ── Sidebar tooltips ──────────────────────────────────────────
+.tooltip .tooltip-inner {
+  background-color: #2D2A26;
+}
+
+.tooltip .tooltip-arrow::before {
+  border-right-color: #2D2A26;
+}
+
 // ── Status dots ───────────────────────────────────────────────
 // Shown next to each recent session to indicate its state
 .status-dot {
@@ -236,6 +245,8 @@
   &--completed  { background-color: #6DBF8A; }
   &--processing { background-color: #F0B429; }
   &--failed     { background-color: #C0BAB0; }
+
+  &--pending  { background-color: #C0BAB0; }
 
   &--recording {
     background-color: #E05C5C;
@@ -485,7 +496,7 @@
 }
 
 .avatar-name {
-  font-size: 13px;
+  font-size: 14px;
   color: #5A533D;
   white-space: nowrap;
   overflow: hidden;
@@ -510,7 +521,7 @@
 .avatar-dropdown-item {
   display: block;
   padding: 10px 16px;
-  font-size: 13px;
+  font-size: 14px;
   color: #5A533D;
   text-decoration: none;
   transition: background-color 0.15s ease;

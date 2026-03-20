@@ -114,8 +114,19 @@ class RecordingSessionsController < ApplicationController
   end
 
   def destroy
+    referer_path = URI.parse(request.referer).path rescue nil
+    on_show_page = referer_path == recording_session_path(@recording_session)
+
     @recording_session.destroy
-    redirect_to recording_sessions_path
+
+    if on_show_page
+      redirect_to recording_sessions_path
+    else
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to recording_sessions_path }
+      end
+    end
   end
 
   def update_folder
