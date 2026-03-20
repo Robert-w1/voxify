@@ -190,7 +190,7 @@ build_session(
   status:            "completed",
   title:             "Q3 Board Review",
   audience:          "board",
-  presentation_type: "all_hands",
+  presentation_type: "daily_practice",
   focus:             %w[clarity conciseness pacing],
   transcript:        TRANSCRIPTS[0],
   duration:          12
