@@ -56,8 +56,22 @@
           bootstrap.Tooltip.getOrCreateInstance(el, { trigger: "hover" })
         })
       }
-      document.addEventListener("turbo:load", () => { feather.replace(); localizeTimestamps(); initTooltips() })
-      document.addEventListener("turbo:render", () => { feather.replace(); localizeTimestamps(); initTooltips() })
+      function initSidebarModals() {
+        document.querySelectorAll('.sidebar .delete-confirm').forEach(modal => {
+          if (modal.dataset.ported) return
+          modal.dataset.ported = '1'
+          const wrapper = modal.closest('.recent-item-wrapper')
+          if (!wrapper) return
+          const checkbox = wrapper.querySelector('input.delete-trigger')
+          if (!checkbox) return
+          checkbox.addEventListener('change', () => {
+            modal.style.display = checkbox.checked ? 'flex' : 'none'
+          })
+          document.body.appendChild(modal)
+        })
+      }
+      document.addEventListener("turbo:load", () => { feather.replace(); localizeTimestamps(); initTooltips(); initSidebarModals() })
+      document.addEventListener("turbo:render", () => { feather.replace(); localizeTimestamps(); initTooltips(); initSidebarModals() })
       document.addEventListener("turbo:before-stream-render", (event) => {
         const original = event.detail.render
         event.detail.render = function(streamElement) {
@@ -74,6 +88,7 @@
           original(streamElement)
           localizeTimestamps()
           initTooltips()
+          initSidebarModals()
         }
       })
     </script>

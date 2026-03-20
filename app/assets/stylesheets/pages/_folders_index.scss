@@ -188,17 +188,6 @@
   padding: 4px 0;
 }
 
-.folder-picker-current {
-  padding: 6px 12px;
-  color: $color-caption;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 
 .folder-picker-divider {
   height: 1px;
@@ -248,6 +237,26 @@
     color: $color-primary;
     i { color: $color-primary; }
     &:hover { background-color: rgba($color-primary, 0.06); }
+  }
+
+  &--active {
+    cursor: default;
+    color: $color-primary;
+    i { color: $color-primary; }
+    &:hover { background-color: transparent; }
+  }
+
+  &__name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__check {
+    flex-shrink: 0;
+    font-size: 11px !important;
+    color: $color-primary !important;
+    margin-left: auto;
   }
 }
 
@@ -352,4 +361,14 @@
 .session-dropdown-item--remove {
   color: $color-error !important;
   i { color: $color-error !important; }
+}
+
+.session-dropdown-item--active {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+  color: $color-primary !important;
+  i { color: $color-primary !important; }
+  &:hover { background-color: transparent !important; }
 }

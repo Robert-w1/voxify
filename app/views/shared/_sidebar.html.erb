@@ -10,10 +10,10 @@
 
     <%# ── Header: logo + collapse toggle ── %>
     <div class="sidebar-header">
-      <div class="brand-link">
+      <%= link_to "/intro.html", class: "brand-link", data: { turbo: false } do %>
         <%= image_tag "voxify_logo.svg", class: "brand-logo", alt: "Voxify" %>
         <span class="brand-name">Voxify</span>
-      </div>
+      <% end %>
       <button id="sidebar-toggle" class="toggle-btn" aria-label="Toggle sidebar">
         <i data-feather="menu"></i>
       </button>
@@ -125,6 +125,11 @@
 
               <li class="sidebar-folder-list" hidden>
                 <% if session.folder.present? %>
+                  <span class="dropdown-item session-dropdown-item session-dropdown-item--active sidebar-folder-option">
+                    <i class="fa-solid fa-folder"></i>
+                    <span style="flex:1;overflow:hidden;text-overflow:ellipsis;"><%= session.folder.name %></span>
+                    <i class="fa-solid fa-check" style="font-size:11px;margin-left:auto;flex-shrink:0;"></i>
+                  </span>
                   <%= button_to update_folder_recording_session_path(session),
                                 params: { folder_id: "" },
                                 method: :patch,
@@ -166,7 +171,7 @@
 
           <%# ── Delete confirmation modal -%>
           <% session_label = session.title.presence || "Untitled" %>
-          <div class="delete-confirm">
+          <div class="delete-confirm" id="<%= dom_id(session, :sidebar_delete_modal) %>">
             <label for="<%= dom_id(session, :sidebar_delete_trigger) %>" class="delete-confirm__backdrop"></label>
             <div class="delete-confirm__card">
               <p class="delete-confirm__title">Delete session?</p>

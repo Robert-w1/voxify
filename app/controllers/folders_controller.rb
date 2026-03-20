@@ -43,8 +43,10 @@ class FoldersController < ApplicationController
       if @session_id.present?
         session_record = current_user.recording_sessions.find_by(id: @session_id)
         session_record&.update(folder_id: @folder.id)
+        redirect_to recording_session_path(@session_id)
+      else
+        redirect_to folder_path(@folder)
       end
-      redirect_to folder_path(@folder)
     else
       render :new, status: :unprocessable_entity
     end

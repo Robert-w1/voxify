@@ -24,9 +24,11 @@
               <%= folder.description.split.first(10).join(" ") %><%= "…" if folder.description.split.size > 10 %>
             </span>
           <% end %>
-          <span class="session-row__date text-caption">
-            <%= folder.created_at.strftime("%-d %b %Y") %>
-          </span>
+          <time class="session-row__date text-caption"
+                datetime="<%= folder.created_at.iso8601 %>"
+                data-localize>
+            <%= folder.created_at.strftime("%-d %B %Y") %>
+          </time>
         </div>
 
       <% end %>
