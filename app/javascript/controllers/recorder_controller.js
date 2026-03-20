@@ -829,7 +829,7 @@ export default class extends Controller {
     this.reportImprovementsTarget.innerHTML = `
       <div class="insight-header mb-3">
         <span class="insight-icon insight-icon--accent"><i class="fa fa-arrow-up"></i></span>
-        <h5 class="mb-0">To Improve</h5>
+        <h5 class="mb-0">To improve</h5>
       </div>
       <ul class="report-insight-list">
         ${improvements.map(i => `<li>${i}</li>`).join("")}
