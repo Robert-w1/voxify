@@ -1,3 +1,7 @@
 one:
   recording_session: one
   duration_seconds: 30
+
+completed_recording:
+  recording_session: completed
+  duration_seconds: 60

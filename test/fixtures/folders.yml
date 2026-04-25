@@ -1,0 +1,7 @@
+one:
+  user: one
+  name: "My Folder"
+
+other:
+  user: two
+  name: "Other User Folder"
