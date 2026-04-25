@@ -1,0 +1,18 @@
+one:
+  recording: completed_recording
+  summary:
+    score: 85
+    summary: "Good presentation"
+    top_strengths:
+      - clarity
+    top_improvements:
+      - pacing
+    recommended_focus: tone
+  focus_feedbacks:
+    clarity:
+      score: 8
+      feedback: "Clear delivery"
+  llm_raw_response:
+    meta:
+      words_per_minute: 120
+      filler_word_count: 3

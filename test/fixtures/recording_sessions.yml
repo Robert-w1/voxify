@@ -5,3 +5,35 @@ one:
   presentation_type: presentation
   status: recording
   focus: "{clarity}"
+
+completed:
+  user: one
+  title: "Completed Session"
+  audience: colleagues
+  presentation_type: presentation
+  status: completed
+  focus: "{clarity}"
+
+completed_no_report:
+  user: one
+  title: "Completed No Report Session"
+  audience: colleagues
+  presentation_type: presentation
+  status: completed
+  focus: "{clarity}"
+
+failed:
+  user: one
+  title: "Failed Session"
+  audience: colleagues
+  presentation_type: presentation
+  status: failed
+  focus: "{clarity}"
+
+processing:
+  user: one
+  title: "Processing Session"
+  audience: colleagues
+  presentation_type: presentation
+  status: processing
+  focus: "{clarity}"
