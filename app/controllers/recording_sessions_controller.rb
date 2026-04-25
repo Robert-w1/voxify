@@ -68,18 +68,6 @@ class RecordingSessionsController < ApplicationController
     render json: { ready: report&.pdf_file&.attached? || false }
   end
 
-  # def download_pdf
-  #   recording = @recording_session.recordings.order(created_at: :desc).first
-  #   report = recording&.report
-
-  #   if report&.pdf_file&.attached?
-  #     # redirect_to url_for(report.pdf_file), allow_other_host: true
-  #     redirect_to Cloudinary::Utils.cloudinary_url("#{Rails.env}/#{report.pdf_file.blob.key}",resource_type: "raw", flags: "attachment:voxify-report-#{report.id}.pdf"), allow_other_host: true
-  #   else
-  #     redirect_to recording_session_path(@recording_session), alert: "PDF not available"
-  #   end
-  # end
-
   def download_pdf
     recording = @recording_session.recordings.order(created_at: :desc).first
     report = recording&.report
