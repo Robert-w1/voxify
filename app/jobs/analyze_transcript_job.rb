@@ -1,11 +1,3 @@
-# Anthropic API Setup
-# ====================
-# No local installation needed — Anthropic is a cloud API.
-#
-# 1. Sign up at https://console.anthropic.com and create an API key
-# 2. Add to your .env file:
-#      ANTHROPIC_API_KEY=your_key_here
-
 require "json"
 
 class AnalyzeTranscriptJob < ApplicationJob
@@ -17,22 +9,6 @@ class AnalyzeTranscriptJob < ApplicationJob
 
     session = recording.recording_session
 
-    # --- Start: Use of Anthropic API
-    # client = Anthropic::Client.new(api_key: ENV.fetch("ANTHROPIC_API_KEY"))
-
-    # response = client.messages.create(
-    #   model:      "claude-sonnet-4-6",
-    #   max_tokens: 4096,
-    #   system:     SYSTEM_PROMPT,
-    #   messages: [
-    #     { role: "user", content: build_user_message(recording, session) }
-    #   ]
-    # )
-
-    # recording.create_report!(llm_raw_response: response.content.first.text)
-    # --- End: Use of Anthropic API
-
-    # client = RubyLLM.chat(model: "gpt-4.1")
     client = RubyLLM.chat # gpt-4.1-nano
     response = client.with_instructions(system_prompt).ask(build_user_message(recording, session))
     llm_data = parse_llm_json(response.content)
@@ -51,8 +27,6 @@ class AnalyzeTranscriptJob < ApplicationJob
   end
 
   private
-  # TODO add word-level timing to the prompt
-  # Word-level timing (word, start_sec, end_sec): #{recording.transcript_words.map { |w| "#{w["word"]} #{w["start"]} #{w["end"]}" }.join("\n")}
 
   def build_user_message(recording, session)
     <<~MSG
