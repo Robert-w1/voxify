@@ -4,6 +4,10 @@ class RecordingsController < ApplicationController
   def create
     session = current_user.recording_sessions.find(params[:recording_session_id])
 
+    if params[:audio].blank?
+      return render json: { error: "Audio is required" }, status: :unprocessable_content
+    end
+
     recording = session.recordings.build
     recording.duration_seconds = params[:duration_seconds]
     recording.audio.attach(params[:audio])
@@ -14,5 +18,7 @@ class RecordingsController < ApplicationController
     TranscribeRecordingJob.perform_later(recording.id, current_user.id)
 
     render json: { status: "ok" }
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.message }, status: :unprocessable_content
   end
 end
