@@ -16,7 +16,7 @@ class RecordingSessionsController < ApplicationController
     if @recording_session.save
       redirect_to recording_session_path(@recording_session, source: "new")
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -55,7 +55,7 @@ class RecordingSessionsController < ApplicationController
 
     if @recording_session.completed? && report
       render json: { status: "completed", report: build_report_json(report, recording) }
-    elsif @recording_session.failed?
+    elsif @recording_session.failed? || @recording_session.completed?
       render json: { status: "failed" }
     else
       render json: { status: "processing" }
@@ -88,16 +88,24 @@ class RecordingSessionsController < ApplicationController
               filename: "voxify-report-#{report.id}.pdf",
               type: "application/pdf",
               disposition: "attachment"
+  rescue OpenURI::HTTPError, SocketError, Errno::ECONNREFUSED
+    redirect_to recording_session_path(@recording_session), alert: "PDF download failed. Please try again."
   end
 
   def edit; end
 
   def update
-    @recording_session.update(update_params)
-    respond_to do |format|
-      format.json { render json: { ok: true } }
-      format.turbo_stream
-      format.html { redirect_to recording_sessions_path }
+    if @recording_session.update(update_params)
+      respond_to do |format|
+        format.json { render json: { ok: true } }
+        format.turbo_stream
+        format.html { redirect_to recording_sessions_path }
+      end
+    else
+      respond_to do |format|
+        format.json { render json: { ok: false, errors: @recording_session.errors.full_messages }, status: :unprocessable_content }
+        format.html { render :edit, status: :unprocessable_content }
+      end
     end
   end
 
@@ -119,6 +127,9 @@ class RecordingSessionsController < ApplicationController
 
   def update_folder
     folder_id = params[:folder_id].presence
+    if folder_id && !current_user.folders.exists?(folder_id)
+      return redirect_back_or_to recording_sessions_path, alert: "Folder not found"
+    end
     @recording_session.update(folder_id: folder_id)
     redirect_back_or_to recording_sessions_path
   end
