@@ -1,7 +1,7 @@
 require "test_helper"
 
 class RecordingTest < ActiveSupport::TestCase
-  def setup
+  setup do
     @recording = recordings(:one)
   end
 
