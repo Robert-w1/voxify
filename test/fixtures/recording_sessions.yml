@@ -1,0 +1,7 @@
+one:
+  user: one
+  title: "Test Session"
+  audience: colleagues
+  presentation_type: presentation
+  status: recording
+  focus: "{clarity}"

@@ -37,17 +37,6 @@ class RecordingSession < ApplicationRecord
     conference_talk
   ].freeze
 
-  #   FEEDBACK_FOCUS_OPTIONS = %w[
-  #   filler_words
-  #   tone
-  #   pace
-  #   clarity
-  #   confidence
-  #   vocabulary
-  #   conciseness
-  #   engagement
-  #   storytelling
-  # ].freeze
   FEEDBACK_FOCUS_OPTIONS = %w[
     filler_words
     tone
