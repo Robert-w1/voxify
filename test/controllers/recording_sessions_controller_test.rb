@@ -13,16 +13,17 @@ class RecordingSessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create redirects to session show page on success" do
     post recording_sessions_path, params: {
-      recording_session: { audience: "colleagues", presentation_type: "presentation", focus: [ "clarity" ] }
+      recording_session: { audience: "colleagues", presentation_type: "presentation", focus: ["clarity"] }
     }
 
     new_session = RecordingSession.last
+
     assert_redirected_to recording_session_path(new_session, source: "new")
   end
 
   test "create re-renders new with 422 on invalid params" do
     post recording_sessions_path, params: {
-      recording_session: { audience: "not_a_valid_audience", presentation_type: "presentation", focus: [ "clarity" ] }
+      recording_session: { audience: "not_a_valid_audience", presentation_type: "presentation", focus: ["clarity"] }
     }
 
     assert_response :unprocessable_content
@@ -35,8 +36,9 @@ class RecordingSessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     body = response.parsed_body
+
     assert_equal "completed", body["status"]
-    assert body["report"].present?
+    assert_predicate body["report"], :present?
     assert_equal 85, body["report"]["overall_score"]
   end
 
@@ -80,8 +82,9 @@ class RecordingSessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_content
     body = response.parsed_body
+
     assert_equal false, body["ok"]
-    assert body["errors"].present?
+    assert_predicate body["errors"], :present?
   end
 
   # update_folder
@@ -140,12 +143,14 @@ class RecordingSessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     results = response.parsed_body
-    assert results.any?
+
+    assert_predicate results, :any?
     result = results.first
+
     assert_equal "session", result["type"]
-    assert result["label"].present?
-    assert result["url"].present?
-    assert result["created_at"].present?
+    assert_predicate result["label"], :present?
+    assert_predicate result["url"], :present?
+    assert_predicate result["created_at"], :present?
   end
 
   # download_pdf

@@ -4,9 +4,7 @@ class RecordingsController < ApplicationController
   def create
     session = current_user.recording_sessions.find(params[:recording_session_id])
 
-    if params[:audio].blank?
-      return render json: { error: "Audio is required" }, status: :unprocessable_content
-    end
+    return render json: { error: "Audio is required" }, status: :unprocessable_content if params[:audio].blank?
 
     recording = session.recordings.build
     recording.duration_seconds = params[:duration_seconds]

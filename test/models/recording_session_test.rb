@@ -11,7 +11,7 @@ class RecordingSessionTest < ActiveSupport::TestCase
       audience: "colleagues",
       presentation_type: presentation_type,
       status: "recording",
-      focus: [ "clarity" ],
+      focus: ["clarity"],
       title: title
     )
   end
@@ -20,6 +20,7 @@ class RecordingSessionTest < ActiveSupport::TestCase
     travel_to Time.zone.local(2026, 4, 7) do
       session = new_session
       session.valid?
+
       assert_equal "Presentation - 7 April 2026", session.title
     end
   end
@@ -28,6 +29,7 @@ class RecordingSessionTest < ActiveSupport::TestCase
     travel_to Time.zone.local(2026, 4, 25) do
       session = new_session(presentation_type: "manager_1on1")
       session.valid?
+
       assert_equal "Manager 1-on-1 - 25 April 2026", session.title
     end
   end
@@ -35,6 +37,7 @@ class RecordingSessionTest < ActiveSupport::TestCase
   test "does not overwrite a title that was already provided" do
     session = new_session(title: "My Custom Title")
     session.valid?
+
     assert_equal "My Custom Title", session.title
   end
 
@@ -42,8 +45,9 @@ class RecordingSessionTest < ActiveSupport::TestCase
     travel_to Time.zone.local(2026, 4, 7) do
       session = new_session
       session.valid?
+
       assert_match(/- 7 April/, session.title)
-      refute_match(/- 07 April/, session.title)
+      assert_no_match(/- 07 April/, session.title)
     end
   end
 

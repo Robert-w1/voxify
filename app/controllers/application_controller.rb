@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:account_update, keys: [:username])
   end
 
-  def after_sign_in_path_for(resource)
+  def after_sign_in_path_for(_resource)
     new_recording_session_path
   end
 
@@ -34,5 +34,4 @@ class ApplicationController < ActionController::Base
     @recent_sessions = current_user.recording_sessions.order(created_at: :desc).limit(10)
     @user_folders = current_user.folders.order(name: :asc)
   end
-
 end

@@ -9,8 +9,8 @@ class GenerateReportPdfJob < ApplicationJob
     pdf_binary = PdfReportService.new(session, recording, report).generate
 
     report.pdf_file.attach(
-      io:           StringIO.new(pdf_binary),
-      filename:     "voxify-report-#{report.id}.pdf",
+      io: StringIO.new(pdf_binary),
+      filename: "voxify-report-#{report.id}.pdf",
       content_type: "application/pdf"
     )
   end

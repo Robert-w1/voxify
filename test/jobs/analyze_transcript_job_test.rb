@@ -18,6 +18,7 @@ class AnalyzeTranscriptJobTest < ActiveJob::TestCase
     end
 
     report = @recording.reload.report
+
     assert_not_nil report
     assert_equal({ "score" => 80, "summary" => "Good job" }, report.summary)
     assert_equal({ "clarity" => { "score" => 8, "feedback" => "Very clear" } }, report.focus_feedbacks)
@@ -37,6 +38,7 @@ class AnalyzeTranscriptJobTest < ActiveJob::TestCase
     end
 
     keys = @recording.reload.report.focus_feedbacks.keys
+
     assert_not_includes keys, "overall"
     assert_not_includes keys, "meta"
   end
@@ -117,9 +119,9 @@ class AnalyzeTranscriptJobTest < ActiveJob::TestCase
 
   def valid_llm_json
     {
-      "overall"  => { "score" => 80, "summary" => "Good job" },
-      "meta"     => { "words_per_minute" => 120 },
-      "clarity"  => { "score" => 8, "feedback" => "Very clear" }
+      "overall" => { "score" => 80, "summary" => "Good job" },
+      "meta" => { "words_per_minute" => 120 },
+      "clarity" => { "score" => 8, "feedback" => "Very clear" }
     }.to_json
   end
 
@@ -128,8 +130,8 @@ class AnalyzeTranscriptJobTest < ActiveJob::TestCase
     response_mock.expect(:content, content)
 
     client_mock = Minitest::Mock.new
-    client_mock.expect(:with_instructions, client_mock, [ String ])
-    client_mock.expect(:ask, response_mock, [ String ])
+    client_mock.expect(:with_instructions, client_mock, [String])
+    client_mock.expect(:ask, response_mock, [String])
 
     RubyLLM.stub(:chat, client_mock) do
       yield

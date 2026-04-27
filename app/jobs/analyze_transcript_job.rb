@@ -15,13 +15,13 @@ class AnalyzeTranscriptJob < ApplicationJob
 
     report = recording.create_report!(
       llm_raw_response: llm_data,
-      summary:          llm_data["overall"],
-      focus_feedbacks:  llm_data.except(*["overall", "meta"])
+      summary: llm_data["overall"],
+      focus_feedbacks: llm_data.except("overall", "meta")
     )
 
     GenerateReportPdfJob.perform_later(report.id)
     session.completed!
-  rescue => e
+  rescue StandardError => e
     Recording.find_by(id: recording_id)&.recording_session&.failed!
     raise e
   end
@@ -35,7 +35,7 @@ class AnalyzeTranscriptJob < ApplicationJob
       - context.type: #{session.presentation_type}
       - context.audience: #{session.audience}
       - context.duration_seconds: #{recording.duration_seconds}
-      - context.focus: #{ session.focus.empty? ? [] : session.focus.join(", ")}
+      - context.focus: #{session.focus.empty? ? [] : session.focus.join(', ')}
     MSG
   end
 
@@ -46,6 +46,7 @@ class AnalyzeTranscriptJob < ApplicationJob
     cleaned = content.gsub(/\A```(?:json)?\s*/i, "").gsub(/\s*```\z/, "").strip
     match = cleaned.match(/\{.+\}/m)
     raise "Could not extract JSON from LLM response" unless match
+
     JSON.parse(match[0])
   end
 

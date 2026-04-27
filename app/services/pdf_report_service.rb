@@ -12,7 +12,8 @@ class PdfReportService
   BAR_BG       = "E5E7EB"
   WHITE        = "FFFFFF"
   FOCUS_ACCENT = "0D7377"
-  COMMON_FILLER_WORDS = %w[um uh mhmm mm-mm uh-uh uh-huh nuh-uh like you\ know basically literally actually just really so anyway sort\ of kind\ of].freeze
+  COMMON_FILLER_WORDS = %w[um uh mhmm mm-mm uh-uh uh-huh nuh-uh like you\ know basically literally actually just really
+                           so anyway sort\ of kind\ of].freeze
 
   # Maps the 9 user-facing focus options → LLM category keys
   # FOCUS_TO_CATEGORY = {
@@ -33,7 +34,7 @@ class PdfReportService
     @report    = report
   end
 
-  BEBAS_PATH = Rails.root.join("app/assets/fonts/BebasNeue-Regular.ttf").to_s
+  BEBAS_PATH = Rails.root.join("app", "assets", "fonts", "BebasNeue-Regular.ttf").to_s
 
   # Returns raw PDF binary string.
   def generate
@@ -69,13 +70,16 @@ class PdfReportService
 
   def summary_text
     return @report.summary.to_s unless @report.summary.is_a?(Hash)
+
     @report.summary["summary"].to_s
   end
 
   def overall_score
     @report.summary&.dig("score") || begin
       scores = (@report.focus_feedbacks || {}).values
-                 .filter_map { |v| v["score"].to_i if v.is_a?(Hash) }
+               .filter_map do |v|
+        v["score"].to_i if v.is_a?(Hash)
+      end
       scores.any? ? ((scores.sum.to_f / scores.size) * 10).round : 0
     end
   end
@@ -83,15 +87,23 @@ class PdfReportService
   # Interpolates orange (#E8750A) at 1 → teal (#0D7377) at max, returns hex string
   def score_color_hex(score, max = 10)
     t = [[(score.to_f - 1) / (max - 1), 0.0].max, 1.0].min
-    r = (232 + (13  - 232) * t).round
-    g = (117 + (115 - 117) * t).round
-    b = (10  + (119 - 10)  * t).round
-    "%02X%02X%02X" % [r, g, b]
+    r = (232 + ((13  - 232) * t)).round
+    g = (117 + ((115 - 117) * t)).round
+    b = (10  + ((119 - 10)  * t)).round
+    format("%02X%02X%02X", r, g, b)
   end
 
   def overall_score_color(score) = score_color_hex(score.to_i, 100)
-  def overall_score_label(score) = score.to_i >= 80 ? "Excellent" : score.to_i >= 60 ? "Good" : "Needs work"
-  def score_color(score)         = score_color_hex(score.to_i)
+
+  def overall_score_label(score)
+    if score.to_i >= 80
+      "Excellent"
+    else
+      score.to_i >= 60 ? "Good" : "Needs work"
+    end
+  end
+
+  def score_color(score) = score_color_hex(score.to_i)
 
   def format_duration(seconds)
     mins = seconds / 60
@@ -103,7 +115,7 @@ class PdfReportService
   end
 
   def format_duration_clock(seconds)
-    "%02d:%02d" % [seconds / 60, seconds % 60]
+    format("%02d:%02d", seconds / 60, seconds % 60)
   end
 
   def humanize_type(value)
@@ -113,13 +125,13 @@ class PdfReportService
   # Strip characters outside Windows-1252 range so Prawn's built-in fonts don't choke.
   def safe(text)
     text.to_s
-        .gsub("\u2014", "--")   # em dash
-        .gsub("\u2013", "-")    # en dash
-        .gsub("\u201C", '"')    # left double quote
-        .gsub("\u201D", '"')    # right double quote
-        .gsub("\u2018", "'")    # left single quote
-        .gsub("\u2019", "'")    # right single quote
-        .gsub("\u2026", "...")  # ellipsis
+        .gsub("\u2014", "--") # em dash
+        .tr("\u2013", "-")    # en dash
+        .tr("\u201C", '"')    # left double quote
+        .tr("\u201D", '"')    # right double quote
+        .tr("\u2018", "'")    # left single quote
+        .tr("\u2019", "'")    # right single quote
+        .gsub("\u2026", "...") # ellipsis
         .encode("Windows-1252", invalid: :replace, undef: :replace, replace: "?")
         .encode("UTF-8")
   end
@@ -141,7 +153,7 @@ class PdfReportService
 
   def render_header
     logo_top = @pdf.cursor
-    logo_mid  = logo_top - 7
+    logo_mid = logo_top - 7
 
     # Waveform logo bars: extremities = faded teal, inner = brand teal, middle = orange
     bar_colors = [FADED_TEAL, BRAND, ORANGE, BRAND, FADED_TEAL]
@@ -178,20 +190,24 @@ class PdfReportService
 
     # Date subtitle — use session's stored timezone if available, else UTC
     local_time = if @session.timezone.present?
-      tz = ActiveSupport::TimeZone[@session.timezone] || ActiveSupport::TimeZone.find_tzinfo(@session.timezone) rescue nil
-      tz ? @session.created_at.in_time_zone(tz) : @session.created_at.utc
-    else
-      @session.created_at.utc
-    end
+                   tz = begin
+                     ActiveSupport::TimeZone[@session.timezone] || ActiveSupport::TimeZone.find_tzinfo(@session.timezone)
+                   rescue StandardError
+                     nil
+                   end
+                   tz ? @session.created_at.in_time_zone(tz) : @session.created_at.utc
+                 else
+                   @session.created_at.utc
+                 end
     total_mins = local_time.utc_offset / 60
     offset_str = if total_mins == 0
-      "GMT"
-    else
-      sign  = total_mins > 0 ? "+" : "-"
-      hrs   = total_mins.abs / 60
-      mins  = total_mins.abs % 60
-      mins > 0 ? "GMT#{sign}#{hrs}:#{mins.to_s.rjust(2, '0')}" : "GMT#{sign}#{hrs}"
-    end
+                   "GMT"
+                 else
+                   sign = total_mins > 0 ? "+" : "-"
+                   hrs   = total_mins.abs / 60
+                   mins  = total_mins.abs % 60
+                   mins > 0 ? "GMT#{sign}#{hrs}:#{mins.to_s.rjust(2, '0')}" : "GMT#{sign}#{hrs}"
+                 end
     @pdf.fill_color MUTED
     @pdf.text local_time.strftime("%-d %B %Y  .  %-I:%M %p #{offset_str}"),
               size: 10, leading: 2
@@ -203,8 +219,11 @@ class PdfReportService
     @pdf.move_down 8
 
     rows = []
-    rows << ["Presentation type", safe(humanize_type(@session.presentation_type))] if @session.presentation_type.present?
-    rows << ["Audience",          safe(@session.audience.humanize)]             if @session.audience.present?
+    if @session.presentation_type.present?
+      rows << ["Presentation type",
+               safe(humanize_type(@session.presentation_type))]
+    end
+    rows << ["Audience", safe(@session.audience.humanize)] if @session.audience.present?
 
     focuses = @session.focus.reject(&:blank?)
     rows << ["Focus areas", safe(focuses.map(&:humanize).join("  .  "))] if focuses.any?
@@ -254,9 +273,9 @@ class PdfReportService
 
     # Determine which category keys the user specifically focused on
     chosen_categories = (@session.focus || [])
-                          .reject(&:blank?)
-                          #.map { |f| FOCUS_TO_CATEGORY[f] }
-                          .compact.uniq
+                        .reject(&:blank?)
+                        # .map { |f| FOCUS_TO_CATEGORY[f] }
+                        .compact.uniq
 
     focus_feedbacks = chosen_categories.any? ? feedbacks.select { |k, _| chosen_categories.include?(k) } : {}
     other_feedbacks = feedbacks.reject { |k, _| chosen_categories.include?(k) }
@@ -278,7 +297,7 @@ class PdfReportService
 
       score = data["score"].to_i
       color = score_color(score)
-      label = safe(key.to_s.gsub("_", " ").capitalize)
+      label = safe(key.to_s.tr("_", " ").capitalize)
 
       @pdf.move_down 10 if idx > 0
 
@@ -297,7 +316,7 @@ class PdfReportService
       @pdf.text_box label, at: [indent, y], width: w - indent - 75, size: 11, style: :bold
       @pdf.fill_color color
       @pdf.text_box "#{score} / 10", at: [w - 70, y], width: 70,
-                    size: 11, style: :bold, align: :right
+                                     size: 11, style: :bold, align: :right
       @pdf.move_down 16
 
       bar_y = @pdf.cursor
@@ -316,12 +335,12 @@ class PdfReportService
 
       # Improvements list for this category
       improvements = data["improvements"] || []
-      if improvements.any?
-        improvements.each do |item|
-          render_bullet(item, color: color)
-        end
-        @pdf.move_down 3
+      next unless improvements.any?
+
+      improvements.each do |item|
+        render_bullet(item, color: color)
       end
+      @pdf.move_down 3
     end
   end
 
@@ -329,9 +348,18 @@ class PdfReportService
     metrics = @report.llm_raw_response&.dig("meta") || {}
 
     items = []
-    items << { label: "Duration",    value: format_duration_clock(@recording.duration_seconds) } if @recording&.duration_seconds
-    items << { label: "Words / min", value: metrics["words_per_minute"].to_s }             if metrics["words_per_minute"]
-    items << { label: "Filler words", value: metrics["filler_word_count"].to_s }           if metrics["filler_word_count"]
+    if @recording&.duration_seconds
+      items << { label: "Duration",
+                 value: format_duration_clock(@recording.duration_seconds) }
+    end
+    if metrics["words_per_minute"]
+      items << { label: "Words / min",
+                 value: metrics["words_per_minute"].to_s }
+    end
+    if metrics["filler_word_count"]
+      items << { label: "Filler words",
+                 value: metrics["filler_word_count"].to_s }
+    end
 
     return if items.empty?
 
@@ -345,10 +373,10 @@ class PdfReportService
       x = i * col_w
       @pdf.fill_color BLACK
       @pdf.text_box item[:value], at: [x, y], width: col_w,
-                    size: 20, style: :bold, align: :center
+                                  size: 20, style: :bold, align: :center
       @pdf.fill_color MUTED
       @pdf.text_box item[:label], at: [x, y - 24], width: col_w,
-                    size: 8, align: :center
+                                  size: 8, align: :center
     end
 
     @pdf.move_down 44
@@ -368,12 +396,12 @@ class PdfReportService
       @pdf.move_down 6
     end
 
-    if improvements.any?
-      section_label "AREAS TO IMPROVE"
-      @pdf.move_down 8
-      improvements.each do |item|
-        render_bullet(item, color: ORANGE)
-      end
+    return unless improvements.any?
+
+    section_label "AREAS TO IMPROVE"
+    @pdf.move_down 8
+    improvements.each do |item|
+      render_bullet(item, color: ORANGE)
     end
   end
 
@@ -396,14 +424,14 @@ class PdfReportService
     @pdf.fill_color MUTED
 
     llm_fillers  = (@report.llm_raw_response&.dig("meta", "filler_words") || [])
-                     .map(&:to_s).map(&:downcase).reject(&:empty?)
+                   .map(&:to_s).map(&:downcase).reject(&:empty?)
     filler_words = llm_fillers.any? ? llm_fillers : COMMON_FILLER_WORDS
 
     transcript_safe = safe(@recording.transcript)
 
     if filler_words.any?
-      pattern = /\b(#{filler_words.map { |fw| Regexp.escape(fw) }.join("|")})\b/i
-      formatted = transcript_safe.gsub(pattern) { "<b>#{$1}</b>" }
+      pattern = /\b(#{filler_words.map { |fw| Regexp.escape(fw) }.join('|')})\b/i
+      formatted = transcript_safe.gsub(pattern) { "<b>#{::Regexp.last_match(1)}</b>" }
       @pdf.text formatted, size: 9, leading: 4, inline_format: true
     else
       @pdf.text transcript_safe, size: 9, leading: 4
@@ -419,7 +447,7 @@ class PdfReportService
     @pdf.stroke_horizontal_rule
     @pdf.move_down 6
     @pdf.fill_color MUTED
-    @pdf.text safe("Generated by Voxify  -  #{@session.created_at.strftime("%-d %B %Y")}"),
+    @pdf.text safe("Generated by Voxify  -  #{@session.created_at.strftime('%-d %B %Y')}"),
               size: 7, align: :center
   end
 end

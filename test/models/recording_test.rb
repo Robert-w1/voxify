@@ -8,11 +8,12 @@ class RecordingTest < ActiveSupport::TestCase
   # recording_session presence
 
   test "valid with a recording_session" do
-    assert @recording.valid?
+    assert_predicate @recording, :valid?
   end
 
   test "invalid without a recording_session" do
     @recording.recording_session = nil
+
     assert_not @recording.valid?
     assert_includes @recording.errors[:recording_session], "must exist"
   end
@@ -21,22 +22,26 @@ class RecordingTest < ActiveSupport::TestCase
 
   test "valid with nil duration_seconds" do
     @recording.duration_seconds = nil
-    assert @recording.valid?
+
+    assert_predicate @recording, :valid?
   end
 
   test "valid with a positive duration_seconds" do
     @recording.duration_seconds = 30
-    assert @recording.valid?
+
+    assert_predicate @recording, :valid?
   end
 
   test "invalid with duration_seconds of zero" do
     @recording.duration_seconds = 0
+
     assert_not @recording.valid?
     assert_includes @recording.errors[:duration_seconds], "must be greater than 0"
   end
 
   test "invalid with a negative duration_seconds" do
     @recording.duration_seconds = -5
+
     assert_not @recording.valid?
     assert_includes @recording.errors[:duration_seconds], "must be greater than 0"
   end

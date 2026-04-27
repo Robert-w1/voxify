@@ -17,7 +17,7 @@ namespace :deepgram do
 
     # ── 2. Build a minimal silent WAV (0.5 s, 8 kHz, mono, 8-bit PCM) ──────
     sample_rate    = 8_000
-    num_samples    = 4_000   # 0.5 s
+    num_samples    = 4_000 # 0.5 s
     data_size      = num_samples
     byte_rate      = sample_rate
 
@@ -56,14 +56,14 @@ namespace :deepgram do
       body = JSON.parse(response.body)
 
       if body["error"]
-        puts "✗ Deepgram returned an error: #{body["err_msg"]} (code: #{body["err_code"]})"
+        puts "✗ Deepgram returned an error: #{body['err_msg']} (code: #{body['err_code']})"
         exit 1
       end
 
       transcript = body.dig("results", "channels", 0, "alternatives", 0, "transcript").to_s
       puts "✓ Request successful (HTTP #{response.code})"
-      puts "  Transcript: #{transcript.empty? ? "(empty — expected for silence)" : transcript}"
-    rescue => e
+      puts "  Transcript: #{transcript.empty? ? '(empty — expected for silence)' : transcript}"
+    rescue StandardError => e
       puts "✗ Request failed: #{e.message}"
       exit 1
     end

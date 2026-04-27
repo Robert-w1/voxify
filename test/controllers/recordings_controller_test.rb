@@ -29,7 +29,8 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
          params: { audio: audio_fixture, duration_seconds: 30 }
 
     recording = @session.recordings.last
-    assert recording.audio.attached?
+
+    assert_predicate recording.audio, :attached?
     assert_equal 30, recording.duration_seconds
   end
 
@@ -38,6 +39,7 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
          params: { audio: audio_fixture, duration_seconds: 10 }
 
     @session.reload
+
     assert_equal "processing", @session.status
   end
 
@@ -46,7 +48,8 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
          params: { audio: audio_fixture, duration_seconds: 10 }
 
     recording = @session.recordings.last
-    assert_enqueued_with(job: TranscribeRecordingJob, args: [ recording.id, @user.id ])
+
+    assert_enqueued_with(job: TranscribeRecordingJob, args: [recording.id, @user.id])
   end
 
   test "returns 404 when session not found" do
@@ -62,7 +65,7 @@ class RecordingsControllerTest < ActionDispatch::IntegrationTest
       audience: "colleagues",
       presentation_type: "presentation",
       status: "recording",
-      focus: [ "clarity" ]
+      focus: ["clarity"]
     )
 
     post recording_session_recordings_path(other_session),
