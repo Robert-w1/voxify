@@ -71,7 +71,7 @@ class RecordingSessionsControllerTest < ActionDispatch::IntegrationTest
           as: :json
 
     assert_response :success
-    assert_equal true, response.parsed_body["ok"]
+    assert response.parsed_body["ok"]
     assert_equal "New Title", @session.reload.title
   end
 
@@ -83,7 +83,7 @@ class RecordingSessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_content
     body = response.parsed_body
 
-    assert_equal false, body["ok"]
+    assert_not body["ok"]
     assert_predicate body["errors"], :present?
   end
 

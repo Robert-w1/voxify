@@ -56,7 +56,6 @@ class RecordingSession < ApplicationRecord
     failed: "failed"
   }
 
-  validates :user, presence: true
   validates :title, presence: true
   validates :audience, presence: true, inclusion: { in: AUDIENCE_OPTIONS }
   validates :presentation_type, presence: true, inclusion: { in: PRESENTATION_TYPE_OPTIONS }

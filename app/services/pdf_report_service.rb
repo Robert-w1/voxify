@@ -109,8 +109,8 @@ class PdfReportService
     mins = seconds / 60
     secs = seconds % 60
     parts = []
-    parts << "#{mins} #{mins == 1 ? 'minute' : 'minutes'}" if mins > 0
-    parts << "#{secs} #{secs == 1 ? 'second' : 'seconds'}" if secs > 0 || mins == 0
+    parts << "#{mins} #{mins == 1 ? 'minute' : 'minutes'}" if mins.positive?
+    parts << "#{secs} #{secs == 1 ? 'second' : 'seconds'}" if secs.positive? || mins.zero?
     parts.join(" ")
   end
 
@@ -200,13 +200,13 @@ class PdfReportService
                    @session.created_at.utc
                  end
     total_mins = local_time.utc_offset / 60
-    offset_str = if total_mins == 0
+    offset_str = if total_mins.zero?
                    "GMT"
                  else
-                   sign = total_mins > 0 ? "+" : "-"
+                   sign = total_mins.positive? ? "+" : "-"
                    hrs   = total_mins.abs / 60
                    mins  = total_mins.abs % 60
-                   mins > 0 ? "GMT#{sign}#{hrs}:#{mins.to_s.rjust(2, '0')}" : "GMT#{sign}#{hrs}"
+                   mins.positive? ? "GMT#{sign}#{hrs}:#{mins.to_s.rjust(2, '0')}" : "GMT#{sign}#{hrs}"
                  end
     @pdf.fill_color MUTED
     @pdf.text local_time.strftime("%-d %B %Y  .  %-I:%M %p #{offset_str}"),
@@ -225,7 +225,7 @@ class PdfReportService
     end
     rows << ["Audience", safe(@session.audience.humanize)] if @session.audience.present?
 
-    focuses = @session.focus.reject(&:blank?)
+    focuses = @session.focus.compact_blank
     rows << ["Focus areas", safe(focuses.map(&:humanize).join("  .  "))] if focuses.any?
 
     rows << ["Duration", format_duration(@recording.duration_seconds)] if @recording&.duration_seconds
@@ -273,12 +273,12 @@ class PdfReportService
 
     # Determine which category keys the user specifically focused on
     chosen_categories = (@session.focus || [])
-                        .reject(&:blank?)
+                        .compact_blank
                         # .map { |f| FOCUS_TO_CATEGORY[f] }
                         .compact.uniq
 
-    focus_feedbacks = chosen_categories.any? ? feedbacks.select { |k, _| chosen_categories.include?(k) } : {}
-    other_feedbacks = feedbacks.reject { |k, _| chosen_categories.include?(k) }
+    focus_feedbacks = chosen_categories.any? ? feedbacks.slice(*chosen_categories) : {}
+    other_feedbacks = feedbacks.except(*chosen_categories)
 
     if focus_feedbacks.any?
       render_feedback_section("YOUR FOCUS AREAS", focus_feedbacks, accent: true)
@@ -299,7 +299,7 @@ class PdfReportService
       color = score_color(score)
       label = safe(key.to_s.tr("_", " ").capitalize)
 
-      @pdf.move_down 10 if idx > 0
+      @pdf.move_down 10 if idx.positive?
 
       # Guard: ensure there's enough room for the header row + bar + at least one line of summary.
       # If not, start a new page and re-print the section label so context isn't lost.

@@ -10,7 +10,7 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
     @session   = recording_sessions(:one)
     @recording = recordings(:one)
     @recording.audio.attach(
-      io: File.open(Rails.root.join("test", "fixtures", "files", "audio.webm")),
+      io: Rails.root.join("test", "fixtures", "files", "audio.webm").open,
       filename: "audio.webm",
       content_type: "audio/webm"
     )
