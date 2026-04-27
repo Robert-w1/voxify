@@ -77,7 +77,7 @@ class RecordingSessionsController < ApplicationController
     report = recording&.report
 
     unless report&.pdf_file&.attached?
-      redirect_to recording_session_path(@recording_session), alert: "PDF not available"
+      redirect_to recording_session_path(@recording_session), alert: t(".pdf_not_available")
       return
     end
 
@@ -86,14 +86,14 @@ class RecordingSessionsController < ApplicationController
       resource_type: "raw"
     )
 
-    pdf_data = URI.open(url, &:read)
+    pdf_data = URI.parse(url).open(&:read)
 
     send_data pdf_data,
               filename: "voxify-report-#{report.id}.pdf",
               type: "application/pdf",
               disposition: "attachment"
   rescue OpenURI::HTTPError, SocketError, Errno::ECONNREFUSED
-    redirect_to recording_session_path(@recording_session), alert: "PDF download failed. Please try again."
+    redirect_to recording_session_path(@recording_session), alert: t(".download_failed")
   end
 
   def update
@@ -147,26 +147,36 @@ class RecordingSessionsController < ApplicationController
 
   def build_report_json(report, recording)
     feedbacks = report.focus_feedbacks || {}
-    scores = feedbacks.values.filter_map { |v| v["score"].to_i if v.is_a?(Hash) }
-    overall = report.summary&.dig("score") ||
-              (scores.any? ? ((scores.sum.to_f / scores.size) * 10).round : 0)
-
-    summary_text = report.summary.is_a?(Hash) ? report.summary["summary"] : report.summary.to_s
-
     {
-      overall_score: overall,
-      summary: summary_text,
-      top_strengths: report.summary&.dig("top_strengths") || [],
-      top_improvements: report.summary&.dig("top_improvements") || [],
-      recommended_focus: report.summary&.dig("recommended_focus") || "",
+      overall_score: overall_score(report, feedbacks),
+      summary: summary_text(report),
+      top_strengths: report.summary&.[]("top_strengths") || [],
+      top_improvements: report.summary&.[]("top_improvements") || [],
+      recommended_focus: report.summary&.[]("recommended_focus") || "",
       focus_feedbacks: feedbacks,
       pdf_ready: report.pdf_file.attached?,
-      metrics: {
-        duration_seconds: recording&.duration_seconds || 0,
-        words_per_minute: report.llm_raw_response&.dig("meta", "words_per_minute") || 0,
-        filler_word_count: report.llm_raw_response&.dig("meta", "filler_word_count") || 0
-      }
+      metrics: build_metrics(report, recording)
     }
+  end
+
+  def overall_score(report, feedbacks)
+    score = report.summary.is_a?(Hash) && report.summary["score"]
+    return score if score
+
+    scores = feedbacks.values.filter_map { |v| v["score"].to_i if v.is_a?(Hash) }
+    scores.any? ? ((scores.sum.to_f / scores.size) * 10).round : 0
+  end
+
+  def build_metrics(report, recording)
+    {
+      duration_seconds: recording&.duration_seconds || 0,
+      words_per_minute: report.llm_raw_response&.dig("meta", "words_per_minute") || 0,
+      filler_word_count: report.llm_raw_response&.dig("meta", "filler_word_count") || 0
+    }
+  end
+
+  def summary_text(report)
+    report.summary.is_a?(Hash) ? report.summary["summary"] : report.summary.to_s
   end
 
   def set_recording_session

@@ -65,6 +65,10 @@ Metrics/BlockLength:
   Exclude:
     - 'config/routes.rb'
 
+Metrics/ClassLength:
+  Exclude:
+    - 'app/controllers/recording_sessions_controller.rb'
+
 # ── Lint ──────────────────────────────────────────────────────────────────────
 
 Lint/MissingSuper:
