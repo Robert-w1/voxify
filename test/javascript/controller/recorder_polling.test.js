@@ -90,6 +90,7 @@ describe("_startReportPolling", () => {
 
   it("does not transition when fetch throws", async () => {
     global.fetch = jest.fn().mockRejectedValue(new Error("network error"))
+    jest.spyOn(console, "error").mockImplementation(() => {})
     const { trigger } = spyOnInterval()
     const ctrl = createMockController({ _transitionTo: jest.fn() })
 
@@ -97,5 +98,9 @@ describe("_startReportPolling", () => {
     await trigger()
 
     expect(ctrl._transitionTo).not.toHaveBeenCalled()
+    expect(console.error).toHaveBeenCalledWith(
+      "Report status check failed:",
+      expect.any(Error)
+    )
   })
 })
