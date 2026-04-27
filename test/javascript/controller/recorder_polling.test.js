@@ -10,7 +10,7 @@ function spyOnInterval() {
     return 1
   })
   jest.spyOn(global, "clearInterval").mockImplementation(() => {})
-  return { getCallback: () => captured }
+  return { trigger: () => captured() }
 }
 
 beforeEach(() => {
@@ -28,11 +28,11 @@ describe("_startReportPolling", () => {
     global.fetch = jest.fn().mockResolvedValue({
       json: jest.fn().mockResolvedValue({ status: "completed", report }),
     })
-    const { getCallback } = spyOnInterval()
+    const { trigger } = spyOnInterval()
     const ctrl = createMockController({ _transitionTo: jest.fn() })
 
     RecorderController.prototype._startReportPolling.call(ctrl)
-    await getCallback()
+    await trigger()
 
     expect(ctrl._renderReport).toHaveBeenCalledWith(report)
     expect(ctrl._transitionTo).toHaveBeenCalledWith("completed")
@@ -44,11 +44,11 @@ describe("_startReportPolling", () => {
       json: jest.fn().mockResolvedValue({ status: "failed" }),
     })
     window.alert = jest.fn()
-    const { getCallback } = spyOnInterval()
+    const { trigger } = spyOnInterval()
     const ctrl = createMockController({ _transitionTo: jest.fn() })
 
     RecorderController.prototype._startReportPolling.call(ctrl)
-    await getCallback()
+    await trigger()
 
     expect(window.alert).toHaveBeenCalled()
     expect(ctrl._transitionTo).toHaveBeenCalledWith("ready")
@@ -59,11 +59,11 @@ describe("_startReportPolling", () => {
     global.fetch = jest.fn().mockResolvedValue({
       json: jest.fn().mockResolvedValue({ status: "processing" }),
     })
-    const { getCallback } = spyOnInterval()
+    const { trigger } = spyOnInterval()
     const ctrl = createMockController({ _transitionTo: jest.fn() })
 
     RecorderController.prototype._startReportPolling.call(ctrl)
-    await getCallback()
+    await trigger()
 
     expect(ctrl._transitionTo).not.toHaveBeenCalled()
     // only the initial _stopReportPolling call, not a second one
@@ -74,11 +74,11 @@ describe("_startReportPolling", () => {
     global.fetch = jest.fn().mockResolvedValue({
       json: jest.fn().mockResolvedValue({ status: "processing" }),
     })
-    const { getCallback } = spyOnInterval()
+    const { trigger } = spyOnInterval()
     const ctrl = createMockController()
 
     RecorderController.prototype._startReportPolling.call(ctrl)
-    await getCallback()
+    await trigger()
 
     expect(global.fetch).toHaveBeenCalledWith(
       "/sessions/1/report_status",
@@ -90,11 +90,11 @@ describe("_startReportPolling", () => {
 
   it("does not transition when fetch throws", async () => {
     global.fetch = jest.fn().mockRejectedValue(new Error("network error"))
-    const { getCallback } = spyOnInterval()
+    const { trigger } = spyOnInterval()
     const ctrl = createMockController({ _transitionTo: jest.fn() })
 
     RecorderController.prototype._startReportPolling.call(ctrl)
-    await getCallback()
+    await trigger()
 
     expect(ctrl._transitionTo).not.toHaveBeenCalled()
   })
