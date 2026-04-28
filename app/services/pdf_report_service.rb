@@ -378,7 +378,7 @@ class PdfReportService
     improvements = @report.summary&.dig("top_improvements") || []
     return if strengths.empty? && improvements.empty?
 
-    render_bullet_section("KEY STRENGTHS", strengths, BRAND)
+    render_bullet_section("KEY STRENGTHS", strengths, BRAND) { @pdf.move_down 6 }
     render_bullet_section("AREAS TO IMPROVE", improvements, ORANGE)
   end
 
@@ -388,7 +388,7 @@ class PdfReportService
     section_label title
     @pdf.move_down 8
     items.each { |item| render_bullet(item, color: color) }
-    @pdf.move_down 6
+    yield if block_given?
   end
 
   def render_bullet(text, color:)
