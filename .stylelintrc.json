@@ -1,0 +1,24 @@
+{
+  "extends": ["stylelint-config-standard-scss"],
+  "rules": {
+    "selector-class-pattern": [
+      "^[a-z][a-z0-9-]*(__[a-z][a-z0-9-]*)?(--[a-z][a-z0-9-]*)?$",
+      { "message": "Class name must follow BEM (block__element--modifier) pattern" }
+    ],
+    "scss/dollar-variable-pattern": "^[a-z][a-z0-9-]*$",
+    "import-notation": "string",
+    "alpha-value-notation": "number",
+    "color-function-notation": "legacy",
+    "color-function-alias-notation": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "no-descending-specificity": null,
+    "scss/dollar-variable-colon-space-after": null,
+    "scss/dollar-variable-empty-line-before": null,
+    "media-feature-range-notation": "plain",
+    "scss/no-global-function-names": null,
+    "keyframes-name-pattern": "^([a-z][a-z0-9]*)(-[a-z0-9]+)*$",
+    "declaration-block-single-line-max-declarations": 2,
+    "declaration-property-value-keyword-no-deprecated": true
+  },
+  "ignoreFiles": ["node_modules/**", "vendor/**", "public/**"]
+}
