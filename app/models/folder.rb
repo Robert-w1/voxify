@@ -10,5 +10,5 @@ class Folder < ApplicationRecord
   has_many :recording_sessions, dependent: :nullify
 
   validates :name, presence: true
-  validates :name, uniqueness: { scope: :user_id, message: "already exists" }
+  validates :name, uniqueness: { scope: :user_id }
 end

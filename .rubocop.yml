@@ -66,8 +66,7 @@ Metrics/BlockLength:
     - 'config/routes.rb'
 
 Metrics/ClassLength:
-  Exclude:
-    - 'app/controllers/recording_sessions_controller.rb'
+  Max: 350
 
 # ── Lint ──────────────────────────────────────────────────────────────────────
 
