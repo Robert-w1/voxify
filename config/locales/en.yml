@@ -29,3 +29,14 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    errors:
+      models:
+        folder:
+          attributes:
+            name:
+              taken: "already exists"
+  recording_sessions:
+    download_pdf:
+      pdf_not_available: "PDF not available"
+      download_failed: "PDF download failed. Please try again."

@@ -29,7 +29,7 @@ class TranscribeRecordingJob < ApplicationJob
     end
 
     AnalyzeTranscriptJob.perform_later(recording_id, user_id)
-  rescue => e
+  rescue StandardError => e
     Recording.find_by(id: recording_id)&.recording_session&.failed!
     raise e
   end
@@ -41,21 +41,21 @@ class TranscribeRecordingJob < ApplicationJob
     http.use_ssl = true
 
     request = Net::HTTP::Post.new(DEEPGRAM_URL)
-    request["Authorization"] = "Token #{ENV.fetch("DEEPGRAM_API_KEY")}"
+    request["Authorization"] = "Token #{ENV.fetch('DEEPGRAM_API_KEY')}"
     request["Content-Type"] = content_type
     request.body = tempfile.read
 
     response = http.request(request)
     body = JSON.parse(response.body)
 
-    raise "Deepgram API error: #{body["err_msg"]}" if body["error"]
+    raise "Deepgram API error: #{body['err_msg']}" if body["error"]
 
     alternative = body.dig("results", "channels", 0, "alternatives", 0)
     raise "Deepgram returned no transcription — audio may be empty or too short" if alternative.nil?
 
     {
       "transcript" => alternative["transcript"],
-      "words"      => alternative["words"].map { |w| w.slice("word", "start", "end") }
+      "words" => alternative["words"].map { |w| w.slice("word", "start", "end") }
     }
   end
 end

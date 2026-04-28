@@ -5,12 +5,12 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
   include ActiveJob::TestHelper
 
   setup do
-    @user      = users(:one)
+    @user = users(:one)
     @other_user = users(:two)
     @session   = recording_sessions(:one)
     @recording = recordings(:one)
     @recording.audio.attach(
-      io: File.open(Rails.root.join("test/fixtures/files/audio.webm")),
+      io: Rails.root.join("test", "fixtures", "files", "audio.webm").open,
       filename: "audio.webm",
       content_type: "audio/webm"
     )
@@ -22,6 +22,7 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
     end
 
     @recording.reload
+
     assert_equal "Hello world", @recording.transcript
     assert_equal [
       { "word" => "Hello", "start" => 0.1, "end" => 0.5 },
@@ -41,7 +42,7 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
 
   test "enqueues AnalyzeTranscriptJob after transcription" do
     stub_deepgram(deepgram_success_response) do
-      assert_enqueued_with(job: AnalyzeTranscriptJob, args: [ @recording.id, @user.id ]) do
+      assert_enqueued_with(job: AnalyzeTranscriptJob, args: [@recording.id, @user.id]) do
         TranscribeRecordingJob.new.perform(@recording.id, @user.id)
       end
     end
@@ -86,7 +87,7 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
   end
 
   test "raises when Deepgram returns no alternatives" do
-    empty_response = { "results" => { "channels" => [ { "alternatives" => [] } ] } }
+    empty_response = { "results" => { "channels" => [{ "alternatives" => [] }] } }
 
     stub_deepgram(empty_response) do
       error = assert_raises(RuntimeError) do
@@ -98,7 +99,7 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
   end
 
   test "marks session failed when Deepgram returns no alternatives" do
-    empty_response = { "results" => { "channels" => [ { "alternatives" => [] } ] } }
+    empty_response = { "results" => { "channels" => [{ "alternatives" => [] }] } }
 
     stub_deepgram(empty_response) do
       assert_raises(RuntimeError) do
@@ -114,27 +115,27 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
   def deepgram_success_response
     {
       "results" => {
-        "channels" => [ {
-          "alternatives" => [ {
+        "channels" => [{
+          "alternatives" => [{
             "transcript" => "Hello world",
             "words" => [
               { "word" => "Hello", "start" => 0.1, "end" => 0.5, "confidence" => 0.99 },
               { "word" => "world", "start" => 0.6, "end" => 1.0, "confidence" => 0.98 }
             ]
-          } ]
-        } ]
+          }]
+        }]
       }
     }
   end
 
-  def stub_deepgram(response_body)
+  def stub_deepgram(response_body, &)
     mock_response = Minitest::Mock.new
     mock_response.expect(:body, response_body.to_json)
 
     http_stub = Object.new
-    http_stub.define_singleton_method(:use_ssl=) { |_| }
+    http_stub.define_singleton_method(:use_ssl=) { |_| nil }
     http_stub.define_singleton_method(:request) { |_| mock_response }
 
-    Net::HTTP.stub(:new, http_stub) { yield }
+    Net::HTTP.stub(:new, http_stub, &)
   end
 end

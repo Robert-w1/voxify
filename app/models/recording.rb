@@ -7,6 +7,5 @@ class Recording < ApplicationRecord
 
   delegate :user, to: :recording_session
 
-  validates :recording_session, presence: true
   validates :duration_seconds, numericality: { greater_than: 0 }, allow_nil: true
 end

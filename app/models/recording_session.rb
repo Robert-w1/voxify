@@ -2,8 +2,8 @@ class RecordingSession < ApplicationRecord
   include PgSearch::Model
 
   pg_search_scope :search_by_title,
-    against: { title: "A" },
-    using: { tsearch: { prefix: true } }
+                  against: { title: "A" },
+                  using: { tsearch: { prefix: true } }
 
   belongs_to :user
   belongs_to :folder, optional: true
@@ -56,7 +56,6 @@ class RecordingSession < ApplicationRecord
     failed: "failed"
   }
 
-  validates :user, presence: true
   validates :title, presence: true
   validates :audience, presence: true, inclusion: { in: AUDIENCE_OPTIONS }
   validates :presentation_type, presence: true, inclusion: { in: PRESENTATION_TYPE_OPTIONS }

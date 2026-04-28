@@ -1,15 +1,15 @@
 class FoldersController < ApplicationController
   before_action :authenticate_user!
   before_action :enable_sidebar
-  before_action :set_folder, only: [:show, :edit, :update, :destroy]
+  before_action :set_folder, only: %i[show edit update destroy]
 
   def index
     @query = params[:q].to_s.strip
     @folders = if @query.present?
-      current_user.folders.search_by_name(@query)
-    else
-      current_user.folders.order(created_at: :desc)
-    end
+                 current_user.folders.search_by_name(@query)
+               else
+                 current_user.folders.order(created_at: :desc)
+               end
 
     respond_to do |format|
       format.html
@@ -35,6 +35,8 @@ class FoldersController < ApplicationController
     @session_id = params[:session_id]
   end
 
+  def edit; end
+
   def create
     @folder = current_user.folders.build(folder_params)
     @session_id = params[:session_id]
@@ -48,11 +50,9 @@ class FoldersController < ApplicationController
         redirect_to folder_path(@folder)
       end
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
-
-  def edit; end
 
   def update
     @folder.update(folder_params)
