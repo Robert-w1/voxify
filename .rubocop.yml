@@ -64,6 +64,9 @@ Metrics/MethodLength:
 Metrics/BlockLength:
   Exclude:
     - 'config/routes.rb'
+    - 'config/environments/development.rb'
+    - 'config/initializers/simple_form_bootstrap.rb'
+    - 'lib/tasks/deepgram.rake'
 
 Metrics/ClassLength:
   Max: 350

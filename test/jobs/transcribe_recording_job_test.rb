@@ -133,7 +133,7 @@ class TranscribeRecordingJobTest < ActiveJob::TestCase
     mock_response.expect(:body, response_body.to_json)
 
     http_stub = Object.new
-    http_stub.define_singleton_method(:use_ssl=) { |_| }
+    http_stub.define_singleton_method(:use_ssl=) { |_| nil }
     http_stub.define_singleton_method(:request) { |_| mock_response }
 
     Net::HTTP.stub(:new, http_stub, &)
