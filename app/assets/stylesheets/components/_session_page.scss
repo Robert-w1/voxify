@@ -311,7 +311,7 @@
   50%       { box-shadow: 0 0 0 8px rgba(226, 75, 74, 0.25); }
 }
 
-@keyframes countdownPop {
+@keyframes countdown-pop {
   0%   { transform: scale(0.5); opacity: 0; }
   50%  { transform: scale(1.1); }
   100% { transform: scale(1);   opacity: 1; }

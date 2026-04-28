@@ -264,7 +264,7 @@ class RecorderController extends Controller {
     const el = this.countdownTarget;
     el.style.animation = "none";
     el.offsetHeight; // force reflow
-    el.style.animation = "countdownPop 0.4s ease-out forwards";
+    el.style.animation = "countdown-pop 0.4s ease-out forwards";
   }
 
   // ────────────────────────────────────────

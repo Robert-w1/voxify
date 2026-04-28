@@ -438,7 +438,11 @@
   text-decoration: none;
   transition: background-color 0.15s ease;
 
-  i { flex-shrink: 0; color: #B0ACA0; font-size: 12px; }
+  i {
+    flex-shrink: 0;
+    color:       #B0ACA0;
+    font-size:   12px;
+  }
 
   &:hover {
     background-color: #EFECE3;

@@ -14,11 +14,13 @@
     "no-descending-specificity": null,
     "scss/dollar-variable-colon-space-after": null,
     "scss/dollar-variable-empty-line-before": null,
-    "media-feature-range-notation": "plain",
+    "media-feature-range-notation": "prefix",
     "scss/no-global-function-names": null,
     "keyframes-name-pattern": "^([a-z][a-z0-9]*)(-[a-z0-9]+)*$",
     "declaration-block-single-line-max-declarations": 2,
-    "declaration-property-value-keyword-no-deprecated": true
+    "declaration-property-value-keyword-no-deprecated": true,
+    "no-invalid-position-at-import-rule": null,
+    "scss/at-extend-no-missing-placeholder": null
   },
   "ignoreFiles": ["node_modules/**", "vendor/**", "public/**"]
 }
