@@ -5,7 +5,9 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint app/javascript",
-    "lint:fix": "eslint app/javascript --fix"
+    "lint:fix": "eslint app/javascript --fix",
+    "lint:css": "stylelint 'app/assets/stylesheets/**/*.scss'",
+    "lint:css:fix": "stylelint 'app/assets/stylesheets/**/*.scss' --fix"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
