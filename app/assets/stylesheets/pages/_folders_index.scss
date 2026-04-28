@@ -225,7 +225,11 @@
     text-decoration: none;
   }
 
-  i { color: $color-caption; font-size: 12px; flex-shrink: 0; }
+  i {
+    color:      $color-caption;
+    font-size:  12px;
+    flex-shrink: 0;
+  }
 
   &--remove {
     color: $color-error;
@@ -318,7 +322,11 @@
   padding: 12px 16px;
   margin-bottom: 16px;
 
-  p { color: $color-error; font-size: 14px; margin: 0; }
+  p {
+    color:     $color-error;
+    font-size: 14px;
+    margin:    0;
+  }
 }
 
 // ── Sidebar inline folder picker ──────────────────────────────

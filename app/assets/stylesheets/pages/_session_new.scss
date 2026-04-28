@@ -92,12 +92,22 @@
   }
 
   &.active {
-    .step-num   { border-color: $color-primary; background: $color-primary; color: #fff; }
+    .step-num {
+      border-color: $color-primary;
+      background:   $color-primary;
+      color:        #fff;
+    }
+
     .step-label { color: $color-primary; }
   }
 
   &.completed {
-    .step-num   { border-color: $color-primary; background: transparent; color: $color-primary; }
+    .step-num {
+      border-color: $color-primary;
+      background:   transparent;
+      color:        $color-primary;
+    }
+
     .step-label { color: $color-primary; }
   }
 
@@ -122,10 +132,10 @@
   border:        1px solid $color-border-light;
   border-radius: $radius-xl;
   padding:       32px;
-  animation:     flowCardIn 0.2s ease;
+  animation:     flow-card-in 0.2s ease;
 }
 
-@keyframes flowCardIn {
+@keyframes flow-card-in {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0);   }
 }
@@ -149,7 +159,7 @@
       justify-content: center;
       text-align:      center;
       white-space:     normal;
-      word-break:      break-word;
+      overflow-wrap:   break-word;
     }
   }
 }

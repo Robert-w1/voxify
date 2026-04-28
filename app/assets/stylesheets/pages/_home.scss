@@ -218,7 +218,6 @@
 // ============================================================
 
 .features {
-
   &__eyebrow {
     font-size:      12px;
     font-weight:    600;
@@ -233,6 +232,7 @@
     gap:                   20px;
 
     @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+
     @media (max-width: 560px) { grid-template-columns: 1fr; }
   }
 
@@ -305,6 +305,7 @@
     gap:                   20px;
 
     @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+
     @media (max-width: 540px) { grid-template-columns: 1fr; }
   }
 
@@ -407,7 +408,12 @@
     background-color: transparent;
     border-color:     rgba(255, 255, 255, 0.25);
     color:            rgba(255, 255, 255, 0.8);
-    &:hover { background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.4); color: white; }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color:     rgba(255, 255, 255, 0.4);
+      color:            white;
+    }
   }
 }
 
