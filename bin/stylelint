@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+exec node --no-warnings node_modules/.bin/stylelint "$@"

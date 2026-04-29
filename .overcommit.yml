@@ -1,0 +1,19 @@
+gemfile: Gemfile
+
+PreCommit:
+  RuboCop:
+    enabled: true
+    on_warn: fail
+    command: ["bundle", "exec", "rubocop"]
+
+  EsLint:
+    enabled: true
+    command: ["node_modules/.bin/eslint", "-f", "compact"]
+    include:
+      - "app/javascript/**/*.js"
+
+  Stylelint:
+    enabled: true
+    command: ["bin/stylelint"]
+    include:
+      - "app/assets/stylesheets/**/*.scss"
