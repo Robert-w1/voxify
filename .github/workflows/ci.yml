@@ -91,6 +91,7 @@ jobs:
     env:
       RAILS_ENV: test
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/voxify_test
+      DEEPGRAM_API_KEY: test-key
 
     steps:
       - uses: actions/checkout@v4
@@ -130,6 +131,7 @@ jobs:
     env:
       RAILS_ENV: test
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/voxify_test
+      DEEPGRAM_API_KEY: test-key
 
     steps:
       - uses: actions/checkout@v4
