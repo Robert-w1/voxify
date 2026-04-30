@@ -73,6 +73,9 @@ group :development do
   gem "rubocop-minitest", require: false
   gem "rubocop-capybara", require: false
 
+  gem "brakeman", require: false
+  gem "bundler-audit", require: false
+
   gem "overcommit", require: false
 
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]

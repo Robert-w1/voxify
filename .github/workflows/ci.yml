@@ -68,6 +68,23 @@ jobs:
       - name: Run Jest
         run: npm test
 
+  # ── Security ──────────────────────────────────────────────────────────────
+  security:
+    name: Security (Brakeman + bundler-audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Brakeman (static analysis)
+        run: bundle exec brakeman --no-pager
+
+      - name: bundler-audit (CVE check)
+        run: bundle exec bundler-audit check --update
+
   # ── Test: Unit & Integration ──────────────────────────────────────────────
   test-unit:
     name: Test / Unit & Integration (Minitest)
