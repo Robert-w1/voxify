@@ -1,0 +1,147 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+# Cancel redundant runs on the same branch.
+# PRs: cancel when a new push arrives.
+# master: always run to completion.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  # ── Lint: Ruby ────────────────────────────────────────────────────────────
+  lint-ruby:
+    name: Lint / Ruby (RuboCop)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true   # reads .ruby-version; caches vendor/bundle
+
+      - name: Run RuboCop
+        run: bundle exec rubocop --format github
+
+  # ── Lint: Frontend ────────────────────────────────────────────────────────
+  lint-frontend:
+    name: Lint / Frontend (ESLint + Stylelint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Stylelint
+        run: npm run lint:css
+
+  # ── Test: JavaScript ──────────────────────────────────────────────────────
+  test-js:
+    name: Test / JavaScript (Jest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Run Jest
+        run: npm test
+
+  # ── Test: Unit & Integration ──────────────────────────────────────────────
+  test-unit:
+    name: Test / Unit & Integration (Minitest)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: voxify_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/voxify_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Load database schema
+        run: bundle exec rails db:schema:load
+
+      - name: Run Minitest
+        run: bundle exec rails test
+
+  # ── Test: System (Capybara + Chrome) ─────────────────────────────────────
+  # Runs on all PRs, but only after the cheaper jobs pass.
+  test-system:
+    name: Test / System (Capybara + Chrome)
+    runs-on: ubuntu-latest
+    needs: [lint-ruby, lint-frontend, test-unit]
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: voxify_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/voxify_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: browser-actions/setup-chrome@v1
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Load database schema
+        run: bundle exec rails db:schema:load
+
+      - name: Run system tests
+        run: bundle exec rails test:system
