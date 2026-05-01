@@ -1,19 +1,3 @@
-<!--
-  README TEMPLATE
-  ===============
-  Two kinds of sections in this file:
-
-  1. Sections marked with <!-- FILL MANUALLY: ... --> are for YOU to write.
-     They contain personal, project-specific content only you can provide.
-
-  2. Sections marked with <!-- FILL VIA CLAUDE CODE --> are populated by
-     Claude Code based on actual analysis of the codebase. Do not edit
-     these by hand before running the prompt.
-
-  Delete every HTML comment block (including this one) once the README
-  is finalized.
--->
-
 # Voxify
 
 > <!-- FILL MANUALLY: One or two sentences describing what this project does and who it is for. Mention the context (bootcamp project, personal project, hackathon, etc.) if relevant. -->
