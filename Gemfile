@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.3.5"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.1.6"
+gem "rails", "~> 7.2.0"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
 gem "sprockets-rails"
@@ -48,7 +48,7 @@ gem "bootstrap", "~> 5.3"
 gem "devise"
 gem "autoprefixer-rails"
 gem "font-awesome-sass", "~> 6.1"
-gem "simple_form", github: "heartcombo/simple_form"
+gem "simple_form", "~> 5.4"
 gem "sassc-rails"
 gem "anthropic"
 gem "ruby_llm", "~> 1.2.0"
@@ -72,6 +72,9 @@ group :development do
   gem "rubocop-performance", require: false
   gem "rubocop-minitest", require: false
   gem "rubocop-capybara", require: false
+
+  gem "brakeman", require: false
+  gem "bundler-audit", require: false
 
   gem "overcommit", require: false
 
