@@ -64,32 +64,124 @@ AI-powered presentation coach built in a team of three as a bootcamp project. Re
 
 ## 🛠 Tech Stack
 
-<!-- FILL VIA CLAUDE CODE: Group the technologies into categories
-(Frontend / Backend / External APIs / Tooling & Deployment) and list
-the actual libraries with their major versions, as found in the
-dependency manifests. -->
+### Backend
+| Library | Version |
+|---|---|
+| Ruby | 3.3.5 |
+| Rails | 7.2.3.1 |
+| PostgreSQL (`pg`) | 1.6.3 |
+| Puma | 7.2.0 |
+| Devise | 5.0.3 |
+| pg_search | 2.3.7 |
+| Prawn (PDF generation) | 2.4.0 |
+
+### Frontend
+| Library | Version |
+|---|---|
+| Bootstrap | 5.3.8 |
+| Hotwire Turbo | 2.0.23 |
+| Hotwire Stimulus | 1.3.4 |
+| Importmap | 2.2.3 |
+| Font Awesome | 6.7.2 |
+| simple_form | 5.4.1 |
+
+### External APIs
+| Service | Purpose | Integration |
+|---|---|---|
+| Deepgram | Speech-to-text transcription | REST via `Net::HTTP` |
+| Azure GitHub Models (via RubyLLM 1.2.0) | LLM feedback generation | `ruby_llm` gem |
+| Cloudinary | File storage (production) | `cloudinary` gem 2.4.4 |
+
+### Tooling & Deployment
+| Tool | Version |
+|---|---|
+| RuboCop (+ rails, performance, minitest, capybara plugins) | 1.86.1 |
+| ESLint | 9.x |
+| Prettier | 3.8.3 |
+| Stylelint | 17.9.1 |
+| Brakeman | 8.0.4 |
+| bundler-audit | 0.9.3 |
+| Jest | 29.x |
+| Docker | multi-stage build (ruby:3.3.5-slim) |
+| GitHub Actions | CI |
 
 ---
 
 ## 🏗 Architecture
 
-<!-- FILL VIA CLAUDE CODE: Brief description of the architecture of THIS
-project. Include a simple ASCII diagram showing the actual components
-and request flow. Mention non-obvious choices (background jobs, caching,
-service objects, etc.) found in the code. -->
+Voxify is a server-rendered Rails monolith. Audio is captured in the browser via the MediaRecorder API and uploaded directly to the server. Processing then runs through a three-stage **Active Job pipeline**: transcription → AI analysis → PDF generation. There is no client-side bundler — JavaScript is loaded via Importmap.
+
+```
+Browser (Stimulus + MediaRecorder)
+        │  POST /sessions/:id/recordings (FormData)
+        ▼
+RecordingsController
+        │  attaches audio via Active Storage → Cloudinary (production)
+        ▼
+TranscribeRecordingJob
+        │  sends audio to Deepgram REST API, stores transcript on Recording
+        ▼
+AnalyzeTranscriptJob
+        │  sends transcript to Azure GitHub Models via RubyLLM gem
+        │  stores structured JSON feedback on Report (JSONB columns)
+        ▼
+GenerateReportPdfJob
+        │  PdfReportService builds PDF with Prawn
+        └─ PDF stored via Active Storage
+```
+
+**Non-obvious choices:**
+- `focus` is a PostgreSQL `text[]` array column, not a join table.
+- `Report` stores all LLM output in three JSONB columns (`summary`, `focus_feedbacks`, `llm_raw_response`) — no separate feedback rows.
+- Full-text search (sessions + folders) uses `pg_search` against PostgreSQL, no external search service.
+- The LLM integration uses `ruby_llm` pointed at `models.inference.ai.azure.com` (GitHub Models), authenticated with a GitHub token rather than a direct Anthropic key.
 
 ---
 
 ## 🚀 Installation & Setup
 
-<!-- FILL VIA CLAUDE CODE: Provide step-by-step instructions that
-actually work for this codebase, including:
-- Prerequisites with required versions
-- Clone and install commands
-- Environment variable setup (referencing .env.example if present)
-- Database setup commands
-- Command to start the dev server
-- The URL where the app becomes available -->
+### Prerequisites
+
+- **Ruby 3.3.5** — use [rbenv](https://github.com/rbenv/rbenv) or [asdf](https://asdf-vm.com/)
+- **PostgreSQL 16+**
+- **Node.js 20+ and npm** (for JS linting and tests)
+
+### 1. Clone and install
+
+```bash
+git clone https://github.com/Robert-w1/voxify.git
+cd voxify
+bundle install
+npm install
+```
+
+### 2. Environment variables
+
+Create a `.env` file in the project root:
+
+```bash
+DEEPGRAM_API_KEY=your_deepgram_api_key
+GITHUB_TOKEN=your_github_token        # authenticates the Azure GitHub Models Inference API
+CLOUDINARY_URL=cloudinary://...       # file storage (required in production)
+```
+
+<!-- TODO: add a .env.example file to the repository so contributors know which variables are required -->
+
+### 3. Database
+
+```bash
+rails db:create db:migrate
+```
+
+### 4. Start the development server
+
+<!-- TODO: verify the correct dev server command — bin/dev and Procfile.dev are documented in CLAUDE.md but the files do not exist in the repository -->
+
+```bash
+rails server
+```
+
+The app will be available at **http://localhost:3000**.
 
 ---
 
@@ -114,20 +206,59 @@ actually work for this codebase, including:
 
 ## 🧪 Tests
 
-<!-- FILL VIA CLAUDE CODE: Describe the actual testing setup found in
-this project — which frameworks, which categories of tests exist, exact
-commands to run them, and how external APIs are handled in tests. -->
+**Frameworks:** Minitest (Rails default) for backend, Jest 29 for JavaScript, Capybara + Selenium WebDriver (Chrome) for system tests.
+
+| Category | Location |
+|---|---|
+| Model tests | `test/models/` |
+| Controller tests | `test/controllers/` |
+| Job tests | `test/jobs/` |
+| System tests (browser) | `test/system/` |
+| JavaScript unit tests | `test/javascript/` |
+
+```bash
+# All Rails tests (models, controllers, jobs)
+rails test
+
+# Single file
+rails test test/models/recording_session_test.rb
+
+# System tests — requires Chrome installed
+rails test:system
+
+# JavaScript tests
+npm test
+```
+
+External API calls (Deepgram, RubyLLM) are stubbed inline using `Minitest::Mock`. No WebMock or VCR cassettes are used.
 
 ---
 
-<!-- FILL VIA CLAUDE CODE: If linters/formatters are configured, add a
-"## 🧹 Code Quality" section here listing tools, commands, and whether
-they run in CI. If none are configured, skip this section. -->
+## 🧹 Code Quality
 
-<!-- FILL VIA CLAUDE CODE: If CI/CD workflows exist, add a
-"## ⚙️ Continuous Integration" section here describing the provider,
-what the pipeline does, and on which events it triggers. If no CI is
-configured, skip this section. -->
+| Tool | Scope | Commands |
+|---|---|---|
+| RuboCop (+ rails, performance, minitest, capybara) | Ruby | `bundle exec rubocop` / `bundle exec rubocop -a` |
+| ESLint + Prettier | JavaScript (`app/javascript/`) | `npm run lint` / `npm run lint:fix` |
+| Stylelint | SCSS (`app/assets/stylesheets/`) | `npm run lint:css` / `npm run lint:css:fix` |
+| Brakeman | Ruby static security analysis | `bundle exec brakeman --no-pager` |
+| bundler-audit | Gem vulnerability check | `bundle exec bundler-audit check --update` |
+
+All five tools run automatically in CI on every push and pull request.
+
+## ⚙️ Continuous Integration
+
+**Provider:** GitHub Actions (`.github/workflows/ci.yml`)
+**Triggers:** push to `master`, all pull requests
+
+| Job | What it does |
+|---|---|
+| `lint-ruby` | Runs RuboCop |
+| `lint-frontend` | Runs ESLint and Stylelint |
+| `test-js` | Runs Jest unit tests |
+| `security` | Runs Brakeman and bundler-audit |
+| `test-unit` | Runs all Minitest tests against PostgreSQL 16 |
+| `test-system` | Runs Capybara + Chrome system tests (requires `lint-ruby`, `lint-frontend`, and `test-unit` to pass first) |
 
 ---
 
