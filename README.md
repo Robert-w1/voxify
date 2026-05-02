@@ -24,10 +24,8 @@ AI-powered presentation coach built in a team of three as a bootcamp project. Re
 - [Installation & Setup](#installation--setup)
 - [Usage](#usage)
 - [Tests](#tests)
-- [My Contribution](#my-contribution)
 - [Known Limitations](#known-limitations)
 - [Planned Improvements](#planned-improvements)
-- [License](#license)
 
 ---
 
