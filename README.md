@@ -1,14 +1,10 @@
 # Voxify
 
-> <!-- FILL MANUALLY: One or two sentences describing what this project does and who it is for. Mention the context (bootcamp project, personal project, hackathon, etc.) if relevant. -->
 AI-powered presentation coach built in a team of three as a bootcamp project. Record yourself, receive relevant and individual feedback and improve your presentation skills.
 
 📂 **Repository:** https://github.com/Robert-w1/voxify/
 
-<!-- FILL MANUALLY: Add badges here once CI is set up. Example:
 ![Build Status](https://github.com/Robert-w1/voxify/actions/workflows/ci.yml/badge.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
--->
 
 ---
 
@@ -118,7 +114,7 @@ GenerateReportPdfJob
 - `focus` is a PostgreSQL `text[]` array column, not a join table.
 - `Report` stores all LLM output in three JSONB columns (`summary`, `focus_feedbacks`, `llm_raw_response`) — no separate feedback rows.
 - Full-text search (sessions + folders) uses `pg_search` against PostgreSQL, no external search service.
-- The LLM integration uses `ruby_llm` pointed at `models.inference.ai.azure.com` (GitHub Models), authenticated with a GitHub token rather than a direct Anthropic key.
+- The LLM integration uses `ruby_llm` pointed at `models.inference.ai.azure.com` (GitHub Models), authenticated with a GitHub token rather than a direct OpenAI key.
 
 ---
 
@@ -149,8 +145,6 @@ GITHUB_TOKEN=your_github_token        # authenticates the Azure GitHub Models In
 CLOUDINARY_URL=cloudinary://...       # file storage (required in production)
 ```
 
-<!-- TODO: add a .env.example file to the repository so contributors know which variables are required -->
-
 ### 3. Database
 
 ```bash
@@ -158,8 +152,6 @@ rails db:create db:migrate
 ```
 
 ### 4. Start the development server
-
-<!-- TODO: verify the correct dev server command — bin/dev and Procfile.dev are documented in CLAUDE.md but the files do not exist in the repository -->
 
 ```bash
 rails server
@@ -246,16 +238,6 @@ All five tools run automatically in CI on every push and pull request.
 
 ---
 
-## 👥 My Contribution
-
-<!-- FILL MANUALLY: If this was a team project, state team size and
-context. List your main areas of responsibility honestly. Optionally
-add a short reflection on what you learned. If this was a solo project,
-replace this section with "## 👤 About This Project" and note that it
-was built solo. -->
-
----
-
 ## ⚠️ Known Limitations
 
 - Only recordings in English can be processed
@@ -271,13 +253,6 @@ was built solo. -->
 
 ---
 
-## 📄 License
-
-<!-- FILL MANUALLY: State the license. Common choice for portfolio
-projects is MIT. Make sure a LICENSE file actually exists in the repo. -->
-
----
-
 ## 📬 Contact
 
-<!-- FILL MANUALLY: Your name, email, LinkedIn, optional portfolio URL. -->
+Robert Winkler, www.linkedin.com/in/rpwinkler
