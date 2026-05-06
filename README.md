@@ -18,14 +18,17 @@ AI-powered presentation coach built in a team of three as a bootcamp project. Re
 
 ## 📑 Table of Contents
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Installation & Setup](#installation--setup)
-- [Usage](#usage)
-- [Tests](#tests)
-- [Known Limitations](#known-limitations)
-- [Planned Improvements](#planned-improvements)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Installation & Setup](#-installation--setup)
+- [Usage](#-usage)
+- [Tests](#-tests)
+- [Code Quality](#-code-quality)
+- [Continuous Integration](#️-continuous-integration)
+- [Known Limitations](#️-known-limitations)
+- [Planned Improvements](#-planned-improvements)
+- [Contact](#-contact)
 
 ---
 
@@ -253,4 +256,4 @@ All five tools run automatically in CI on every push and pull request.
 
 ## 📬 Contact
 
-Robert Winkler, www.linkedin.com/in/rpwinkler
+Robert Winkler, https://github.com/Robert-w1/, www.linkedin.com/in/rpwinkler
